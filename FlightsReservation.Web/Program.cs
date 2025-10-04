@@ -1,4 +1,4 @@
-using FlightsReservation.DAL.EF;
+using FlightsReservation.DAL.Data;
 using Microsoft.EntityFrameworkCore;
 
 var builder = WebApplication.CreateBuilder(args);

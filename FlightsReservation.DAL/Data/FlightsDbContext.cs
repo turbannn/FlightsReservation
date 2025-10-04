@@ -2,7 +2,7 @@
 using FlightsReservation.DAL.Entities.Model;
 using Microsoft.EntityFrameworkCore;
 
-namespace FlightsReservation.DAL.EF
+namespace FlightsReservation.DAL.Data
 {
     public class FlightsDbContext : DbContext
     {

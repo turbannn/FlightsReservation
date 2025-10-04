@@ -1,5 +1,5 @@
 ﻿
-using FlightsReservation.DAL.EF;
+using FlightsReservation.DAL.Data;
 using FlightsReservation.DAL.Entities.Model;
 using FlightsReservation.DAL.Interfaces;
 using Microsoft.EntityFrameworkCore;
