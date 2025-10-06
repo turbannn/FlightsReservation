@@ -1,10 +1,9 @@
 ﻿using FlightsReservation.BLL.Interfaces;
 
-namespace FlightsReservation.BLL.DtoEntities.SeatsDtos;
+namespace FlightsReservation.BLL.DtoEntities.SeatDtos;
 
-public class SeatUpdateDto : ISeatDto
+public class SeatUpdateDto : BaseTransferEntity, ISeatDto
 {
-    public int Id { get; set; }
     public string SeatNumber { get; set; }
     public bool IsAvailable { get; set; }
 }

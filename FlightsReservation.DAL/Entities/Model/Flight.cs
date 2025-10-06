@@ -8,7 +8,6 @@ public class Flight
     public string Arrival { get; set; } = null!;
     public DateTime DepartureTime { get; set; }
     public DateTime ArrivalTime { get; set; }
-    public int AvailableSeats => Seats.Count(s => s.IsAvailable);
     public string AirplaneType { get; set; } = null!;
 
     public List<Reservation> Reservations { get; set; } = null!;

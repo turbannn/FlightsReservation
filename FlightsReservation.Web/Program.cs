@@ -1,3 +1,4 @@
+using FlightsReservation.BLL.MapperProfiles;
 using FlightsReservation.DAL.Data;
 using FlightsReservation.DAL.Interfaces;
 using FlightsReservation.DAL.Repositories;
@@ -21,6 +22,8 @@ builder.Services.AddScoped<IFlightsRepository, FlightsRepository>();
 //UoW
 builder.Services.AddScoped<IUnitOfWork, EfUnitOfWork>();
 
+//AutoMappers
+builder.Services.AddAutoMapper(cfg => { }, typeof(SeatProfile).Assembly);
 
 builder.Services.AddControllers();
 // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
