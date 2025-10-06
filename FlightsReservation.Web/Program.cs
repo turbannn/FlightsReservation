@@ -1,4 +1,7 @@
 using FlightsReservation.DAL.Data;
+using FlightsReservation.DAL.Interfaces;
+using FlightsReservation.DAL.Repositories;
+using FlightsReservation.DAL.UoWs;
 using Microsoft.EntityFrameworkCore;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -8,10 +11,16 @@ var connection = builder.Configuration.GetConnectionString("DefaultConnection");
 
 builder.Services.AddDbContext<FlightsDbContext>(options => options.UseNpgsql(connection));
 
-//Repositories
-
-
 // Add services to the container.
+//Repositories
+builder.Services.AddScoped<ISeatsRepository, SeatsRepository>();
+builder.Services.AddScoped<IPassengersRepository, PassengersRepository>();
+builder.Services.AddScoped<IReservationsRepository, ReservationRepository>();
+builder.Services.AddScoped<IFlightsRepository, FlightsRepository>();
+
+//UoW
+builder.Services.AddScoped<IUnitOfWork, EfUnitOfWork>();
+
 
 builder.Services.AddControllers();
 // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle

@@ -4,20 +4,20 @@ using FlightsReservation.DAL.Interfaces;
 
 namespace FlightsReservation.DAL.UoWs;
 
-public class UnitOfWork : IUnitOfWork
+public class EfUnitOfWork : IUnitOfWork
 {
     private readonly FlightsDbContext _db;
     private IDbContextTransaction? _tx;
     private bool _disposed;
 
-    public UnitOfWork(FlightsDbContext db)
+    public EfUnitOfWork(FlightsDbContext db)
     {
         _db = db ?? throw new ArgumentNullException(nameof(db));
     }
 
     public async Task BeginAsync(CancellationToken ct = default)
     {
-        if (_tx is not null) return; // транзакція вже відкрита
+        if (_tx is not null) return;
         _tx = await _db.Database.BeginTransactionAsync(ct);
     }
 
@@ -29,7 +29,7 @@ public class UnitOfWork : IUnitOfWork
     public async Task CommitAsync(CancellationToken ct = default)
     {
         if (_tx is null) return;
-        await _db.SaveChangesAsync(ct); // переконаємось, що всі зміни збережені
+        await _db.SaveChangesAsync(ct);
         await _tx.CommitAsync(ct);
         await _tx.DisposeAsync();
         _tx = null;
@@ -53,7 +53,6 @@ public class UnitOfWork : IUnitOfWork
         }
 
         _disposed = true;
-        // DbContext тут не Dispose — він контролюється DI (scoped)
     }
 }
 
