@@ -13,7 +13,7 @@ public class SeatsRepository : ISeatsRepository
         _context = dbContext;
     }
 
-    public async Task<Seat?> GetByIdAsync(int id)
+    public async Task<Seat?> GetByIdAsync(Guid id)
     {
         var seat = await _context.Seats
             .AsNoTracking()
@@ -36,12 +36,12 @@ public class SeatsRepository : ISeatsRepository
         return Task.CompletedTask;
     }
 
-    public async Task DeleteAsync(int id)
+    public async Task DeleteAsync(Guid id)
     {
         await _context.Seats.Where(s => s.Id == id).ExecuteDeleteAsync();
     }
 
-    public async Task MarkSeatAsAvailable(int seatId)
+    public async Task MarkSeatAsAvailable(Guid seatId)
     {
         var seat = await _context.Seats.FirstOrDefaultAsync(s => s.Id == seatId);
         if (seat != null)
@@ -50,7 +50,7 @@ public class SeatsRepository : ISeatsRepository
         }
     }
 
-    public async Task MarkSeatAsOccupied(int seatId)
+    public async Task MarkSeatAsOccupied(Guid seatId)
     {
         var seat = await _context.Seats.FirstOrDefaultAsync(s => s.Id == seatId);
         if (seat != null)

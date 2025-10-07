@@ -1,6 +1,5 @@
 ﻿using System;
 using Microsoft.EntityFrameworkCore.Migrations;
-using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 
 #nullable disable
 
@@ -12,19 +11,18 @@ namespace FlightsReservation.DAL.Migrations
         /// <inheritdoc />
         protected override void Up(MigrationBuilder migrationBuilder)
         {
+            migrationBuilder.Sql("CREATE EXTENSION IF NOT EXISTS \"pgcrypto\";");
+
             migrationBuilder.CreateTable(
                 name: "Flights",
                 columns: table => new
                 {
-                    Id = table.Column<int>(type: "integer", nullable: false)
-                        .Annotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityByDefaultColumn),
+                    Id = table.Column<Guid>(type: "uuid", nullable: false),
                     FlightNumber = table.Column<string>(type: "text", nullable: false),
                     Departure = table.Column<string>(type: "text", nullable: false),
                     Arrival = table.Column<string>(type: "text", nullable: false),
                     DepartureTime = table.Column<DateTime>(type: "timestamp with time zone", nullable: false),
                     ArrivalTime = table.Column<DateTime>(type: "timestamp with time zone", nullable: false),
-                    Capacity = table.Column<int>(type: "integer", nullable: false),
-                    AvailableSeats = table.Column<int>(type: "integer", nullable: false),
                     AirplaneType = table.Column<string>(type: "text", nullable: false)
                 },
                 constraints: table =>
@@ -36,11 +34,10 @@ namespace FlightsReservation.DAL.Migrations
                 name: "Reservations",
                 columns: table => new
                 {
-                    Id = table.Column<int>(type: "integer", nullable: false)
-                        .Annotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityByDefaultColumn),
+                    Id = table.Column<Guid>(type: "uuid", nullable: false),
                     ReservationNumber = table.Column<string>(type: "text", nullable: false),
                     ReservationDate = table.Column<DateTime>(type: "timestamp with time zone", nullable: false),
-                    FlightId = table.Column<int>(type: "integer", nullable: false)
+                    FlightId = table.Column<Guid>(type: "uuid", nullable: false)
                 },
                 constraints: table =>
                 {
@@ -54,18 +51,37 @@ namespace FlightsReservation.DAL.Migrations
                 });
 
             migrationBuilder.CreateTable(
+                name: "Seats",
+                columns: table => new
+                {
+                    Id = table.Column<Guid>(type: "uuid", nullable: false),
+                    SeatNumber = table.Column<string>(type: "text", nullable: false),
+                    IsAvailable = table.Column<bool>(type: "boolean", nullable: false),
+                    FlightId = table.Column<Guid>(type: "uuid", nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_Seats", x => x.Id);
+                    table.ForeignKey(
+                        name: "FK_Seats_Flights_FlightId",
+                        column: x => x.FlightId,
+                        principalTable: "Flights",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Cascade);
+                });
+
+            migrationBuilder.CreateTable(
                 name: "Passengers",
                 columns: table => new
                 {
-                    Id = table.Column<int>(type: "integer", nullable: false)
-                        .Annotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityByDefaultColumn),
+                    Id = table.Column<Guid>(type: "uuid", nullable: false),
                     FirstName = table.Column<string>(type: "text", nullable: false),
                     LastName = table.Column<string>(type: "text", nullable: false),
                     PassportNumber = table.Column<string>(type: "text", nullable: false),
                     PhoneNumber = table.Column<string>(type: "text", nullable: false),
                     Email = table.Column<string>(type: "text", nullable: false),
-                    SeatNumber = table.Column<string>(type: "text", nullable: false),
-                    ReservationId = table.Column<int>(type: "integer", nullable: false)
+                    ReservationId = table.Column<Guid>(type: "uuid", nullable: false),
+                    SeatId = table.Column<Guid>(type: "uuid", nullable: false)
                 },
                 constraints: table =>
                 {
@@ -76,6 +92,12 @@ namespace FlightsReservation.DAL.Migrations
                         principalTable: "Reservations",
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Cascade);
+                    table.ForeignKey(
+                        name: "FK_Passengers_Seats_SeatId",
+                        column: x => x.SeatId,
+                        principalTable: "Seats",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Cascade);
                 });
 
             migrationBuilder.CreateIndex(
@@ -84,8 +106,19 @@ namespace FlightsReservation.DAL.Migrations
                 column: "ReservationId");
 
             migrationBuilder.CreateIndex(
+                name: "IX_Passengers_SeatId",
+                table: "Passengers",
+                column: "SeatId",
+                unique: true);
+
+            migrationBuilder.CreateIndex(
                 name: "IX_Reservations_FlightId",
                 table: "Reservations",
+                column: "FlightId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_Seats_FlightId",
+                table: "Seats",
                 column: "FlightId");
         }
 
@@ -97,6 +130,9 @@ namespace FlightsReservation.DAL.Migrations
 
             migrationBuilder.DropTable(
                 name: "Reservations");
+
+            migrationBuilder.DropTable(
+                name: "Seats");
 
             migrationBuilder.DropTable(
                 name: "Flights");

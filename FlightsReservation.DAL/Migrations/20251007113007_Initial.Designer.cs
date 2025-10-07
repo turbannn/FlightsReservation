@@ -12,7 +12,7 @@ using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 namespace FlightsReservation.DAL.Migrations
 {
     [DbContext(typeof(FlightsDbContext))]
-    [Migration("20250930142405_Initial")]
+    [Migration("20251007113007_Initial")]
     partial class Initial
     {
         /// <inheritdoc />
@@ -25,13 +25,11 @@ namespace FlightsReservation.DAL.Migrations
 
             NpgsqlModelBuilderExtensions.UseIdentityByDefaultColumns(modelBuilder);
 
-            modelBuilder.Entity("FlightsReservation.DAL.Entities.Flight", b =>
+            modelBuilder.Entity("FlightsReservation.DAL.Entities.Model.Flight", b =>
                 {
-                    b.Property<int>("Id")
+                    b.Property<Guid>("Id")
                         .ValueGeneratedOnAdd()
-                        .HasColumnType("integer");
-
-                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
+                        .HasColumnType("uuid");
 
                     b.Property<string>("AirplaneType")
                         .IsRequired()
@@ -43,12 +41,6 @@ namespace FlightsReservation.DAL.Migrations
 
                     b.Property<DateTime>("ArrivalTime")
                         .HasColumnType("timestamp with time zone");
-
-                    b.Property<int>("AvailableSeats")
-                        .HasColumnType("integer");
-
-                    b.Property<int>("Capacity")
-                        .HasColumnType("integer");
 
                     b.Property<string>("Departure")
                         .IsRequired()
@@ -66,13 +58,11 @@ namespace FlightsReservation.DAL.Migrations
                     b.ToTable("Flights");
                 });
 
-            modelBuilder.Entity("FlightsReservation.DAL.Entities.Passenger", b =>
+            modelBuilder.Entity("FlightsReservation.DAL.Entities.Model.Passenger", b =>
                 {
-                    b.Property<int>("Id")
+                    b.Property<Guid>("Id")
                         .ValueGeneratedOnAdd()
-                        .HasColumnType("integer");
-
-                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
+                        .HasColumnType("uuid");
 
                     b.Property<string>("Email")
                         .IsRequired()
@@ -94,30 +84,30 @@ namespace FlightsReservation.DAL.Migrations
                         .IsRequired()
                         .HasColumnType("text");
 
-                    b.Property<int>("ReservationId")
-                        .HasColumnType("integer");
+                    b.Property<Guid>("ReservationId")
+                        .HasColumnType("uuid");
 
-                    b.Property<string>("SeatNumber")
-                        .IsRequired()
-                        .HasColumnType("text");
+                    b.Property<Guid>("SeatId")
+                        .HasColumnType("uuid");
 
                     b.HasKey("Id");
 
                     b.HasIndex("ReservationId");
 
+                    b.HasIndex("SeatId")
+                        .IsUnique();
+
                     b.ToTable("Passengers");
                 });
 
-            modelBuilder.Entity("FlightsReservation.DAL.Entities.Reservation", b =>
+            modelBuilder.Entity("FlightsReservation.DAL.Entities.Model.Reservation", b =>
                 {
-                    b.Property<int>("Id")
+                    b.Property<Guid>("Id")
                         .ValueGeneratedOnAdd()
-                        .HasColumnType("integer");
+                        .HasColumnType("uuid");
 
-                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
-
-                    b.Property<int>("FlightId")
-                        .HasColumnType("integer");
+                    b.Property<Guid>("FlightId")
+                        .HasColumnType("uuid");
 
                     b.Property<DateTime>("ReservationDate")
                         .HasColumnType("timestamp with time zone");
@@ -133,20 +123,51 @@ namespace FlightsReservation.DAL.Migrations
                     b.ToTable("Reservations");
                 });
 
-            modelBuilder.Entity("FlightsReservation.DAL.Entities.Passenger", b =>
+            modelBuilder.Entity("FlightsReservation.DAL.Entities.Model.Seat", b =>
                 {
-                    b.HasOne("FlightsReservation.DAL.Entities.Reservation", "Reservation")
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uuid");
+
+                    b.Property<Guid>("FlightId")
+                        .HasColumnType("uuid");
+
+                    b.Property<bool>("IsAvailable")
+                        .HasColumnType("boolean");
+
+                    b.Property<string>("SeatNumber")
+                        .IsRequired()
+                        .HasColumnType("text");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("FlightId");
+
+                    b.ToTable("Seats");
+                });
+
+            modelBuilder.Entity("FlightsReservation.DAL.Entities.Model.Passenger", b =>
+                {
+                    b.HasOne("FlightsReservation.DAL.Entities.Model.Reservation", "Reservation")
                         .WithMany("Passengers")
                         .HasForeignKey("ReservationId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
+                    b.HasOne("FlightsReservation.DAL.Entities.Model.Seat", "Seat")
+                        .WithOne("Passenger")
+                        .HasForeignKey("FlightsReservation.DAL.Entities.Model.Passenger", "SeatId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
                     b.Navigation("Reservation");
+
+                    b.Navigation("Seat");
                 });
 
-            modelBuilder.Entity("FlightsReservation.DAL.Entities.Reservation", b =>
+            modelBuilder.Entity("FlightsReservation.DAL.Entities.Model.Reservation", b =>
                 {
-                    b.HasOne("FlightsReservation.DAL.Entities.Flight", "Flight")
+                    b.HasOne("FlightsReservation.DAL.Entities.Model.Flight", "Flight")
                         .WithMany("Reservations")
                         .HasForeignKey("FlightId")
                         .OnDelete(DeleteBehavior.Cascade)
@@ -155,14 +176,32 @@ namespace FlightsReservation.DAL.Migrations
                     b.Navigation("Flight");
                 });
 
-            modelBuilder.Entity("FlightsReservation.DAL.Entities.Flight", b =>
+            modelBuilder.Entity("FlightsReservation.DAL.Entities.Model.Seat", b =>
                 {
-                    b.Navigation("Reservations");
+                    b.HasOne("FlightsReservation.DAL.Entities.Model.Flight", "Flight")
+                        .WithMany("Seats")
+                        .HasForeignKey("FlightId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Flight");
                 });
 
-            modelBuilder.Entity("FlightsReservation.DAL.Entities.Reservation", b =>
+            modelBuilder.Entity("FlightsReservation.DAL.Entities.Model.Flight", b =>
+                {
+                    b.Navigation("Reservations");
+
+                    b.Navigation("Seats");
+                });
+
+            modelBuilder.Entity("FlightsReservation.DAL.Entities.Model.Reservation", b =>
                 {
                     b.Navigation("Passengers");
+                });
+
+            modelBuilder.Entity("FlightsReservation.DAL.Entities.Model.Seat", b =>
+                {
+                    b.Navigation("Passenger");
                 });
 #pragma warning restore 612, 618
         }

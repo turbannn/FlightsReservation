@@ -2,7 +2,7 @@
 
 public class Flight
 {
-    public int Id { get; set; }
+    public Guid Id { get; set; }
     public string FlightNumber { get; set; } = null!;
     public string Departure { get; set; } = null!;
     public string Arrival { get; set; } = null!;

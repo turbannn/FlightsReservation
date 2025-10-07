@@ -4,11 +4,11 @@ namespace FlightsReservation.DAL.Entities.Model;
 
 public class Reservation
 {
-    public int Id { get; set; }
+    public Guid Id { get; set; }
     public string ReservationNumber { get; set; } = null!;
     public DateTime ReservationDate { get; set; }
 
-    public int FlightId { get; set; }
+    public Guid FlightId { get; set; }
     [ForeignKey(nameof(FlightId))]
     public Flight Flight { get; set; } = null!;
 

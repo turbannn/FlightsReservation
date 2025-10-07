@@ -30,7 +30,7 @@ public class FlightsRepository : IFlightsRepository
         return await _context.Flights.CountAsync();
     }
 
-    public async Task<Flight?> GetByIdAsync(int id)
+    public async Task<Flight?> GetByIdAsync(Guid id)
     {
         var flight = await _context.Flights
             .AsNoTracking()
@@ -53,7 +53,7 @@ public class FlightsRepository : IFlightsRepository
         return Task.CompletedTask;
     }
 
-    public async Task DeleteAsync(int id)
+    public async Task DeleteAsync(Guid id)
     {
         var flight = await _context.Flights.FirstOrDefaultAsync(f => f.Id == id);
         

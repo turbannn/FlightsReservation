@@ -21,7 +21,7 @@ namespace FlightsReservation.DAL.Data
             modelBuilder.ApplyConfiguration(new ReservationConfiguration());
             modelBuilder.ApplyConfiguration(new PassengerConfiguration());
             modelBuilder.ApplyConfiguration(new SeatConfiguration());
-
+            
             base.OnModelCreating(modelBuilder);
         }
     }

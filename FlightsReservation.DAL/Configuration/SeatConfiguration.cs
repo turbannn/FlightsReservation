@@ -8,6 +8,10 @@ namespace FlightsReservation.DAL.Configuration
     {
         public void Configure(EntityTypeBuilder<Seat> builder)
         {
+            builder.Property(s => s.Id)
+                .ValueGeneratedOnAdd()
+                .HasDefaultValueSql("gen_random_uuid()");
+
             builder.Property(s => s.SeatNumber).IsRequired().HasMaxLength(4);
         }
     }

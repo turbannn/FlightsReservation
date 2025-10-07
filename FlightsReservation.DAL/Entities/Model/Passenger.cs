@@ -4,7 +4,7 @@ namespace FlightsReservation.DAL.Entities.Model;
 
 public class Passenger
 {
-    public int Id { get; set; }
+    public Guid Id { get; set; }
     public string FirstName { get; set; } = null!;
     public string LastName { get; set; } = null!;
     public string PassportNumber { get; set; } = null!;
@@ -12,12 +12,12 @@ public class Passenger
     public string Email { get; set; } = null!;
     public string SeatNumber => Seat.SeatNumber;
 
-    public int ReservationId { get; set; }
+    public Guid ReservationId { get; set; }
     [ForeignKey(nameof(ReservationId))]
     public Reservation Reservation { get; set; } = null!;
 
     //Dependent from seat
-    public int SeatId { get; set; }
+    public Guid SeatId { get; set; }
     [ForeignKey(nameof(SeatId))]
     public Seat Seat { get; set; } = null!;
 }

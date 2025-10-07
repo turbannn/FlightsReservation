@@ -13,7 +13,7 @@ public class ReservationRepository : IReservationsRepository
     {
         _context = dbContext;
     }
-    public async Task<Reservation?> GetByIdAsync(int id)
+    public async Task<Reservation?> GetByIdAsync(Guid id)
     {
         var r = await _context.Reservations
             .AsNoTracking()
@@ -36,7 +36,7 @@ public class ReservationRepository : IReservationsRepository
         return Task.CompletedTask;
     }
 
-    public async Task DeleteAsync(int id)
+    public async Task DeleteAsync(Guid id)
     {
         await _context.Reservations.Where(r => r.Id == id).ExecuteDeleteAsync();
     }

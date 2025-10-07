@@ -24,11 +24,10 @@ namespace FlightsReservation.DAL.Migrations
 
             modelBuilder.Entity("FlightsReservation.DAL.Entities.Model.Flight", b =>
                 {
-                    b.Property<int>("Id")
+                    b.Property<Guid>("Id")
                         .ValueGeneratedOnAdd()
-                        .HasColumnType("integer");
-
-                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
+                        .HasColumnType("uuid")
+                        .HasDefaultValueSql("gen_random_uuid()");
 
                     b.Property<string>("AirplaneType")
                         .IsRequired()
@@ -63,11 +62,10 @@ namespace FlightsReservation.DAL.Migrations
 
             modelBuilder.Entity("FlightsReservation.DAL.Entities.Model.Passenger", b =>
                 {
-                    b.Property<int>("Id")
+                    b.Property<Guid>("Id")
                         .ValueGeneratedOnAdd()
-                        .HasColumnType("integer");
-
-                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
+                        .HasColumnType("uuid")
+                        .HasDefaultValueSql("gen_random_uuid()");
 
                     b.Property<string>("Email")
                         .IsRequired()
@@ -94,11 +92,11 @@ namespace FlightsReservation.DAL.Migrations
                         .HasMaxLength(15)
                         .HasColumnType("character varying(15)");
 
-                    b.Property<int>("ReservationId")
-                        .HasColumnType("integer");
+                    b.Property<Guid>("ReservationId")
+                        .HasColumnType("uuid");
 
-                    b.Property<int>("SeatId")
-                        .HasColumnType("integer");
+                    b.Property<Guid>("SeatId")
+                        .HasColumnType("uuid");
 
                     b.HasKey("Id");
 
@@ -112,14 +110,13 @@ namespace FlightsReservation.DAL.Migrations
 
             modelBuilder.Entity("FlightsReservation.DAL.Entities.Model.Reservation", b =>
                 {
-                    b.Property<int>("Id")
+                    b.Property<Guid>("Id")
                         .ValueGeneratedOnAdd()
-                        .HasColumnType("integer");
+                        .HasColumnType("uuid")
+                        .HasDefaultValueSql("gen_random_uuid()");
 
-                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
-
-                    b.Property<int>("FlightId")
-                        .HasColumnType("integer");
+                    b.Property<Guid>("FlightId")
+                        .HasColumnType("uuid");
 
                     b.Property<DateTime>("ReservationDate")
                         .HasColumnType("timestamp with time zone");
@@ -138,14 +135,13 @@ namespace FlightsReservation.DAL.Migrations
 
             modelBuilder.Entity("FlightsReservation.DAL.Entities.Model.Seat", b =>
                 {
-                    b.Property<int>("Id")
+                    b.Property<Guid>("Id")
                         .ValueGeneratedOnAdd()
-                        .HasColumnType("integer");
+                        .HasColumnType("uuid")
+                        .HasDefaultValueSql("gen_random_uuid()");
 
-                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
-
-                    b.Property<int>("FlightId")
-                        .HasColumnType("integer");
+                    b.Property<Guid>("FlightId")
+                        .HasColumnType("uuid");
 
                     b.Property<bool>("IsAvailable")
                         .HasColumnType("boolean");

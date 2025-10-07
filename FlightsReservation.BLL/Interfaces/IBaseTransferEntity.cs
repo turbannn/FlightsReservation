@@ -3,5 +3,5 @@
 //Easier validation
 public interface IBaseTransferEntity
 {
-    int Id { get; set; }
+    Guid Id { get; set; }
 }

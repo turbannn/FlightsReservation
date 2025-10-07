@@ -1,4 +1,5 @@
-﻿using Microsoft.EntityFrameworkCore.Migrations;
+﻿using System;
+using Microsoft.EntityFrameworkCore.Migrations;
 
 #nullable disable
 
@@ -10,38 +11,23 @@ namespace FlightsReservation.DAL.Migrations
         /// <inheritdoc />
         protected override void Up(MigrationBuilder migrationBuilder)
         {
-            migrationBuilder.DropForeignKey(
-                name: "FK_Seat_Flights_FlightId",
-                table: "Seat");
-
-            migrationBuilder.DropForeignKey(
-                name: "FK_Seat_Passengers_PassengerId",
-                table: "Seat");
-
-            migrationBuilder.DropPrimaryKey(
-                name: "PK_Seat",
-                table: "Seat");
-
-            migrationBuilder.DropIndex(
-                name: "IX_Seat_PassengerId",
-                table: "Seat");
-
-            migrationBuilder.DropColumn(
+            migrationBuilder.AlterColumn<string>(
                 name: "SeatNumber",
-                table: "Passengers");
-
-            migrationBuilder.DropColumn(
-                name: "PassengerId",
-                table: "Seat");
-
-            migrationBuilder.RenameTable(
-                name: "Seat",
-                newName: "Seats");
-
-            migrationBuilder.RenameIndex(
-                name: "IX_Seat_FlightId",
                 table: "Seats",
-                newName: "IX_Seats_FlightId");
+                type: "character varying(4)",
+                maxLength: 4,
+                nullable: false,
+                oldClrType: typeof(string),
+                oldType: "text");
+
+            migrationBuilder.AlterColumn<Guid>(
+                name: "Id",
+                table: "Seats",
+                type: "uuid",
+                nullable: false,
+                defaultValueSql: "gen_random_uuid()",
+                oldClrType: typeof(Guid),
+                oldType: "uuid");
 
             migrationBuilder.AlterColumn<string>(
                 name: "ReservationNumber",
@@ -51,6 +37,15 @@ namespace FlightsReservation.DAL.Migrations
                 nullable: false,
                 oldClrType: typeof(string),
                 oldType: "text");
+
+            migrationBuilder.AlterColumn<Guid>(
+                name: "Id",
+                table: "Reservations",
+                type: "uuid",
+                nullable: false,
+                defaultValueSql: "gen_random_uuid()",
+                oldClrType: typeof(Guid),
+                oldType: "uuid");
 
             migrationBuilder.AlterColumn<string>(
                 name: "PhoneNumber",
@@ -97,12 +92,14 @@ namespace FlightsReservation.DAL.Migrations
                 oldClrType: typeof(string),
                 oldType: "text");
 
-            migrationBuilder.AddColumn<int>(
-                name: "SeatId",
+            migrationBuilder.AlterColumn<Guid>(
+                name: "Id",
                 table: "Passengers",
-                type: "integer",
+                type: "uuid",
                 nullable: false,
-                defaultValue: 0);
+                defaultValueSql: "gen_random_uuid()",
+                oldClrType: typeof(Guid),
+                oldType: "uuid");
 
             migrationBuilder.AlterColumn<string>(
                 name: "FlightNumber",
@@ -140,74 +137,36 @@ namespace FlightsReservation.DAL.Migrations
                 oldClrType: typeof(string),
                 oldType: "text");
 
-            migrationBuilder.AlterColumn<string>(
-                name: "SeatNumber",
-                table: "Seats",
-                type: "character varying(4)",
-                maxLength: 4,
+            migrationBuilder.AlterColumn<Guid>(
+                name: "Id",
+                table: "Flights",
+                type: "uuid",
                 nullable: false,
-                oldClrType: typeof(string),
-                oldType: "text");
-
-            migrationBuilder.AddPrimaryKey(
-                name: "PK_Seats",
-                table: "Seats",
-                column: "Id");
-
-            migrationBuilder.CreateIndex(
-                name: "IX_Passengers_SeatId",
-                table: "Passengers",
-                column: "SeatId",
-                unique: true);
-
-            migrationBuilder.AddForeignKey(
-                name: "FK_Passengers_Seats_SeatId",
-                table: "Passengers",
-                column: "SeatId",
-                principalTable: "Seats",
-                principalColumn: "Id",
-                onDelete: ReferentialAction.Cascade);
-
-            migrationBuilder.AddForeignKey(
-                name: "FK_Seats_Flights_FlightId",
-                table: "Seats",
-                column: "FlightId",
-                principalTable: "Flights",
-                principalColumn: "Id",
-                onDelete: ReferentialAction.Cascade);
+                defaultValueSql: "gen_random_uuid()",
+                oldClrType: typeof(Guid),
+                oldType: "uuid");
         }
 
         /// <inheritdoc />
         protected override void Down(MigrationBuilder migrationBuilder)
         {
-            migrationBuilder.DropForeignKey(
-                name: "FK_Passengers_Seats_SeatId",
-                table: "Passengers");
+            migrationBuilder.AlterColumn<string>(
+                name: "SeatNumber",
+                table: "Seats",
+                type: "text",
+                nullable: false,
+                oldClrType: typeof(string),
+                oldType: "character varying(4)",
+                oldMaxLength: 4);
 
-            migrationBuilder.DropForeignKey(
-                name: "FK_Seats_Flights_FlightId",
-                table: "Seats");
-
-            migrationBuilder.DropIndex(
-                name: "IX_Passengers_SeatId",
-                table: "Passengers");
-
-            migrationBuilder.DropPrimaryKey(
-                name: "PK_Seats",
-                table: "Seats");
-
-            migrationBuilder.DropColumn(
-                name: "SeatId",
-                table: "Passengers");
-
-            migrationBuilder.RenameTable(
-                name: "Seats",
-                newName: "Seat");
-
-            migrationBuilder.RenameIndex(
-                name: "IX_Seats_FlightId",
-                table: "Seat",
-                newName: "IX_Seat_FlightId");
+            migrationBuilder.AlterColumn<Guid>(
+                name: "Id",
+                table: "Seats",
+                type: "uuid",
+                nullable: false,
+                oldClrType: typeof(Guid),
+                oldType: "uuid",
+                oldDefaultValueSql: "gen_random_uuid()");
 
             migrationBuilder.AlterColumn<string>(
                 name: "ReservationNumber",
@@ -217,6 +176,15 @@ namespace FlightsReservation.DAL.Migrations
                 oldClrType: typeof(string),
                 oldType: "character varying(30)",
                 oldMaxLength: 30);
+
+            migrationBuilder.AlterColumn<Guid>(
+                name: "Id",
+                table: "Reservations",
+                type: "uuid",
+                nullable: false,
+                oldClrType: typeof(Guid),
+                oldType: "uuid",
+                oldDefaultValueSql: "gen_random_uuid()");
 
             migrationBuilder.AlterColumn<string>(
                 name: "PhoneNumber",
@@ -263,12 +231,14 @@ namespace FlightsReservation.DAL.Migrations
                 oldType: "character varying(25)",
                 oldMaxLength: 25);
 
-            migrationBuilder.AddColumn<string>(
-                name: "SeatNumber",
+            migrationBuilder.AlterColumn<Guid>(
+                name: "Id",
                 table: "Passengers",
-                type: "text",
+                type: "uuid",
                 nullable: false,
-                defaultValue: "");
+                oldClrType: typeof(Guid),
+                oldType: "uuid",
+                oldDefaultValueSql: "gen_random_uuid()");
 
             migrationBuilder.AlterColumn<string>(
                 name: "FlightNumber",
@@ -306,46 +276,14 @@ namespace FlightsReservation.DAL.Migrations
                 oldType: "character varying(20)",
                 oldMaxLength: 20);
 
-            migrationBuilder.AlterColumn<string>(
-                name: "SeatNumber",
-                table: "Seat",
-                type: "text",
+            migrationBuilder.AlterColumn<Guid>(
+                name: "Id",
+                table: "Flights",
+                type: "uuid",
                 nullable: false,
-                oldClrType: typeof(string),
-                oldType: "character varying(4)",
-                oldMaxLength: 4);
-
-            migrationBuilder.AddColumn<int>(
-                name: "PassengerId",
-                table: "Seat",
-                type: "integer",
-                nullable: true);
-
-            migrationBuilder.AddPrimaryKey(
-                name: "PK_Seat",
-                table: "Seat",
-                column: "Id");
-
-            migrationBuilder.CreateIndex(
-                name: "IX_Seat_PassengerId",
-                table: "Seat",
-                column: "PassengerId",
-                unique: true);
-
-            migrationBuilder.AddForeignKey(
-                name: "FK_Seat_Flights_FlightId",
-                table: "Seat",
-                column: "FlightId",
-                principalTable: "Flights",
-                principalColumn: "Id",
-                onDelete: ReferentialAction.Cascade);
-
-            migrationBuilder.AddForeignKey(
-                name: "FK_Seat_Passengers_PassengerId",
-                table: "Seat",
-                column: "PassengerId",
-                principalTable: "Passengers",
-                principalColumn: "Id");
+                oldClrType: typeof(Guid),
+                oldType: "uuid",
+                oldDefaultValueSql: "gen_random_uuid()");
         }
     }
 }

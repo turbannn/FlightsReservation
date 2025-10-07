@@ -14,7 +14,7 @@ public class PassengersRepository : IPassengersRepository
         _context = dbContext;
     }
 
-    public async Task<Passenger?> GetByIdAsync(int id)
+    public async Task<Passenger?> GetByIdAsync(Guid id)
     {
         var p = await _context.Passengers
             .AsNoTracking()
@@ -36,7 +36,7 @@ public class PassengersRepository : IPassengersRepository
         return Task.CompletedTask;
     }
 
-    public async Task DeleteAsync(int id)
+    public async Task DeleteAsync(Guid id)
     {
         var p = await _context.Passengers.FirstOrDefaultAsync(p => p.Id == id);
         if(p is not null)
