@@ -15,8 +15,4 @@
     <ProjectReference Include="..\FlightsReservation.DAL\FlightsReservation.DAL.csproj" />
   </ItemGroup>
 
-  <ItemGroup>
-    <Folder Include="Validators\" />
-  </ItemGroup>
-
 </Project>

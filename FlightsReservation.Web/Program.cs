@@ -1,8 +1,10 @@
 using FlightsReservation.BLL.MapperProfiles;
+using FlightsReservation.BLL.Validators;
 using FlightsReservation.DAL.Data;
 using FlightsReservation.DAL.Interfaces;
 using FlightsReservation.DAL.Repositories;
 using FlightsReservation.DAL.UoWs;
+using FluentValidation;
 using Microsoft.EntityFrameworkCore;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -24,6 +26,9 @@ builder.Services.AddScoped<IUnitOfWork, EfUnitOfWork>();
 
 //AutoMappers
 builder.Services.AddAutoMapper(cfg => { }, typeof(SeatProfile).Assembly);
+
+//Validators
+builder.Services.AddValidatorsFromAssembly(typeof(FlightDtoValidator).Assembly);
 
 builder.Services.AddControllers();
 // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
