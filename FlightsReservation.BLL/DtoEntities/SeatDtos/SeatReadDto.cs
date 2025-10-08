@@ -4,6 +4,6 @@ namespace FlightsReservation.BLL.DtoEntities.SeatDtos;
 
 public class SeatReadDto : BaseTransferEntity, ISeatDto
 {
-    public string SeatNumber { get; set; }
+    public string SeatNumber { get; set; } = null!;
     public Guid FlightId { get; set; }
 }

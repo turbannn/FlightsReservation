@@ -4,6 +4,6 @@ namespace FlightsReservation.BLL.DtoEntities.ReservationDtos;
 
 public class ReservationDto : BaseTransferEntity, IReservationDto
 {
-    public string ReservationNumber { get; set; }
+    public string ReservationNumber { get; set; } = null!;
     public DateTime ReservationDate { get; set; }
 }

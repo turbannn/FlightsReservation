@@ -17,7 +17,7 @@ public class SeatDtoValidator : AbstractValidator<ISeatDto>
         //String
         RuleFor(seat => seat.SeatNumber)
             .NotEmpty().WithMessage("Seat number is required.")
-            .MaximumLength(5).WithMessage("Seat number cannot exceed 5 characters.");
+            .MaximumLength(4).WithMessage("Seat number cannot exceed 4 characters.");
     }
 }
 

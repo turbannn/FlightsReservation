@@ -18,11 +18,11 @@ public class FlightDtoValidator : AbstractValidator<IFlightDto>
 
         RuleFor(flight => flight.Departure)
             .NotEmpty().WithMessage("Departure is required.")
-            .MaximumLength(20).WithMessage("Departure cannot exceed 20 characters.");
+            .MaximumLength(30).WithMessage("Departure cannot exceed 30 characters.");
 
         RuleFor(flight => flight.Arrival)
             .NotEmpty().WithMessage("Arrival is required.")
-            .MaximumLength(20).WithMessage("Arrival cannot exceed 20 characters.");
+            .MaximumLength(30).WithMessage("Arrival cannot exceed 30 characters.");
         
         RuleFor(flight => flight.AirplaneType)
             .NotEmpty().WithMessage("AirplaneType is required.")

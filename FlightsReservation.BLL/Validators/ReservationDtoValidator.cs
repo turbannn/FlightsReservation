@@ -3,9 +3,9 @@ using FluentValidation;
 
 namespace FlightsReservation.BLL.Validators;
 
-public class ReservationValidator : AbstractValidator<IReservationDto>
+public class ReservationDtoValidator : AbstractValidator<IReservationDto>
 {
-    public ReservationValidator()
+    public ReservationDtoValidator()
     {
         //Ids
         RuleFor(reservation => reservation.Id)
@@ -14,7 +14,7 @@ public class ReservationValidator : AbstractValidator<IReservationDto>
         //String
         RuleFor(reservation => reservation.ReservationNumber)
             .NotEmpty().WithMessage("Reservation number is required.")
-            .MaximumLength(20).WithMessage("Reservation number cannot exceed 20 characters.");
+            .MaximumLength(30).WithMessage("Reservation number cannot exceed 30 characters.");
 
         //Date
         RuleFor(reservation => reservation.ReservationDate)
