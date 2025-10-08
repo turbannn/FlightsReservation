@@ -10,7 +10,6 @@ public class Passenger
     public string PassportNumber { get; set; } = null!;
     public string PhoneNumber { get; set; } = null!;
     public string Email { get; set; } = null!;
-    public string SeatNumber => Seat.SeatNumber;
 
     public Guid ReservationId { get; set; }
     [ForeignKey(nameof(ReservationId))]

@@ -1,6 +1,5 @@
 ﻿using FlightsReservation.BLL.DtoEntities.PassengerDtos;
 using FlightsReservation.BLL.Interfaces;
-using FlightsReservation.DAL.Entities.Model;
 using FlightsReservation.DAL.Interfaces;
 using FluentValidation;
 using AutoMapper;
@@ -22,6 +21,7 @@ public class PassengersService
         _passengersRepository = passengersRepository;
     }
 
+    //ctctct
     public async Task<PassengerReadDto?> GetPassengerByIdAsync(Guid id)
     {
         if (id == Guid.Empty)
@@ -40,6 +40,7 @@ public class PassengersService
         return _mapper.Map<PassengerReadDto>(passenger);
     }
 
+    /*
     public async Task AddPassengerAsync(PassengerCreateDto createDto)
     {
         var validationResult = await _validator.ValidateAsync(createDto);
@@ -63,6 +64,63 @@ public class PassengersService
             Console.WriteLine($"Error adding passenger: {ex.Message}");
         }
     }
+    */
 
+    public async Task UpdatePassengerAsync(PassengerUpdateDto updateDto)
+    {
+        var validationResult = await _validator.ValidateAsync(updateDto);
+        if (!validationResult.IsValid)
+        {
+            foreach (var error in validationResult.Errors)
+            {
+                Console.WriteLine(error.ErrorMessage);
+            }
+            return;
+        }
 
+        var existingPassenger = await _passengersRepository.GetByIdAsync(updateDto.Id);
+        if (existingPassenger is null)
+        {
+            Console.WriteLine("Passenger not found");
+            return;
+        }
+
+        _mapper.Map(updateDto, existingPassenger);
+
+        try
+        {
+            await _passengersRepository.UpdateAsync(existingPassenger);
+            await _unitOfWork.SaveChangesAsync();
+        }
+        catch (Exception ex)
+        {
+            Console.WriteLine($"Error updating passenger: {ex.Message}");
+        }
+    }
+
+    public async Task DeletePassengerAsync(Guid id)
+    {
+        if (id == Guid.Empty)
+        {
+            Console.WriteLine("Bad id");
+            return;
+        }
+
+        var existingPassenger = await _passengersRepository.GetByIdAsync(id);
+        if (existingPassenger is null)
+        {
+            Console.WriteLine("Passenger not found");
+            return;
+        }
+
+        try
+        {
+            await _passengersRepository.DeleteAsync(existingPassenger.Id);
+            await _unitOfWork.SaveChangesAsync();
+        }
+        catch (Exception ex)
+        {
+            Console.WriteLine($"Error deleting passenger: {ex.Message}");
+        }
+    }
 }
