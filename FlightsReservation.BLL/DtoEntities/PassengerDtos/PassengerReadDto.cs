@@ -11,4 +11,6 @@ public class PassengerReadDto : BaseTransferEntity, IPassengerDto
     public string Email { get; set; } = null!;
 
     public string SeatNumber { get; set; } = null!;
+
+    public Guid SeatId { get; set; }
 }

@@ -7,4 +7,6 @@ public interface IPassengerDto : IBaseTransferEntity
     string PassportNumber { get; set; }
     string PhoneNumber { get; set; }
     string Email { get; set; }
+
+    Guid SeatId { get; set; }
 }
