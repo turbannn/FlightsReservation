@@ -8,9 +8,6 @@ public class ReservationDtoValidator : AbstractValidator<IReservationDto>
     public ReservationDtoValidator()
     {
         //Ids
-        RuleFor(reservation => reservation.Id)
-            .NotEmpty().WithMessage("Reservation ID is required.");
-
         RuleFor(reservation => reservation.FlightId)
             .NotEmpty().WithMessage("Flight ID is required.");
 

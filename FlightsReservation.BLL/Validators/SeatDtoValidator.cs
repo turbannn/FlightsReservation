@@ -8,9 +8,6 @@ public class SeatDtoValidator : AbstractValidator<ISeatDto>
     public SeatDtoValidator()
     {
         //Ids
-        RuleFor(seat => seat.Id)
-            .NotEmpty().WithMessage("Seat ID is required.");
-
         RuleFor(seat => seat.FlightId)
             .NotEmpty().WithMessage("Flight ID is required.");
         

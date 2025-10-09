@@ -12,13 +12,19 @@ public class PassengersService
     private readonly IMapper _mapper;
     private readonly IValidator<IPassengerDto> _validator;
     private readonly IPassengersRepository _passengersRepository;
+    private readonly ISeatsRepository _seatsRepository;
 
-    public PassengersService(IUnitOfWork unitOfWork, IMapper mapper, IValidator<IPassengerDto> validator, IPassengersRepository passengersRepository)
+    public PassengersService(IUnitOfWork unitOfWork,
+        IMapper mapper,
+        IValidator<IPassengerDto> validator,
+        IPassengersRepository passengersRepository,
+        ISeatsRepository seatsRepository)
     {
         _unitOfWork = unitOfWork;
         _mapper = mapper;
         _validator = validator;
         _passengersRepository = passengersRepository;
+        _seatsRepository = seatsRepository;
     }
 
     //ctctct
@@ -113,13 +119,25 @@ public class PassengersService
             return;
         }
 
+        await _unitOfWork.BeginAsync(ct);
+        try
+        {
+            await _seatsRepository.MarkSeatAsAvailable(existingPassenger.SeatId, ct);
+        }
+        catch
+        {
+            await _unitOfWork.RollbackAsync(ct);
+            Console.WriteLine($"Seat with ID {existingPassenger.SeatId} does not exist.");
+        }
+
         try
         {
             await _passengersRepository.DeleteAsync(existingPassenger.Id, ct);
-            await _unitOfWork.SaveChangesAsync(ct);
+            await _unitOfWork.CommitAsync(ct);
         }
         catch (Exception ex)
         {
+            await _unitOfWork.RollbackAsync(ct);
             Console.WriteLine($"Error deleting passenger: {ex.Message}");
         }
     }

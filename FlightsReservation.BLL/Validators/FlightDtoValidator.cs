@@ -7,10 +7,6 @@ public class FlightDtoValidator : AbstractValidator<IFlightDto>
 {
     public FlightDtoValidator()
     {
-        //Ids
-        RuleFor(flight => flight.Id)
-            .NotEmpty().WithMessage("Flight ID is required.");
-
         //String
         RuleFor(flight => flight.FlightNumber)
             .NotEmpty().WithMessage("Flight number is required.")

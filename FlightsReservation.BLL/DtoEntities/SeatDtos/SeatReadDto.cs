@@ -1,9 +1,5 @@
-﻿using FlightsReservation.BLL.Interfaces;
+﻿namespace FlightsReservation.BLL.DtoEntities.SeatDtos;
 
-namespace FlightsReservation.BLL.DtoEntities.SeatDtos;
-
-public class SeatReadDto : BaseTransferEntity, ISeatDto
+public class SeatReadDto : BaseSeatDto
 {
-    public string SeatNumber { get; set; } = null!;
-    public Guid FlightId { get; set; }
 }

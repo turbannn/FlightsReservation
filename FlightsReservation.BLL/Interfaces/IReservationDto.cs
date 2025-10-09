@@ -1,7 +1,7 @@
 ﻿
 namespace FlightsReservation.BLL.Interfaces;
 
-public interface IReservationDto : IBaseTransferEntity
+public interface IReservationDto
 {
     string ReservationNumber { get; set; }
 

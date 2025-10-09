@@ -6,7 +6,7 @@ namespace FlightsReservation.BLL.MapperProfiles;
 
 public class PassengerProfile : Profile
 {
-    PassengerProfile()
+    public PassengerProfile()
     {
         CreateMap<Passenger, PassengerReadDto>().ForMember(dest => dest.SeatNumber,
             opt =>

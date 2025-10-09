@@ -61,4 +61,6 @@ app.UseAuthorization();
 
 app.MapControllers();
 
+app.MapCarter();
+
 app.Run();

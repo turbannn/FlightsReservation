@@ -1,14 +1,6 @@
-﻿using FlightsReservation.BLL.Interfaces;
+﻿namespace FlightsReservation.BLL.DtoEntities.PassengerDtos;
 
-namespace FlightsReservation.BLL.DtoEntities.PassengerDtos;
-
-public class PassengerUpdateDto : BaseTransferEntity, IPassengerDto
+public class PassengerUpdateDto : BasePassengerDto
 {
-    public string FirstName { get; set; } = null!;
-    public string LastName { get; set; } = null!;
-    public string PassportNumber { get; set; } = null!;
-    public string PhoneNumber { get; set; } = null!;
-    public string Email { get; set; } = null!;
-
-    public Guid SeatId { get; set; }
+    public Guid Id { get; set; }
 }

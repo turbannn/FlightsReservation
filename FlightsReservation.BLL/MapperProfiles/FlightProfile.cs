@@ -1,12 +1,12 @@
-﻿using AutoMapper;
-using FlightsReservation.BLL.DtoEntities.FlightDtos;
+﻿using FlightsReservation.BLL.DtoEntities.FlightDtos;
 using FlightsReservation.DAL.Entities.Model;
+using AutoMapper;
 
 namespace FlightsReservation.BLL.MapperProfiles;
 
 public class FlightProfile : Profile
 {
-    FlightProfile()
+    public FlightProfile()
     {
         CreateMap<Flight, FlightReadDto>().ForMember(dest => dest.AvailableSeats,
             opt =>

@@ -6,7 +6,7 @@ namespace FlightsReservation.BLL.MapperProfiles;
 
 public class ReservationProfile : Profile
 {
-    ReservationProfile()
+    public ReservationProfile()
     {
         CreateMap<Reservation, ReservationReadDto>();
 
