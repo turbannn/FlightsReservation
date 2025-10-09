@@ -13,31 +13,34 @@ public class ReservationRepository : IReservationsRepository
     {
         _context = dbContext;
     }
-    public async Task<Reservation?> GetByIdAsync(Guid id)
+    public async Task<Reservation?> GetByIdAsync(Guid id, CancellationToken ct = default)
     {
         var r = await _context.Reservations
             .AsNoTracking()
             .Include(r => r.Flight)
             .Include(r => r.Passengers)
             .ThenInclude(p => p.Seat)
-            .FirstOrDefaultAsync(r => r.Id == id);
+            .FirstOrDefaultAsync(r => r.Id == id, cancellationToken: ct);
 
         return r;
     }
 
-    public async Task AddAsync(Reservation entityToAdd)
+    public async Task AddAsync(Reservation entityToAdd, CancellationToken ct = default)
     {
-        await _context.Reservations.AddAsync(entityToAdd);
+        await _context.Reservations.AddAsync(entityToAdd, ct);
     }
 
-    public Task UpdateAsync(Reservation entityToUpdate)
+    public async Task UpdateAsync(Reservation entityToUpdate, CancellationToken ct = default)
     {
-        _context.Reservations.Update(entityToUpdate);
-        return Task.CompletedTask;
+        await _context.Reservations
+            .Where(r => r.Id == entityToUpdate.Id)
+            .ExecuteUpdateAsync(setters => setters
+                .SetProperty(rr => rr.ReservationNumber, entityToUpdate.ReservationNumber)
+                .SetProperty(rr => rr.ReservationDate, entityToUpdate.ReservationDate), cancellationToken: ct);
     }
 
-    public async Task DeleteAsync(Guid id)
+    public async Task DeleteAsync(Guid id, CancellationToken ct = default)
     {
-        await _context.Reservations.Where(r => r.Id == id).ExecuteDeleteAsync();
+        await _context.Reservations.Where(r => r.Id == id).ExecuteDeleteAsync(cancellationToken: ct);
     }
 }

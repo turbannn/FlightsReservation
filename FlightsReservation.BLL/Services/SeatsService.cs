@@ -22,7 +22,7 @@ public class SeatsService
         _seatsRepository = seatsRepository;
     }
 
-    public async Task<SeatReadDto?> GetSeatByIdAsync(Guid id)
+    public async Task<SeatReadDto?> GetSeatByIdAsync(Guid id, CancellationToken ct = default)
     {
         if (id == Guid.Empty)
         {
@@ -30,7 +30,7 @@ public class SeatsService
             return null;
         }
 
-        var seat = await _seatsRepository.GetByIdAsync(id);
+        var seat = await _seatsRepository.GetByIdAsync(id, ct);
         if (seat is null)
         {
             Console.WriteLine("Seat not found");
@@ -40,9 +40,9 @@ public class SeatsService
         return _mapper.Map<SeatReadDto>(seat);
     }
 
-    public async Task AddSeatAsync(SeatCreateDto createDto)
+    public async Task AddSeatAsync(SeatCreateDto createDto, CancellationToken ct = default)
     {
-        var validationResult = await _validator.ValidateAsync(createDto);
+        var validationResult = await _validator.ValidateAsync(createDto, ct);
         if (!validationResult.IsValid)
         {
             foreach (var error in validationResult.Errors)
@@ -55,8 +55,8 @@ public class SeatsService
         var seat = _mapper.Map<Seat>(createDto);
         try
         {
-            await _seatsRepository.AddAsync(seat);
-            await _unitOfWork.SaveChangesAsync();
+            await _seatsRepository.AddAsync(seat, ct);
+            await _unitOfWork.SaveChangesAsync(ct);
         }
         catch(Exception ex)
         {
@@ -65,9 +65,9 @@ public class SeatsService
         }
     }
 
-    public async Task UpdateSeatAsync(SeatUpdateDto updateDto)
+    public async Task UpdateSeatAsync(SeatUpdateDto updateDto, CancellationToken ct = default)
     {
-        var validationResult = await _validator.ValidateAsync(updateDto);
+        var validationResult = await _validator.ValidateAsync(updateDto, ct);
         if (!validationResult.IsValid)
         {
             foreach (var error in validationResult.Errors)
@@ -77,7 +77,7 @@ public class SeatsService
             return;
         }
 
-        var seat = await _seatsRepository.GetByIdAsync(updateDto.Id);
+        var seat = await _seatsRepository.GetByIdAsync(updateDto.Id, ct);
         if (seat is null)
         {
             Console.WriteLine("Seat not found");
@@ -87,8 +87,8 @@ public class SeatsService
         _mapper.Map(updateDto, seat);
         try
         {
-            await _seatsRepository.UpdateAsync(seat);
-            await _unitOfWork.SaveChangesAsync();
+            await _seatsRepository.UpdateAsync(seat, ct);
+            await _unitOfWork.SaveChangesAsync(ct);
         }
         catch(Exception ex)
         {
@@ -97,7 +97,7 @@ public class SeatsService
         }
     }
 
-    public async Task DeleteSeat(Guid id)
+    public async Task DeleteSeat(Guid id, CancellationToken ct = default)
     {
         if (id == Guid.Empty)
         {
@@ -105,6 +105,6 @@ public class SeatsService
             return;
         }
 
-        await _seatsRepository.DeleteAsync(id); //Add deleted count check
+        await _seatsRepository.DeleteAsync(id, ct); //Add deleted count check
     }
 }

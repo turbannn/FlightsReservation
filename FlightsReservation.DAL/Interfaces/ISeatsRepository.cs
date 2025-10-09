@@ -4,6 +4,6 @@ namespace FlightsReservation.DAL.Interfaces;
 
 public interface ISeatsRepository : IRepository<Seat>
 {
-    Task MarkSeatAsAvailable(Guid seatId);
-    Task MarkSeatAsOccupied(Guid seatId);
+    Task MarkSeatAsAvailable(Guid seatId, CancellationToken ct);
+    Task MarkSeatAsOccupied(Guid seatId, CancellationToken ct);
 }

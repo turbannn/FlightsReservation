@@ -22,7 +22,7 @@ public class FlightsService
         _flightsRepository = flightsRepository;
     }
 
-    public async Task<FlightReadDto?> GetFlightByIdAsync(Guid id)
+    public async Task<FlightReadDto?> GetFlightByIdAsync(Guid id, CancellationToken ct = default)
     {
         if (id == Guid.Empty)
         {
@@ -30,7 +30,7 @@ public class FlightsService
             return null;
         }
 
-        var flight = await _flightsRepository.GetByIdAsync(id);
+        var flight = await _flightsRepository.GetByIdAsync(id, ct);
         if (flight is null)
         {
             Console.WriteLine("Flight not found");
@@ -40,9 +40,9 @@ public class FlightsService
         return _mapper.Map<FlightReadDto>(flight);
     }
 
-    public async Task AddFlightAsync(FlightCreateDto createDto)
+    public async Task AddFlightAsync(FlightCreateDto createDto, CancellationToken ct = default)
     {
-        var validationResult = await _validator.ValidateAsync(createDto);
+        var validationResult = await _validator.ValidateAsync(createDto, ct);
         if (!validationResult.IsValid)
         {
             foreach (var error in validationResult.Errors)
@@ -55,8 +55,8 @@ public class FlightsService
         var flight = _mapper.Map<Flight>(createDto);
         try
         {
-            await _flightsRepository.AddAsync(flight);
-            await _unitOfWork.SaveChangesAsync();
+            await _flightsRepository.AddAsync(flight, ct);
+            await _unitOfWork.SaveChangesAsync(ct);
         }
         catch (Exception ex)
         {
@@ -64,9 +64,9 @@ public class FlightsService
         }
     }
 
-    public async Task UpdateFlightAsync(FlightUpdateDto updateDto)
+    public async Task UpdateFlightAsync(FlightUpdateDto updateDto, CancellationToken ct = default)
     {
-        var validationResult = await _validator.ValidateAsync(updateDto);
+        var validationResult = await _validator.ValidateAsync(updateDto, ct);
         if (!validationResult.IsValid)
         {
             foreach (var error in validationResult.Errors)
@@ -76,7 +76,7 @@ public class FlightsService
             return;
         }
 
-        var existingFlight = await _flightsRepository.GetByIdAsync(updateDto.Id);
+        var existingFlight = await _flightsRepository.GetByIdAsync(updateDto.Id, ct);
         if (existingFlight is null)
         {
             Console.WriteLine("Flight not found");
@@ -87,8 +87,8 @@ public class FlightsService
 
         try
         {
-            await _flightsRepository.UpdateAsync(existingFlight);
-            await _unitOfWork.SaveChangesAsync();
+            await _flightsRepository.UpdateAsync(existingFlight, ct);
+            await _unitOfWork.SaveChangesAsync(ct);
         }
         catch (Exception ex)
         {
@@ -96,7 +96,7 @@ public class FlightsService
         }
     }
 
-    public async Task DeleteFlight(Guid id)
+    public async Task DeleteFlight(Guid id, CancellationToken ct = default)
     {
         if (id == Guid.Empty)
         {
@@ -104,7 +104,7 @@ public class FlightsService
             return;
         }
 
-        var existingFlight = await _flightsRepository.GetByIdAsync(id);
+        var existingFlight = await _flightsRepository.GetByIdAsync(id, ct);
         if (existingFlight is null)
         {
             Console.WriteLine("Flight not found");
@@ -113,8 +113,8 @@ public class FlightsService
 
         try
         {
-            await _flightsRepository.DeleteAsync(existingFlight.Id);
-            await _unitOfWork.SaveChangesAsync();
+            await _flightsRepository.DeleteAsync(existingFlight.Id, ct);
+            await _unitOfWork.SaveChangesAsync(ct);
         }
         catch (Exception ex)
         {

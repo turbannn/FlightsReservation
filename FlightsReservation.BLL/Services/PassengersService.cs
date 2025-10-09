@@ -22,7 +22,7 @@ public class PassengersService
     }
 
     //ctctct
-    public async Task<PassengerReadDto?> GetPassengerByIdAsync(Guid id)
+    public async Task<PassengerReadDto?> GetPassengerByIdAsync(Guid id, CancellationToken ct = default)
     {
         if (id == Guid.Empty)
         {
@@ -30,7 +30,7 @@ public class PassengersService
             return null;
         }
 
-        var passenger = await _passengersRepository.GetByIdAsync(id);
+        var passenger = await _passengersRepository.GetByIdAsync(id, ct);
         if (passenger is null)
         {
             Console.WriteLine("Passenger not found");
@@ -66,9 +66,9 @@ public class PassengersService
     }
     */
 
-    public async Task UpdatePassengerAsync(PassengerUpdateDto updateDto)
+    public async Task UpdatePassengerAsync(PassengerUpdateDto updateDto, CancellationToken ct = default)
     {
-        var validationResult = await _validator.ValidateAsync(updateDto);
+        var validationResult = await _validator.ValidateAsync(updateDto, ct);
         if (!validationResult.IsValid)
         {
             foreach (var error in validationResult.Errors)
@@ -78,7 +78,7 @@ public class PassengersService
             return;
         }
 
-        var existingPassenger = await _passengersRepository.GetByIdAsync(updateDto.Id);
+        var existingPassenger = await _passengersRepository.GetByIdAsync(updateDto.Id, ct);
         if (existingPassenger is null)
         {
             Console.WriteLine("Passenger not found");
@@ -89,8 +89,8 @@ public class PassengersService
 
         try
         {
-            await _passengersRepository.UpdateAsync(existingPassenger);
-            await _unitOfWork.SaveChangesAsync();
+            await _passengersRepository.UpdateAsync(existingPassenger, ct);
+            await _unitOfWork.SaveChangesAsync(ct);
         }
         catch (Exception ex)
         {
@@ -98,7 +98,7 @@ public class PassengersService
         }
     }
 
-    public async Task DeletePassengerAsync(Guid id)
+    public async Task DeletePassengerAsync(Guid id, CancellationToken ct = default)
     {
         if (id == Guid.Empty)
         {
@@ -106,7 +106,7 @@ public class PassengersService
             return;
         }
 
-        var existingPassenger = await _passengersRepository.GetByIdAsync(id);
+        var existingPassenger = await _passengersRepository.GetByIdAsync(id, ct);
         if (existingPassenger is null)
         {
             Console.WriteLine("Passenger not found");
@@ -115,8 +115,8 @@ public class PassengersService
 
         try
         {
-            await _passengersRepository.DeleteAsync(existingPassenger.Id);
-            await _unitOfWork.SaveChangesAsync();
+            await _passengersRepository.DeleteAsync(existingPassenger.Id, ct);
+            await _unitOfWork.SaveChangesAsync(ct);
         }
         catch (Exception ex)
         {

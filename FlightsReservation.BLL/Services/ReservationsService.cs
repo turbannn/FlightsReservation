@@ -33,7 +33,7 @@ public class ReservationsService
     }
 
     //ct
-    public async Task<ReservationReadDto?> GetReservationByIdAsync(Guid id)
+    public async Task<ReservationReadDto?> GetReservationByIdAsync(Guid id, CancellationToken ct = default)
     {
         if (id == Guid.Empty)
         {
@@ -41,7 +41,7 @@ public class ReservationsService
             return null;
         }
 
-        var reservation = await _reservationsRepository.GetByIdAsync(id);
+        var reservation = await _reservationsRepository.GetByIdAsync(id, ct);
         if (reservation is null)
         {
             Console.WriteLine("Reservation not found");
@@ -102,7 +102,7 @@ public class ReservationsService
         {
             try
             {
-                await _seatsRepository.MarkSeatAsOccupied(passenger.SeatId); //test
+                await _seatsRepository.MarkSeatAsOccupied(passenger.SeatId, ct); //test
             }
             catch
             {
@@ -113,7 +113,7 @@ public class ReservationsService
         
         try
         {
-            await _reservationsRepository.AddAsync(reservation);
+            await _reservationsRepository.AddAsync(reservation, ct);
             await _unitOfWork.CommitAsync(ct);
         }
         catch (Exception ex)
@@ -132,7 +132,7 @@ public class ReservationsService
             return;
         }
 
-        var existingReservation = await _reservationsRepository.GetByIdAsync(id);
+        var existingReservation = await _reservationsRepository.GetByIdAsync(id, ct);
         if (existingReservation is null)
         {
             Console.WriteLine("Passenger not found");
@@ -145,7 +145,7 @@ public class ReservationsService
         {
             try
             {
-                await _seatsRepository.MarkSeatAsAvailable(passenger.SeatId);
+                await _seatsRepository.MarkSeatAsAvailable(passenger.SeatId, ct);
             }
             catch
             {
@@ -155,7 +155,7 @@ public class ReservationsService
 
         try
         {
-            await _reservationsRepository.DeleteAsync(existingReservation.Id);
+            await _reservationsRepository.DeleteAsync(existingReservation.Id, ct);
             await _unitOfWork.CommitAsync(ct);
         }
         catch (Exception ex)

@@ -5,37 +5,33 @@ using Carter;
 
 namespace FlightsReservation.Web.Modules;
 
-public class FlightModule : CarterModule
+public class FlightModule() : CarterModule("/Flights")
 {
-    public FlightModule() : base("/Flights")
-    {
-
-    }
     public override void AddRoutes(IEndpointRouteBuilder app)
     {
-        app.MapGet("/GetFlight", async (Guid id, FlightsService service) =>
+        app.MapGet("/GetFlight", async (Guid id, FlightsService service, CancellationToken ct = default) =>
         {
-            var response = await service.GetFlightByIdAsync(id);
+            var response = await service.GetFlightByIdAsync(id, ct);
             return Results.Ok(response);
         });
 
         app.MapPost("/AddFlight",
-            async ([FromBody] FlightCreateDto createDto, FlightsService service) =>
+            async ([FromBody] FlightCreateDto createDto, FlightsService service, CancellationToken ct = default) =>
             {
-                await service.AddFlightAsync(createDto);
+                await service.AddFlightAsync(createDto, ct);
                 return Results.Ok();
             });
 
         app.MapPut("/UpdateFlight",
-            async ([FromBody] FlightUpdateDto productUpdateDto, FlightsService service) =>
+            async ([FromBody] FlightUpdateDto productUpdateDto, FlightsService service, CancellationToken ct = default) =>
             {
-                await service.UpdateFlightAsync(productUpdateDto);
+                await service.UpdateFlightAsync(productUpdateDto, ct);
                 return Results.Ok();
             });
 
-        app.MapDelete("/DeleteFlight", async (Guid id, FlightsService service) =>
+        app.MapDelete("/DeleteFlight", async (Guid id, FlightsService service, CancellationToken ct = default) =>
         {
-            await service.DeleteFlight(id);
+            await service.DeleteFlight(id, ct);
             return Results.Ok();
         });
     }
