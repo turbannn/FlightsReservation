@@ -48,18 +48,34 @@ public class SeatsRepository : ISeatsRepository
     public async Task MarkSeatAsAvailable(Guid seatId, CancellationToken ct = default)
     {
         var seat = await _context.Seats.FirstOrDefaultAsync(s => s.Id == seatId, cancellationToken: ct);
-        if (seat != null)
+
+        if (seat is null)
         {
-            seat.IsAvailable = true;
+            throw new InvalidOperationException("Seat not found");
         }
+
+        if (seat.IsAvailable)
+        {
+            throw new ArgumentException("Seat is already available");
+        }
+
+        seat.IsAvailable = true;
     }
 
     public async Task MarkSeatAsOccupied(Guid seatId, CancellationToken ct = default)
     {
         var seat = await _context.Seats.FirstOrDefaultAsync(s => s.Id == seatId, cancellationToken: ct);
-        if (seat != null)
+
+        if (seat is null)
         {
-            seat.IsAvailable = false;
+            throw new InvalidOperationException("Seat not found");
         }
+
+        if (!seat.IsAvailable)
+        {
+            throw new ArgumentException("Seat is already occupied");
+        }
+
+        seat.IsAvailable = false;
     }
 }

@@ -89,6 +89,12 @@ public class ReservationsService
             }
         }
 
+        if (createDto.Passengers.Select(p => p.SeatId).Distinct().Count() != createDto.Passengers.Count)
+        {
+            Console.WriteLine("Duplicate SeatId detected.");
+            return;
+        }
+
         var reservation = _mapper.Map<Reservation>(createDto);
 
         if (reservation.Passengers.Any(p => p.SeatId == Guid.Empty))
@@ -104,10 +110,20 @@ public class ReservationsService
             {
                 await _seatsRepository.MarkSeatAsOccupied(passenger.SeatId, ct); //test
             }
+            catch (InvalidOperationException ioex)
+            {
+                await _unitOfWork.RollbackAsync(ct);
+                Console.WriteLine($"{ioex.Message}");
+            }
+            catch (ArgumentException aex)
+            {
+                await _unitOfWork.RollbackAsync(ct);
+                Console.WriteLine(aex.Message);
+            }
             catch
             {
                 await _unitOfWork.RollbackAsync(ct);
-                Console.WriteLine($"Seat with ID {passenger.SeatId} is already occupied or does not exist.");
+                Console.WriteLine("Unknown error marking seat as occupied.");
             }
         }
         
