@@ -47,7 +47,7 @@ public class FlightsRepository : IFlightsRepository
         try
         {
             await _context.Flights.AddAsync(entityToAdd, ct);
-            return true;
+            return true; 
         }
         catch
         {
