@@ -2,6 +2,7 @@
 using FlightsReservation.BLL.Services;
 using Carter;
 using FlightsReservation.BLL.Entities.DataTransferObjects.SeatDtos;
+using FlightsReservation.Web.Extensions;
 
 namespace FlightsReservation.Web.Modules;
 
@@ -13,27 +14,27 @@ public class SeatModule() : CarterModule("/Seats")
         app.MapGet("/GetSeat", async (Guid id, SeatsService service, CancellationToken ct = default) =>
         {
             var response = await service.GetSeatByIdAsync(id, ct);
-            return Results.Ok(response);
+            return response.ToHttpResult();
         });
 
         app.MapPost("/AddSeat",
             async ([FromBody] SeatCreateDto createDto, SeatsService service, CancellationToken ct = default) =>
             {
-                await service.AddSeatAsync(createDto, ct);
-                return Results.Ok();
+                var response = await service.AddSeatAsync(createDto, ct);
+                return response.ToHttpResult();
             });
 
         app.MapPut("/UpdateSeat",
             async ([FromBody] SeatUpdateDto productUpdateDto, SeatsService service, CancellationToken ct = default) =>
             {
-                await service.UpdateSeatAsync(productUpdateDto, ct);
-                return Results.Ok();
+                var response = await service.UpdateSeatAsync(productUpdateDto, ct);
+                return response.ToHttpResult();
             });
 
         app.MapDelete("/DeleteSeat", async (Guid id, SeatsService service, CancellationToken ct = default) =>
         {
-            await service.DeleteSeat(id, ct);
-            return Results.Ok();
+            var response = await service.DeleteSeat(id, ct);
+            return response.ToHttpResult();
         });
     }
 }

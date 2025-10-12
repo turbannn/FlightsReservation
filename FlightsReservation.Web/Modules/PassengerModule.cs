@@ -2,6 +2,7 @@
 using Microsoft.AspNetCore.Mvc;
 using Carter;
 using FlightsReservation.BLL.Entities.DataTransferObjects.PassengerDtos;
+using FlightsReservation.Web.Extensions;
 
 namespace FlightsReservation.Web.Modules;
 
@@ -12,20 +13,20 @@ public class PassengerModule() : CarterModule("/Passengers")
         app.MapGet("/GetPassenger", async (Guid id, PassengersService service, CancellationToken ct = default) =>
         {
             var response = await service.GetPassengerByIdAsync(id, ct);
-            return Results.Ok(response);
+            return response.ToHttpResult();
         });
 
         app.MapPut("/UpdatePassenger",
             async ([FromBody] PassengerUpdateDto productUpdateDto, PassengersService service, CancellationToken ct = default) =>
             {
-                await service.UpdatePassengerAsync(productUpdateDto, ct);
-                return Results.Ok();
+                var response = await service.UpdatePassengerAsync(productUpdateDto, ct);
+                return response.ToHttpResult();
             });
 
         app.MapDelete("/DeletePassenger", async (Guid id, PassengersService service, CancellationToken ct = default) =>
         {
-            await service.DeletePassengerAsync(id, ct);
-            return Results.Ok();
+            var response = await service.DeletePassengerAsync(id, ct);
+            return response.ToHttpResult();
         });
     }
 }

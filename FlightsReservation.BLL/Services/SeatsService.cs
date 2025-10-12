@@ -1,11 +1,11 @@
 ﻿using FlightsReservation.BLL.Entities.DataTransferObjects.SeatDtos;
+using FlightsReservation.BLL.Entities.Utilities.Results;
+using FlightsReservation.BLL.Entities.Utilities.Other;
 using FlightsReservation.BLL.Interfaces;
 using FlightsReservation.DAL.Entities.Model;
 using FlightsReservation.DAL.Interfaces;
 using FluentValidation;
 using AutoMapper;
-using FlightsReservation.BLL.Entities.Utilities.Other;
-using FlightsReservation.BLL.Entities.Utilities.Results;
 
 namespace FlightsReservation.BLL.Services;
 
