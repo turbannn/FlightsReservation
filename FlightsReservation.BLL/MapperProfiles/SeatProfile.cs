@@ -1,5 +1,5 @@
 ﻿using AutoMapper;
-using FlightsReservation.BLL.DtoEntities.SeatDtos;
+using FlightsReservation.BLL.Entities.DataTransferObjects.SeatDtos;
 using FlightsReservation.DAL.Entities.Model;
 
 namespace FlightsReservation.BLL.MapperProfiles;

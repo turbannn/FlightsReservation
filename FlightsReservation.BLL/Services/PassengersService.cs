@@ -1,4 +1,4 @@
-﻿using FlightsReservation.BLL.DtoEntities.PassengerDtos;
+﻿using FlightsReservation.BLL.Entities.DataTransferObjects.PassengerDtos;
 using FlightsReservation.BLL.Interfaces;
 using FlightsReservation.DAL.Interfaces;
 using FluentValidation;

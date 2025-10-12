@@ -1,4 +1,4 @@
-﻿using FlightsReservation.BLL.DtoEntities.SeatDtos;
+﻿using FlightsReservation.BLL.Entities.DataTransferObjects.SeatDtos;
 using FlightsReservation.BLL.Interfaces;
 using FlightsReservation.DAL.Entities.Model;
 using FlightsReservation.DAL.Interfaces;

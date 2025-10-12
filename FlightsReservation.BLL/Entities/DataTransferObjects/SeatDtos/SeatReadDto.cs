@@ -1,4 +1,4 @@
-﻿namespace FlightsReservation.BLL.DtoEntities.SeatDtos;
+﻿namespace FlightsReservation.BLL.Entities.DataTransferObjects.SeatDtos;
 
 public class SeatReadDto : BaseSeatDto
 {

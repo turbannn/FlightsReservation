@@ -1,6 +1,6 @@
 ﻿using FlightsReservation.BLL.Interfaces;
 
-namespace FlightsReservation.BLL.DtoEntities.FlightDtos;
+namespace FlightsReservation.BLL.Entities.DataTransferObjects.FlightDtos;
 
 public class BaseFlightDto : IFlightDto
 {

@@ -1,7 +1,7 @@
-﻿using FlightsReservation.BLL.DtoEntities.PassengerDtos;
-using FlightsReservation.BLL.Services;
+﻿using FlightsReservation.BLL.Services;
 using Microsoft.AspNetCore.Mvc;
 using Carter;
+using FlightsReservation.BLL.Entities.DataTransferObjects.PassengerDtos;
 
 namespace FlightsReservation.Web.Modules;
 

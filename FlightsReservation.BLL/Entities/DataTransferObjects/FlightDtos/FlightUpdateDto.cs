@@ -1,4 +1,4 @@
-﻿namespace FlightsReservation.BLL.DtoEntities.FlightDtos;
+﻿namespace FlightsReservation.BLL.Entities.DataTransferObjects.FlightDtos;
 
 public class FlightUpdateDto : BaseFlightDto
 {

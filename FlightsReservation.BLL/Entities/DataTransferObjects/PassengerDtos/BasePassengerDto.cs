@@ -1,6 +1,6 @@
 ﻿using FlightsReservation.BLL.Interfaces;
 
-namespace FlightsReservation.BLL.DtoEntities.PassengerDtos;
+namespace FlightsReservation.BLL.Entities.DataTransferObjects.PassengerDtos;
 
 public class BasePassengerDto : IPassengerDto
 {
