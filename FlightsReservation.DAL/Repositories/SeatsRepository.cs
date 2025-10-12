@@ -24,25 +24,43 @@ public class SeatsRepository : ISeatsRepository
     }
 
     //Non separate transaction
-    public async Task AddAsync(Seat entityToAdd, CancellationToken ct = default)
+    public async Task<bool> AddAsync(Seat entityToAdd, CancellationToken ct = default)
     {
-        await _context.Seats.AddAsync(entityToAdd, ct);
+        try
+        {
+            await _context.Seats.AddAsync(entityToAdd, ct);
+            return true;
+        }
+        catch
+        {
+            return false;
+        }
     }
 
     //Non separate transaction
-    public async Task UpdateAsync(Seat entityToUpdate, CancellationToken ct = default)
+    public async Task<bool> UpdateAsync(Seat entityToUpdate, CancellationToken ct = default)
     {
-        await _context.Seats
+        var res = await _context.Seats
             .Where(s => s.Id == entityToUpdate.Id)
             .ExecuteUpdateAsync(setters => setters
                 .SetProperty(ss => ss.SeatNumber, entityToUpdate.SeatNumber)
                 .SetProperty(ss => ss.IsAvailable, entityToUpdate.IsAvailable)
                 .SetProperty(ss => ss.FlightId, entityToUpdate.FlightId), cancellationToken: ct);
+
+        if (res <= 0)
+            return false;
+
+        return true;
     }
 
-    public async Task DeleteAsync(Guid id, CancellationToken ct = default)
+    public async Task<bool> DeleteAsync(Guid id, CancellationToken ct = default)
     {
-        await _context.Seats.Where(s => s.Id == id).ExecuteDeleteAsync(cancellationToken: ct);
+        var res = await _context.Seats.Where(s => s.Id == id).ExecuteDeleteAsync(cancellationToken: ct);
+
+        if (res <= 0) 
+            return false;
+
+        return true;
     }
 
     public async Task MarkSeatAsAvailable(Guid seatId, CancellationToken ct = default)

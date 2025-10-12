@@ -42,14 +42,22 @@ public class FlightsRepository : IFlightsRepository
         return flight;
     }
 
-    public async Task AddAsync(Flight entityToAdd, CancellationToken ct = default)
+    public async Task<bool> AddAsync(Flight entityToAdd, CancellationToken ct = default)
     {
-        await _context.Flights.AddAsync(entityToAdd, ct);
+        try
+        {
+            await _context.Flights.AddAsync(entityToAdd, ct);
+            return true;
+        }
+        catch
+        {
+            return false;
+        }
     }
 
-    public async Task UpdateAsync(Flight entityToUpdate, CancellationToken ct = default)
+    public async Task<bool> UpdateAsync(Flight entityToUpdate, CancellationToken ct = default)
     {
-        await _context.Flights
+        var res = await _context.Flights
             .Where(f => f.Id == entityToUpdate.Id)
             .ExecuteUpdateAsync(setters => setters
                 .SetProperty(ff => ff.FlightNumber, entityToUpdate.FlightNumber)
@@ -58,15 +66,21 @@ public class FlightsRepository : IFlightsRepository
                 .SetProperty(ff => ff.DepartureTime, entityToUpdate.DepartureTime)
                 .SetProperty(ff => ff.ArrivalTime, entityToUpdate.ArrivalTime)
                 .SetProperty(ff => ff.AirplaneType, entityToUpdate.AirplaneType), cancellationToken: ct);
+
+        if (res <= 0)
+            return false;
+
+        return true;
     }
 
-    public async Task DeleteAsync(Guid id, CancellationToken ct = default)
+    public async Task<bool> DeleteAsync(Guid id, CancellationToken ct = default)
     {
         var flight = await _context.Flights.FirstOrDefaultAsync(f => f.Id == id, cancellationToken: ct);
         
-        if(flight is null) return;
+        if(flight is null) return false;
 
         _context.Flights.Remove(flight);
+        return true;
     }
 }
 

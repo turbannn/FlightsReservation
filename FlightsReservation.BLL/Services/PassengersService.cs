@@ -3,6 +3,8 @@ using FlightsReservation.BLL.Interfaces;
 using FlightsReservation.DAL.Interfaces;
 using FluentValidation;
 using AutoMapper;
+using FlightsReservation.BLL.Entities.Utilities.Other;
+using FlightsReservation.BLL.Entities.Utilities.Results;
 
 namespace FlightsReservation.BLL.Services;
 
@@ -27,96 +29,74 @@ public class PassengersService
         _seatsRepository = seatsRepository;
     }
 
-    //ctctct
-    public async Task<PassengerReadDto?> GetPassengerByIdAsync(Guid id, CancellationToken ct = default)
+    public async Task<FlightReservationResult<PassengerReadDto>> GetPassengerByIdAsync(Guid id, CancellationToken ct = default)
     {
         if (id == Guid.Empty)
         {
-            Console.WriteLine("Bad id");
-            return null;
+            Console.WriteLine("ERROR: Bad id");
+            return FlightReservationResult<PassengerReadDto>.Fail("Bad id", ResponseCodes.BadRequest);
         }
 
         var passenger = await _passengersRepository.GetByIdAsync(id, ct);
         if (passenger is null)
         {
             Console.WriteLine("Passenger not found");
-            return null;
+            return FlightReservationResult<PassengerReadDto>.Fail("Passenger not found", ResponseCodes.NotFound);
         }
 
-        return _mapper.Map<PassengerReadDto>(passenger);
+
+        var pasReadDto = _mapper.Map<PassengerReadDto>(passenger);
+
+        return FlightReservationResult<PassengerReadDto>.Success(pasReadDto, ResponseCodes.Success);
     }
 
-    /*
-    public async Task AddPassengerAsync(PassengerCreateDto createDto)
-    {
-        var validationResult = await _validator.ValidateAsync(createDto);
-        if (!validationResult.IsValid)
-        {
-            foreach (var error in validationResult.Errors)
-            {
-                Console.WriteLine(error.ErrorMessage);
-            }
-            return;
-        }
-
-        var passenger = _mapper.Map<Passenger>(createDto);
-        try
-        {
-            await _passengersRepository.AddAsync(passenger);
-            await _unitOfWork.SaveChangesAsync();
-        }
-        catch (Exception ex)
-        {
-            Console.WriteLine($"Error adding passenger: {ex.Message}");
-        }
-    }
-    */
-
-    public async Task UpdatePassengerAsync(PassengerUpdateDto updateDto, CancellationToken ct = default)
+    public async Task<FlightReservationResult<int>> UpdatePassengerAsync(PassengerUpdateDto updateDto, CancellationToken ct = default)
     {
         var validationResult = await _validator.ValidateAsync(updateDto, ct);
         if (!validationResult.IsValid)
         {
-            foreach (var error in validationResult.Errors)
-            {
-                Console.WriteLine(error.ErrorMessage);
-            }
-            return;
+            var error = validationResult.Errors.First();
+
+            return FlightReservationResult<int>.Fail(error.ToString(), ResponseCodes.BadRequest);
         }
 
         var existingPassenger = await _passengersRepository.GetByIdAsync(updateDto.Id, ct);
         if (existingPassenger is null)
         {
-            Console.WriteLine("Passenger not found");
-            return;
+            return FlightReservationResult<int>.Fail("Passenger not found", ResponseCodes.NotFound);
         }
-
-        _mapper.Map(updateDto, existingPassenger);
 
         try
         {
-            await _passengersRepository.UpdateAsync(existingPassenger, ct);
-            await _unitOfWork.SaveChangesAsync(ct);
+            _mapper.Map(updateDto, existingPassenger);
         }
-        catch (Exception ex)
+        catch
         {
-            Console.WriteLine($"Error updating passenger: {ex.Message}");
+            return FlightReservationResult<int>.Fail("Internal server error", ResponseCodes.InternalServerError);
         }
+
+        var res = await _passengersRepository.UpdateAsync(existingPassenger, ct);
+        if (!res)
+        {
+            return FlightReservationResult<int>.Fail("Internal server error", ResponseCodes.InternalServerError);
+        }
+        await _unitOfWork.SaveChangesAsync(ct);
+
+        return FlightReservationResult<int>.Success(1, ResponseCodes.Success);
     }
 
-    public async Task DeletePassengerAsync(Guid id, CancellationToken ct = default)
+    public async Task<FlightReservationResult<int>> DeletePassengerAsync(Guid id, CancellationToken ct = default)
     {
         if (id == Guid.Empty)
         {
-            Console.WriteLine("Bad id");
-            return;
+            Console.WriteLine("ERROR: Bad id");
+            return FlightReservationResult<int>.Fail("Bad id", ResponseCodes.BadRequest);
         }
 
         var existingPassenger = await _passengersRepository.GetByIdAsync(id, ct);
         if (existingPassenger is null)
         {
-            Console.WriteLine("Passenger not found");
-            return;
+            return FlightReservationResult<int>.Fail("Passenger not found", ResponseCodes.NotFound);
         }
 
         await _unitOfWork.BeginAsync(ct);
@@ -128,17 +108,20 @@ public class PassengersService
         {
             await _unitOfWork.RollbackAsync(ct);
             Console.WriteLine($"Seat with ID {existingPassenger.SeatId} does not exist.");
+            return FlightReservationResult<int>.Fail("Seat not found", ResponseCodes.NotFound);
         }
 
         try
         {
             await _passengersRepository.DeleteAsync(existingPassenger.Id, ct);
             await _unitOfWork.CommitAsync(ct);
+            return FlightReservationResult<int>.Success(1, ResponseCodes.Success);
         }
         catch (Exception ex)
         {
             await _unitOfWork.RollbackAsync(ct);
             Console.WriteLine($"Error deleting passenger: {ex.Message}");
+            return FlightReservationResult<int>.Fail("Internal server error", ResponseCodes.InternalServerError);
         }
     }
 }

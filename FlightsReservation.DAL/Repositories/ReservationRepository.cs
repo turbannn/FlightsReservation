@@ -25,22 +25,40 @@ public class ReservationRepository : IReservationsRepository
         return r;
     }
 
-    public async Task AddAsync(Reservation entityToAdd, CancellationToken ct = default)
+    public async Task<bool> AddAsync(Reservation entityToAdd, CancellationToken ct = default)
     {
-        await _context.Reservations.AddAsync(entityToAdd, ct);
+        try
+        {
+            await _context.Reservations.AddAsync(entityToAdd, ct);
+            return true;
+        }
+        catch
+        {
+            return false;
+        }
     }
 
-    public async Task UpdateAsync(Reservation entityToUpdate, CancellationToken ct = default)
+    public async Task<bool> UpdateAsync(Reservation entityToUpdate, CancellationToken ct = default)
     {
-        await _context.Reservations
+        var res = await _context.Reservations
             .Where(r => r.Id == entityToUpdate.Id)
             .ExecuteUpdateAsync(setters => setters
                 .SetProperty(rr => rr.ReservationNumber, entityToUpdate.ReservationNumber)
                 .SetProperty(rr => rr.ReservationDate, entityToUpdate.ReservationDate), cancellationToken: ct);
+
+        if (res <= 0)
+            return false;
+
+        return true;
     }
 
-    public async Task DeleteAsync(Guid id, CancellationToken ct = default)
+    public async Task<bool> DeleteAsync(Guid id, CancellationToken ct = default)
     {
-        await _context.Reservations.Where(r => r.Id == id).ExecuteDeleteAsync(cancellationToken: ct);
+        var res = await _context.Reservations.Where(r => r.Id == id).ExecuteDeleteAsync(cancellationToken: ct);
+
+        if(res <= 0)
+            return false;
+
+        return true;
     }
 }

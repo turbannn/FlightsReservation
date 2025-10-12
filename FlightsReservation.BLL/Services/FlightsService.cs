@@ -4,6 +4,10 @@ using FlightsReservation.BLL.Interfaces;
 using FlightsReservation.DAL.Interfaces;
 using FluentValidation;
 using AutoMapper;
+using FlightsReservation.BLL.Entities.Utilities.Results;
+using FlightsReservation.BLL.Entities.DataTransferObjects.SeatDtos;
+using FlightsReservation.BLL.Entities.Utilities.Other;
+using FlightsReservation.DAL.Repositories;
 
 namespace FlightsReservation.BLL.Services;
 
@@ -22,103 +26,120 @@ public class FlightsService
         _flightsRepository = flightsRepository;
     }
 
-    public async Task<FlightReadDto?> GetFlightByIdAsync(Guid id, CancellationToken ct = default)
+    public async Task<FlightReservationResult<FlightReadDto>> GetFlightByIdAsync(Guid id, CancellationToken ct = default)
     {
         if (id == Guid.Empty)
         {
             Console.WriteLine("Bad id");
-            return null;
+            return FlightReservationResult<FlightReadDto>.Fail("Bad id", ResponseCodes.BadRequest);
         }
 
         var flight = await _flightsRepository.GetByIdAsync(id, ct);
         if (flight is null)
         {
             Console.WriteLine("Flight not found");
-            return null;
+            return FlightReservationResult<FlightReadDto>.Fail("Flight not found", ResponseCodes.NotFound);
         }
 
-        return _mapper.Map<FlightReadDto>(flight);
+        var flightReadDto = _mapper.Map<FlightReadDto>(flight);
+
+        return FlightReservationResult<FlightReadDto>.Success(flightReadDto, ResponseCodes.Success);
     }
 
-    public async Task AddFlightAsync(FlightCreateDto createDto, CancellationToken ct = default)
+    public async Task<FlightReservationResult<int>> AddFlightAsync(FlightCreateDto createDto, CancellationToken ct = default)
     {
         var validationResult = await _validator.ValidateAsync(createDto, ct);
         if (!validationResult.IsValid)
         {
-            foreach (var error in validationResult.Errors)
-            {
-                Console.WriteLine(error.ErrorMessage);
-            }
-            return;
+            var error = validationResult.Errors.First();
+
+            return FlightReservationResult<int>.Fail(error.ToString(), ResponseCodes.BadRequest);
         }
 
-        var flight = _mapper.Map<Flight>(createDto);
+        Flight? flight = null;
+
         try
         {
-            await _flightsRepository.AddAsync(flight, ct);
-            await _unitOfWork.SaveChangesAsync(ct);
+            flight = _mapper.Map<Flight>(createDto);
         }
-        catch (Exception ex)
+        catch(Exception ex)
         {
-            Console.WriteLine($"Error adding flight: {ex.Message}");
+            Console.WriteLine(ex.Message);
+            Console.WriteLine("Internal server error");
+            return FlightReservationResult<int>.Fail("Internal server error", ResponseCodes.InternalServerError);
         }
+
+        var res = await _flightsRepository.AddAsync(flight, ct);
+        if (!res)
+        {
+            return FlightReservationResult<int>.Fail("Internal server error", ResponseCodes.InternalServerError);
+        }
+        await _unitOfWork.SaveChangesAsync(ct);
+
+        return FlightReservationResult<int>.Success(1, ResponseCodes.Success);
     }
 
-    public async Task UpdateFlightAsync(FlightUpdateDto updateDto, CancellationToken ct = default)
+    public async Task<FlightReservationResult<int>> UpdateFlightAsync(FlightUpdateDto updateDto, CancellationToken ct = default)
     {
         var validationResult = await _validator.ValidateAsync(updateDto, ct);
         if (!validationResult.IsValid)
         {
-            foreach (var error in validationResult.Errors)
-            {
-                Console.WriteLine(error.ErrorMessage);
-            }
-            return;
+            var error = validationResult.Errors.First();
+
+            return FlightReservationResult<int>.Fail(error.ToString(), ResponseCodes.BadRequest);
         }
 
         var existingFlight = await _flightsRepository.GetByIdAsync(updateDto.Id, ct);
         if (existingFlight is null)
         {
             Console.WriteLine("Flight not found");
-            return;
+            return FlightReservationResult<int>.Fail("Flight not found", ResponseCodes.NotFound);
         }
-
-        _mapper.Map(updateDto, existingFlight);
 
         try
         {
-            await _flightsRepository.UpdateAsync(existingFlight, ct);
-            await _unitOfWork.SaveChangesAsync(ct);
+            _mapper.Map(updateDto, existingFlight);
         }
         catch (Exception ex)
         {
-            Console.WriteLine($"Error updating flight: {ex.Message}");
+            Console.WriteLine(ex.Message);
+            Console.WriteLine("Internal server error");
+            return FlightReservationResult<int>.Fail("Internal server error", ResponseCodes.InternalServerError);
         }
+
+        var res = await _flightsRepository.UpdateAsync(existingFlight, ct);
+        if (!res)
+        {
+            return FlightReservationResult<int>.Fail("Flight was not updated", ResponseCodes.InternalServerError);
+        }
+        await _unitOfWork.SaveChangesAsync(ct);
+
+        return FlightReservationResult<int>.Success(1, ResponseCodes.Success);
     }
 
-    public async Task DeleteFlight(Guid id, CancellationToken ct = default)
+    public async Task<FlightReservationResult<int>> DeleteFlight(Guid id, CancellationToken ct = default)
     {
         if (id == Guid.Empty)
         {
             Console.WriteLine("Bad id");
-            return;
+            return FlightReservationResult<int>.Fail("Bad id", ResponseCodes.BadRequest);
         }
 
         var existingFlight = await _flightsRepository.GetByIdAsync(id, ct);
         if (existingFlight is null)
         {
             Console.WriteLine("Flight not found");
-            return;
+            return FlightReservationResult<int>.Fail("Flight not found", ResponseCodes.NotFound);
         }
 
-        try
+
+        var res = await _flightsRepository.DeleteAsync(existingFlight.Id, ct);
+        if (!res)
         {
-            await _flightsRepository.DeleteAsync(existingFlight.Id, ct);
-            await _unitOfWork.SaveChangesAsync(ct);
+            return FlightReservationResult<int>.Fail("Flight was not updated", ResponseCodes.InternalServerError);
         }
-        catch (Exception ex)
-        {
-            Console.WriteLine($"Error deleting flight: {ex.Message}");
-        }
+        await _unitOfWork.SaveChangesAsync(ct);
+
+        return FlightReservationResult<int>.Success(1, ResponseCodes.Success);
     }
 }

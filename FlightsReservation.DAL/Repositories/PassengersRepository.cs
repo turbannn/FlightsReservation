@@ -25,14 +25,23 @@ public class PassengersRepository : IPassengersRepository
         return p;
     }
 
-    public async Task AddAsync(Passenger entityToAdd, CancellationToken ct = default)
+    public async Task<bool> AddAsync(Passenger entityToAdd, CancellationToken ct = default)
     {
-        await _context.Passengers.AddAsync(entityToAdd, ct);
+        try
+        {
+            await _context.Passengers.AddAsync(entityToAdd, ct);
+            return true;
+        }
+        catch
+        {
+            return false;
+        }
+
     }
 
-    public async Task UpdateAsync(Passenger entityToUpdate, CancellationToken ct = default)
+    public async Task<bool> UpdateAsync(Passenger entityToUpdate, CancellationToken ct = default)
     {
-        await _context.Passengers
+        var res = await _context.Passengers
             .Where(p => p.Id == entityToUpdate.Id)
             .ExecuteUpdateAsync(setters => setters
                 .SetProperty(pp => pp.FirstName, entityToUpdate.FirstName)
@@ -40,13 +49,24 @@ public class PassengersRepository : IPassengersRepository
                 .SetProperty(pp => pp.PassportNumber, entityToUpdate.PassportNumber)
                 .SetProperty(pp => pp.PhoneNumber, entityToUpdate.PhoneNumber)
                 .SetProperty(pp => pp.Email, entityToUpdate.Email), cancellationToken: ct);
+
+        if (res <= 0)
+            return false;
+
+        return true;
     }
 
-    public async Task DeleteAsync(Guid id, CancellationToken ct = default)
+    public async Task<bool> DeleteAsync(Guid id, CancellationToken ct = default)
     {
         var p = await _context.Passengers.FirstOrDefaultAsync(p => p.Id == id, cancellationToken: ct);
-        if(p is not null)
-            _context.Passengers.Remove(p);
+
+        if (p is null)
+        {
+            return false;
+        }
+
+        _context.Passengers.Remove(p);
+        return true;
     }
 }
 
