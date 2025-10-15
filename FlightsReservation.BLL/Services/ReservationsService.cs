@@ -34,7 +34,7 @@ public class ReservationsService
         _seatsRepository = seatsRepository;
     }
 
-    //ct
+    //Admin
     public async Task<FlightReservationResult<ReservationReadDto>> GetReservationByIdAsync(Guid id, CancellationToken ct = default)
     {
         if (id == Guid.Empty)
@@ -55,6 +55,7 @@ public class ReservationsService
         return FlightReservationResult<ReservationReadDto>.Success(reservationReadDto, ResponseCodes.Success);
     }
 
+    //Admin
     public async Task<FlightReservationResult<int>> AddReservationAsync(ReservationCreateDto createDto, CancellationToken ct = default)
     {
         if (createDto.Passengers.Count == 0)
@@ -154,6 +155,7 @@ public class ReservationsService
         return FlightReservationResult<int>.Success(1, ResponseCodes.Success);
     }
 
+    //Admin
     public async Task<FlightReservationResult<int>> DeleteReservation(Guid id, CancellationToken ct = default)
     {
         //rework for all Guid.TryParse

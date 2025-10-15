@@ -24,6 +24,7 @@ public class SeatsService
         _seatsRepository = seatsRepository;
     }
 
+    //Admin
     public async Task<FlightReservationResult<SeatReadDto>> GetSeatByIdAsync(Guid id, CancellationToken ct = default)
     {
         if (id == Guid.Empty)
@@ -44,6 +45,7 @@ public class SeatsService
         return FlightReservationResult<SeatReadDto>.Success(seatReadDto, ResponseCodes.Success);
     }
 
+    //Admin
     public async Task<FlightReservationResult<int>> AddSeatAsync(SeatCreateDto createDto, CancellationToken ct = default)
     {
         var validationResult = await _validator.ValidateAsync(createDto, ct);
@@ -78,6 +80,7 @@ public class SeatsService
         return FlightReservationResult<int>.Success(1, ResponseCodes.Success);
     }
 
+    //Admin
     public async Task<FlightReservationResult<int>> UpdateSeatAsync(SeatUpdateDto updateDto, CancellationToken ct = default)
     {
         var validationResult = await _validator.ValidateAsync(updateDto, ct);
@@ -113,6 +116,7 @@ public class SeatsService
         return FlightReservationResult<int>.Success(1, ResponseCodes.Success);
     }
 
+    //Admin
     public async Task<FlightReservationResult<int>> DeleteSeat(Guid id, CancellationToken ct = default)
     {
         if (id == Guid.Empty)

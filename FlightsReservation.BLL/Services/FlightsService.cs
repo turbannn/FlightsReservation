@@ -6,6 +6,7 @@ using FlightsReservation.DAL.Entities.Model;
 using FlightsReservation.DAL.Interfaces;
 using FluentValidation;
 using AutoMapper;
+using FlightsReservation.BLL.Entities.Utilities.Requests;
 
 namespace FlightsReservation.BLL.Services;
 
@@ -24,6 +25,109 @@ public class FlightsService
         _flightsRepository = flightsRepository;
     }
 
+    public async Task<FlightReservationPagedResult<List<FlightReadDto>>> GetFlightPageFromRequestWithReturnAsync(int page,
+        int size,
+        FlightSearchWithReturnRequest request,
+        CancellationToken ct = default)
+    {
+        if (page <= 0)
+        {
+            Console.WriteLine("Bad page");
+            return FlightReservationPagedResult<List<FlightReadDto>>.PagedFail("Bad page", ResponseCodes.BadRequest);
+        }
+
+        if (size <= 0)
+        {
+            Console.WriteLine("Bad size");
+            return FlightReservationPagedResult<List<FlightReadDto>>.PagedFail("Bad size", ResponseCodes.BadRequest);
+        }
+
+        var flights = await _flightsRepository.GetFilteredPageWithReturnAsync(page,
+            size,
+            request.DepartureCity,
+            request.ArrivalCity,
+            request.DepartureDate,
+            request.ReturnDate,
+            ct);
+
+        if (flights.Outbound.Count == 0)
+        {
+            Console.WriteLine("Flights weren't found");
+            return FlightReservationPagedResult<List<FlightReadDto>>.PagedFail("Flights weren't found", ResponseCodes.NotFound);
+        }
+
+        if (flights.Return.Count == 0)
+        {
+            Console.WriteLine("Flights back weren't found");
+            return FlightReservationPagedResult<List<FlightReadDto>>.PagedFail("Flights back weren't found", ResponseCodes.NotFound);
+        }
+
+        var concated = flights.Outbound.Concat(flights.Return).ToList();
+
+        var count = await _flightsRepository.GetTotalCountAsync(ct);
+
+        var flightReadDto = _mapper.Map<List<FlightReadDto>>(concated);
+
+        return FlightReservationPagedResult<List<FlightReadDto>>.PagedSuccess(flightReadDto, count);
+    }
+
+
+    public async Task<FlightReservationPagedResult<List<FlightReadDto>>> GetFlightPageFromRequestAsync(int page,
+        int size,
+        FlightSearchRequest request,
+        CancellationToken ct = default)
+    {
+        if (page <= 0)
+        {
+            Console.WriteLine("Bad page");
+            return FlightReservationPagedResult<List<FlightReadDto>>.PagedFail("Bad page", ResponseCodes.BadRequest);
+        }
+
+        if (size <= 0)
+        {
+            Console.WriteLine("Bad size");
+            return FlightReservationPagedResult<List<FlightReadDto>>.PagedFail("Bad size", ResponseCodes.BadRequest);
+        }
+
+        var flights = await _flightsRepository.GetFilteredPageAsync(page,
+            size,
+            request.DepartureCity,
+            request.ArrivalCity,
+            request.DepartureDate,
+            ct);
+
+        var count = await _flightsRepository.GetTotalCountAsync(ct);
+
+        var flightReadDto = _mapper.Map<List<FlightReadDto>>(flights);
+
+        return FlightReservationPagedResult<List<FlightReadDto>>.PagedSuccess(flightReadDto, count);
+    }
+
+    //Admin
+    public async Task<FlightReservationPagedResult<List<FlightReadDto>>> GetFlightPageAsync(int page, int size, CancellationToken ct = default)
+    {
+        if (page <= 0)
+        {
+            Console.WriteLine("Bad page");
+            return FlightReservationPagedResult<List<FlightReadDto>>.PagedFail("Bad page", ResponseCodes.BadRequest);
+        }
+
+        if (size <= 0)
+        {
+            Console.WriteLine("Bad size");
+            return FlightReservationPagedResult<List<FlightReadDto>>.PagedFail("Bad size", ResponseCodes.BadRequest);
+        }
+
+        var flights = await _flightsRepository.GetPageAsync(page, size, ct);
+
+        var count = await _flightsRepository.GetTotalCountAsync(ct);
+
+        var flightReadDto = _mapper.Map<List<FlightReadDto>>(flights);
+
+        return FlightReservationPagedResult<List<FlightReadDto>>.PagedSuccess(flightReadDto, count);
+    }
+
+    //Admin
     public async Task<FlightReservationResult<FlightReadDto>> GetFlightByIdAsync(Guid id, CancellationToken ct = default)
     {
         if (id == Guid.Empty)
@@ -44,6 +148,7 @@ public class FlightsService
         return FlightReservationResult<FlightReadDto>.Success(flightReadDto, ResponseCodes.Success);
     }
 
+    //Admin
     public async Task<FlightReservationResult<int>> AddFlightAsync(FlightCreateDto createDto, CancellationToken ct = default)
     {
         var validationResult = await _validator.ValidateAsync(createDto, ct);
@@ -77,6 +182,7 @@ public class FlightsService
         return FlightReservationResult<int>.Success(1, ResponseCodes.Success);
     }
 
+    //Admin
     public async Task<FlightReservationResult<int>> UpdateFlightAsync(FlightUpdateDto updateDto, CancellationToken ct = default)
     {
         var validationResult = await _validator.ValidateAsync(updateDto, ct);
@@ -115,6 +221,7 @@ public class FlightsService
         return FlightReservationResult<int>.Success(1, ResponseCodes.Success);
     }
 
+    //Admin
     public async Task<FlightReservationResult<int>> DeleteFlight(Guid id, CancellationToken ct = default)
     {
         if (id == Guid.Empty)

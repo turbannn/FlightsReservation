@@ -2,8 +2,10 @@
 using FlightsReservation.DAL.Data;
 using FlightsReservation.DAL.Entities.Model;
 using FlightsReservation.DAL.Interfaces;
+using FlightsReservation.DAL.Entities.Utils;
 
 namespace FlightsReservation.DAL.Repositories;
+
 
 public class FlightsRepository : IFlightsRepository
 {
@@ -13,13 +15,75 @@ public class FlightsRepository : IFlightsRepository
         _context = dbContext;
     }
 
+    public async Task<IEnumerable<Flight>> GetFilteredPageAsync(int page,
+        int size,
+        string departure,
+        string arrival,
+        DateTime departureTime,
+        CancellationToken ct)
+    {
+        return await _context.Flights
+            .AsNoTracking()
+            .AsSplitQuery()
+            .Where(f =>
+                string.Equals(f.Departure, departure, StringComparison.OrdinalIgnoreCase) &&
+                string.Equals(f.Arrival, arrival, StringComparison.OrdinalIgnoreCase) &&
+                f.DepartureTime >= departureTime.Date &&
+                f.DepartureTime < departureTime.Date.AddDays(1))
+            .Include(f => f.Seats.Where(s => s.IsAvailable))
+            .Skip((page - 1) * size)
+            .Take(size)
+            .ToListAsync(cancellationToken: ct);
+    }
+
+    public async Task<FlightsWithReturnResult> GetFilteredPageWithReturnAsync(int page,
+        int size,
+        string departure,
+        string arrival,
+        DateTime departureTime,
+        DateTime returnTime,
+        CancellationToken ct)
+    {
+        var flights = await _context.Flights
+            .AsNoTracking()
+            .AsSplitQuery()
+            .Where(f =>
+                string.Equals(f.Departure, departure, StringComparison.OrdinalIgnoreCase) &&
+                string.Equals(f.Arrival, arrival, StringComparison.OrdinalIgnoreCase) &&
+                f.DepartureTime >= departureTime.Date &&
+                f.DepartureTime < departureTime.Date.AddDays(1))
+            .Include(f => f.Seats.Where(s => s.IsAvailable))
+            .OrderBy(f => f.DepartureTime)
+            .Skip((page - 1) * size)
+            .Take(size)
+            .ToListAsync(cancellationToken: ct);
+
+        var flightsBack = await _context.Flights
+            .AsNoTracking()
+            .AsSplitQuery()
+            .Where(f =>
+                string.Equals(f.Departure, arrival, StringComparison.OrdinalIgnoreCase) &&
+                string.Equals(f.Arrival, departure, StringComparison.OrdinalIgnoreCase) &&
+                f.DepartureTime >= returnTime.Date && f.DepartureTime < returnTime.Date.AddDays(1))
+            .Include(f => f.Seats.Where(s => s.IsAvailable))
+            .OrderBy(f => f.DepartureTime)
+            .Skip((page - 1) * size)
+            .Take(size)
+            .ToListAsync(cancellationToken: ct);
+
+
+        return new FlightsWithReturnResult(flights, flightsBack);
+    }
+
     public async Task<IEnumerable<Flight>> GetPageAsync(int page, int size, CancellationToken ct)
     {
         return await _context.Flights
             .AsNoTracking()
+            .AsSplitQuery()
             .Include(f => f.Seats)
             .Include(f => f.Reservations)
             .ThenInclude(r => r.Passengers)
+            .OrderBy(f => f.DepartureTime)
             .Skip((page - 1) * size)
             .Take(size)
             .ToListAsync(cancellationToken: ct);
