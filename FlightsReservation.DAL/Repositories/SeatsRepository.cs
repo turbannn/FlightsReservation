@@ -106,12 +106,12 @@ public class SeatsRepository : ISeatsRepository
             throw new InvalidOperationException("Seat not found");
         }
 
-        if (DateTime.UtcNow < seat.Lock)
+        if (DateTime.UtcNow.AddHours(2) < seat.Lock)
         {
             throw new ArgumentException("Seat is already locked");
         }
 
-        seat.Lock = DateTime.UtcNow.AddMinutes(10);
+        seat.Lock = DateTime.UtcNow.AddHours(2).AddMinutes(10);
 
         return true;
     }

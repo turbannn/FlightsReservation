@@ -33,7 +33,7 @@ public class FlightsRepository : IFlightsRepository
                 f.Arrival.ToLower() == arrLower &&
                 f.DepartureTime >= departureTime.Date &&
                 f.DepartureTime < departureTime.Date.AddDays(1))
-            .Include(f => f.Seats.Where(s => s.IsAvailable && DateTime.UtcNow > s.Lock))
+            .Include(f => f.Seats.Where(s => s.IsAvailable && DateTime.UtcNow.AddHours(2) > s.Lock))
             .Skip((page - 1) * size)
             .Take(size)
             .ToListAsync(cancellationToken: ct);
@@ -58,7 +58,7 @@ public class FlightsRepository : IFlightsRepository
                 f.Arrival.ToLower() == arrLower &&
                 f.DepartureTime >= departureTime.Date &&
                 f.DepartureTime < departureTime.Date.AddDays(1))
-            .Include(f => f.Seats.Where(s => s.IsAvailable && DateTime.UtcNow > s.Lock))
+            .Include(f => f.Seats.Where(s => s.IsAvailable && DateTime.UtcNow.AddHours(2) > s.Lock))
             .OrderBy(f => f.DepartureTime)
             .Skip((page - 1) * size)
             .Take(size)
@@ -71,7 +71,7 @@ public class FlightsRepository : IFlightsRepository
                 f.Departure.ToLower() == arrLower &&
                 f.Arrival.ToLower() == depLower &&
                 f.DepartureTime >= returnTime.Date && f.DepartureTime < returnTime.Date.AddDays(1))
-            .Include(f => f.Seats.Where(s => s.IsAvailable && DateTime.UtcNow > s.Lock))
+            .Include(f => f.Seats.Where(s => s.IsAvailable && DateTime.UtcNow.AddHours(2) > s.Lock))
             .OrderBy(f => f.DepartureTime)
             .Skip((page - 1) * size)
             .Take(size)
