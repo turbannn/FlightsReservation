@@ -19,4 +19,6 @@ public interface IFlightsRepository : IPagedRepository<Flight>
         DateTime departureTime,
         DateTime returnTime,
         CancellationToken ct);
+
+    Task<bool> DeleteAllAsync(CancellationToken ct);
 }

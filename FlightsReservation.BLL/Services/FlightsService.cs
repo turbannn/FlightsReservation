@@ -247,4 +247,17 @@ public class FlightsService
 
         return FlightReservationResult<int>.Success(1, ResponseCodes.Success);
     }
+
+    //Admin
+    public async Task<FlightReservationResult<int>> DeleteAllFlights(CancellationToken ct = default)
+    {
+        var res = await _flightsRepository.DeleteAllAsync(ct);
+        if (!res)
+        {
+            return FlightReservationResult<int>.Fail("Flight was not updated", ResponseCodes.InternalServerError);
+        }
+        await _unitOfWork.SaveChangesAsync(ct);
+
+        return FlightReservationResult<int>.Success(1, ResponseCodes.Success);
+    }
 }

@@ -146,5 +146,11 @@ public class FlightsRepository : IFlightsRepository
         _context.Flights.Remove(flight);
         return true;
     }
+
+    public async Task<bool> DeleteAllAsync(CancellationToken ct = default)
+    {
+        var res = await _context.Flights.ExecuteDeleteAsync(cancellationToken: ct);
+        return res >= 0;
+    }
 }
 
