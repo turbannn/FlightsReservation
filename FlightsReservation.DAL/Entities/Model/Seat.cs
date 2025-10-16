@@ -7,6 +7,7 @@ public class Seat
     public Guid Id { get; set; }
     public string SeatNumber { get; set; } = null!;
     public bool IsAvailable { get; set; } = true;
+    public DateTime Lock {get; set; }
 
     public Passenger? Passenger { get; set; }
 

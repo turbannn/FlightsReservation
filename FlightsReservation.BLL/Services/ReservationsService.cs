@@ -120,7 +120,7 @@ public class ReservationsService
         {
             try
             {
-                await _seatsRepository.MarkSeatAsOccupied(passenger.SeatId, ct); //test
+                await _seatsRepository.MarkSeatAsOccupied(passenger.SeatId, ct);
             }
             catch (InvalidOperationException ioex)
             {
