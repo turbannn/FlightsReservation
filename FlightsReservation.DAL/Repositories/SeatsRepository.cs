@@ -96,4 +96,23 @@ public class SeatsRepository : ISeatsRepository
 
         seat.IsAvailable = false;
     }
+
+    public async Task<bool> SetLockAsync(Guid id, CancellationToken ct = default)
+    {
+        var seat = await _context.Seats.FirstOrDefaultAsync(s => s.Id == id, cancellationToken: ct);
+
+        if (seat is null)
+        {
+            throw new InvalidOperationException("Seat not found");
+        }
+
+        if (DateTime.UtcNow < seat.Lock)
+        {
+            throw new ArgumentException("Seat is already locked");
+        }
+
+        seat.Lock = DateTime.UtcNow.AddMinutes(10);
+
+        return true;
+    }
 }

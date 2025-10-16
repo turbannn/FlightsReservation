@@ -133,4 +133,45 @@ public class SeatsService
         await _unitOfWork.SaveChangesAsync(ct);
         return FlightReservationResult<int>.Success(1, ResponseCodes.Success);
     }
+
+    public async Task<FlightReservationResult<int>> LockSeats(List<Guid> ids, CancellationToken ct = default)
+    {
+        await _unitOfWork.BeginAsync(ct);
+
+        foreach (var id in ids)
+        {
+            if (id == Guid.Empty)
+            {
+                Console.WriteLine("ERROR: Bad id");
+                return FlightReservationResult<int>.Fail("Bad id", ResponseCodes.BadRequest);
+            }
+
+            try
+            {
+                await _seatsRepository.SetLockAsync(id, ct);
+            }
+            catch (InvalidOperationException ioex)
+            {
+                await _unitOfWork.RollbackAsync(ct);
+                Console.WriteLine($"{ioex.Message}");
+                return FlightReservationResult<int>.Fail(ioex.Message, ResponseCodes.NotFound);
+            }
+            catch (ArgumentException aex)
+            {
+                await _unitOfWork.RollbackAsync(ct);
+                Console.WriteLine(aex.Message);
+                return FlightReservationResult<int>.Fail(aex.Message, ResponseCodes.BadRequest);
+            }
+            catch
+            {
+                await _unitOfWork.RollbackAsync(ct);
+                Console.WriteLine("INTERNAL SERVER ERROR ADD RESERVATION");
+                return FlightReservationResult<int>.Fail("Unknown error marking seat as occupied.", ResponseCodes.InternalServerError);
+            }
+        }
+
+        await _unitOfWork.CommitAsync(ct);
+
+        return FlightReservationResult<int>.Success(1, ResponseCodes.Success);
+    }
 }

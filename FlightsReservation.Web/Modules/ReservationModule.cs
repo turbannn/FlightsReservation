@@ -28,5 +28,11 @@ public class ReservationModule() : CarterModule("/Reservations")
             var response = await service.DeleteReservation(id, ct);
             return response.ToHttpResult();
         });
+
+        app.MapPost("/BeginReservation", async (List<Guid> ids, SeatsService service, CancellationToken ct = default) =>
+        {
+            var response = await service.LockSeats(ids, ct);
+            return response.ToHttpResult();
+        });
     }
 }

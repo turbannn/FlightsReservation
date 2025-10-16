@@ -6,4 +6,5 @@ public interface ISeatsRepository : IRepository<Seat>
 {
     Task MarkSeatAsAvailable(Guid seatId, CancellationToken ct);
     Task MarkSeatAsOccupied(Guid seatId, CancellationToken ct);
+    Task<bool> SetLockAsync(Guid id, CancellationToken ct);
 }

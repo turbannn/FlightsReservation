@@ -10,7 +10,6 @@ public class SeatModule() : CarterModule("/Seats")
 {
     public override void AddRoutes(IEndpointRouteBuilder app)
     {
-
         app.MapGet("/GetSeat", async (Guid id, SeatsService service, CancellationToken ct = default) =>
         {
             var response = await service.GetSeatByIdAsync(id, ct);

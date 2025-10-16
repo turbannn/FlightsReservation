@@ -22,15 +22,18 @@ public class FlightsRepository : IFlightsRepository
         DateTime departureTime,
         CancellationToken ct)
     {
+        var depLower = departure.ToLower();
+        var arrLower = arrival.ToLower();
+
         return await _context.Flights
             .AsNoTracking()
             .AsSplitQuery()
             .Where(f =>
-                string.Equals(f.Departure, departure, StringComparison.OrdinalIgnoreCase) &&
-                string.Equals(f.Arrival, arrival, StringComparison.OrdinalIgnoreCase) &&
+                f.Departure.ToLower() == depLower &&
+                f.Arrival.ToLower() == arrLower &&
                 f.DepartureTime >= departureTime.Date &&
                 f.DepartureTime < departureTime.Date.AddDays(1))
-            .Include(f => f.Seats.Where(s => s.IsAvailable))
+            .Include(f => f.Seats.Where(s => s.IsAvailable && DateTime.UtcNow > s.Lock))
             .Skip((page - 1) * size)
             .Take(size)
             .ToListAsync(cancellationToken: ct);
@@ -44,15 +47,18 @@ public class FlightsRepository : IFlightsRepository
         DateTime returnTime,
         CancellationToken ct)
     {
+        var depLower = departure.ToLower();
+        var arrLower = arrival.ToLower();
+
         var flights = await _context.Flights
             .AsNoTracking()
             .AsSplitQuery()
             .Where(f =>
-                string.Equals(f.Departure, departure, StringComparison.OrdinalIgnoreCase) &&
-                string.Equals(f.Arrival, arrival, StringComparison.OrdinalIgnoreCase) &&
+                f.Departure.ToLower() == depLower &&
+                f.Arrival.ToLower() == arrLower &&
                 f.DepartureTime >= departureTime.Date &&
                 f.DepartureTime < departureTime.Date.AddDays(1))
-            .Include(f => f.Seats.Where(s => s.IsAvailable))
+            .Include(f => f.Seats.Where(s => s.IsAvailable && DateTime.UtcNow > s.Lock))
             .OrderBy(f => f.DepartureTime)
             .Skip((page - 1) * size)
             .Take(size)
@@ -62,10 +68,10 @@ public class FlightsRepository : IFlightsRepository
             .AsNoTracking()
             .AsSplitQuery()
             .Where(f =>
-                string.Equals(f.Departure, arrival, StringComparison.OrdinalIgnoreCase) &&
-                string.Equals(f.Arrival, departure, StringComparison.OrdinalIgnoreCase) &&
+                f.Departure.ToLower() == arrLower &&
+                f.Arrival.ToLower() == depLower &&
                 f.DepartureTime >= returnTime.Date && f.DepartureTime < returnTime.Date.AddDays(1))
-            .Include(f => f.Seats.Where(s => s.IsAvailable))
+            .Include(f => f.Seats.Where(s => s.IsAvailable && DateTime.UtcNow > s.Lock))
             .OrderBy(f => f.DepartureTime)
             .Skip((page - 1) * size)
             .Take(size)
