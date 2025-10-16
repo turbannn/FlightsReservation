@@ -3,6 +3,7 @@ using System;
 using FlightsReservation.DAL.Data;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 
@@ -11,9 +12,11 @@ using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 namespace FlightsReservation.DAL.Migrations
 {
     [DbContext(typeof(FlightsDbContext))]
-    partial class FlightsDbContextModelSnapshot : ModelSnapshot
+    [Migration("20251016183056_SeatsLock")]
+    partial class SeatsLock
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -148,9 +151,7 @@ namespace FlightsReservation.DAL.Migrations
                         .HasColumnType("boolean");
 
                     b.Property<DateTime>("Lock")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("timestamp with time zone")
-                        .HasDefaultValueSql("1970-01-01 00:00:00'::timestamp");
+                        .HasColumnType("timestamp with time zone");
 
                     b.Property<string>("SeatNumber")
                         .IsRequired()
