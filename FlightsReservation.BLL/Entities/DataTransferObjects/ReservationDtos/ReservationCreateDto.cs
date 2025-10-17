@@ -1,7 +1,7 @@
 ﻿using FlightsReservation.BLL.Entities.DataTransferObjects.PassengerDtos;
 using System.Text.Json.Serialization;
 
-namespace FlightsReservation.BLL.DtoEntities.ReservationDtos;
+namespace FlightsReservation.BLL.Entities.DataTransferObjects.ReservationDtos;
 
 public class ReservationCreateDto : BaseReservationDto
 {
