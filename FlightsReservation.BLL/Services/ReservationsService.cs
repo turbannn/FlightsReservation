@@ -56,7 +56,7 @@ public class ReservationsService
     }
 
     //Admin
-    public async Task<FlightReservationResult<int>> AddReservationAsync(ReservationCreateDto createDto, CancellationToken ct = default)
+    public async Task<FlightReservationResult<int>> CommitReservationAsync(ReservationCreateDto createDto, CancellationToken ct = default)
     {
         if (createDto.Passengers.Count == 0)
         {

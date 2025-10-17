@@ -1,7 +1,7 @@
-﻿using Carter;
-using FlightsReservation.BLL.Entities.DataTransferObjects.FlightDtos;
+﻿using FlightsReservation.BLL.Entities.DataTransferObjects.FlightDtos;
 using FlightsReservation.BLL.Entities.DataTransferObjects.SeatDtos;
 using FlightsReservation.BLL.Services;
+using Carter;
 
 namespace FlightsReservation.Web.Modules;
 
@@ -19,28 +19,31 @@ public class UtilityModule() : CarterModule("/Flights")
             var random = new Random();
             var airports = new[] { "Warsaw", "Berlin", "Paris", "London", "Rome", "Prague" };
 
-            int n = 20;
+            int n = 70;
 
-            for (int i = 0; i < n; i++)
+            for (int i = 0; i < n/10; i++)
             {
-                var departure = airports[random.Next(airports.Length)];
-                var arrival = airports.Except(new[] { departure }).OrderBy(_ => random.Next()).First();
-
-                var depDay = DateTime.UtcNow.AddDays(random.Next(1, 30));
-
-                var createFlightDto = new FlightCreateDto
+                for(int m = 0; m < n/7; m++)
                 {
-                    FlightNumber = $"FL{random.Next(1000, 9999)}",
-                    Departure = departure,
-                    Arrival = arrival,
-                    DepartureTime = depDay,
-                    ArrivalTime = depDay.AddHours(random.Next(1, 4)),
-                    AirplaneType = $"Boeing {random.Next(700, 799)}"
-                };
+                    var departure = airports[random.Next(airports.Length)];
+                    var arrival = airports.Except(new[] { departure }).OrderBy(_ => random.Next()).First();
 
-                var flightResult = await flightsService.AddFlightAsync(createFlightDto, ct);
-                if (!flightResult.IsSuccess)
-                    return Results.BadRequest();
+                    var depDay = DateTime.UtcNow.AddDays(i);
+
+                    var createFlightDto = new FlightCreateDto
+                    {
+                        FlightNumber = $"FL{random.Next(1000, 9999)}",
+                        Departure = departure,
+                        Arrival = arrival,
+                        DepartureTime = depDay,
+                        ArrivalTime = depDay.AddHours(random.Next(1, 4)),
+                        AirplaneType = $"Boeing {random.Next(700, 799)}"
+                    };
+
+                    var flightResult = await flightsService.AddFlightAsync(createFlightDto, ct);
+                    if (!flightResult.IsSuccess)
+                        return Results.BadRequest();
+                }
             }
 
             var flightsRead = await flightsService.GetFlightPageAsync(1, n, ct);

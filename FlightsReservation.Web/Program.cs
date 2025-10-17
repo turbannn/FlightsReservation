@@ -8,6 +8,8 @@ using FlightsReservation.DAL.UoWs;
 using Microsoft.EntityFrameworkCore;
 using FluentValidation;
 using Carter;
+using FlightsReservation.BLL.Interfaces;
+using FlightsReservation.DAL.Entities.Utils.Email;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -26,6 +28,16 @@ builder.Services.AddScoped<IFlightsRepository, FlightsRepository>();
 //UoW
 builder.Services.AddScoped<IUnitOfWork, EfUnitOfWork>();
 
+var emailSettings = builder.Configuration
+    .GetSection("EmailSettings")
+    .Get<EmailSettings>();
+
+if(emailSettings is null)
+    throw new Exception("Email settings are not configured properly");
+
+//Settings
+builder.Services.AddSingleton(emailSettings);
+
 //OOM Mapper
 builder.Services.AddAutoMapper(cfg => { }, typeof(SeatProfile).Assembly);
 
@@ -37,6 +49,8 @@ builder.Services.AddScoped<SeatsService>();
 builder.Services.AddScoped<PassengersService>();
 builder.Services.AddScoped<ReservationsService>();
 builder.Services.AddScoped<FlightsService>();
+builder.Services.AddScoped<IEmailService, MailkitEmailService>();
+
 
 //Routing modules
 builder.Services.AddCarter();

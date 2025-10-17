@@ -19,7 +19,7 @@ public class ReservationModule() : CarterModule("/Reservations")
         app.MapPost("/CommitReservation",
             async ([FromBody] ReservationCreateDto createDto, ReservationsService service, CancellationToken ct = default) =>
             {
-                var response = await service.AddReservationAsync(createDto, ct);
+                var response = await service.CommitReservationAsync(createDto, ct);
                 return response.ToHttpResult();
             });
 
