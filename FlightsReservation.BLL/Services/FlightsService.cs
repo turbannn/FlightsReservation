@@ -159,6 +159,8 @@ public class FlightsService
             return FlightReservationResult<int>.Fail(error.ToString(), ResponseCodes.BadRequest);
         }
 
+        createDto.FlightNumber = $"FN-{createDto.DepartureTime.Year}{createDto.DepartureTime.Month}{createDto.DepartureTime.Day}{createDto.DepartureTime.Hour}{createDto.DepartureTime.Minute}{createDto.DepartureTime.Second}";
+
         Flight? flight = null;
 
         try

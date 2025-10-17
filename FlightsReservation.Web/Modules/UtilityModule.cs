@@ -2,6 +2,7 @@
 using FlightsReservation.BLL.Entities.DataTransferObjects.SeatDtos;
 using FlightsReservation.BLL.Services;
 using Carter;
+using Microsoft.AspNetCore.Http.HttpResults;
 
 namespace FlightsReservation.Web.Modules;
 
@@ -32,22 +33,19 @@ public class UtilityModule() : CarterModule("/Flights")
 
                     var createFlightDto = new FlightCreateDto
                     {
-                        FlightNumber = $"FL{random.Next(1000, 9999)}",
+                        FlightNumber = $"FN-{depDay.Year}{depDay.Month}{depDay.Day}{depDay.Hour}{depDay.Minute}{depDay.Second}",
                         Departure = departure,
                         Arrival = arrival,
                         DepartureTime = depDay,
                         ArrivalTime = depDay.AddHours(random.Next(1, 4)),
                         AirplaneType = $"Boeing {random.Next(700, 799)}"
                     };
-
                     var flightResult = await flightsService.AddFlightAsync(createFlightDto, ct);
                     if (!flightResult.IsSuccess)
                         return Results.BadRequest();
                 }
             }
-
             var flightsRead = await flightsService.GetFlightPageAsync(1, n, ct);
-
             if (flightsRead.Value is null)
                 return Results.NotFound();
 

@@ -75,6 +75,8 @@ public class ReservationsService
         
         createDto.Id = Guid.NewGuid();
 
+        createDto.ReservationNumber = $"RE_{DateTime.UtcNow}";
+
         foreach (var p in createDto.Passengers)
         {
             p.ReservationId = createDto.Id;
