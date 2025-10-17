@@ -15,22 +15,24 @@ namespace FlightsReservation.BLL.Services
         {
             _emailSettings = emailSettings;
         }
-        public async Task SendEmailAsync(string to, CancellationToken ct)
+        public async Task SendEmailAsync(string to, MemoryStream pdfStream, string attachmentName, CancellationToken ct)
         {
             if (!Parse(to))
-            {
                 return;
-            }
-            var emailMessage = new MimeMessage();
 
+            var emailMessage = new MimeMessage();
             emailMessage.From.Add(new MailboxAddress(_emailSettings.ApplicationName, _emailSettings.Email));
             emailMessage.To.Add(MailboxAddress.Parse(to));
             emailMessage.Subject = _emailSettings.Subject;
 
+            var bodyBuilder = new BodyBuilder
+            {
+                HtmlBody = _emailSettings.HtmlBody
+            };
 
-            // HTMLBody
-            var bodyBuilder = new BodyBuilder();
-            bodyBuilder.HtmlBody = _emailSettings.HtmlBody;
+            pdfStream.Position = 0;
+            bodyBuilder.Attachments.Add(attachmentName, pdfStream.ToArray(), new ContentType("application", "pdf"));
+            
             emailMessage.Body = bodyBuilder.ToMessageBody();
 
             using (var smtp = new SmtpClient(new ProtocolLogger("smtp.log")))
@@ -40,24 +42,29 @@ namespace FlightsReservation.BLL.Services
                 {
                     try
                     {
-                        await smtp.ConnectAsync(_emailSettings.SmtpServer,
+                        await smtp.ConnectAsync(
+                            _emailSettings.SmtpServer,
                             _emailSettings.SmtpPort,
                             SecureSocketOptions.SslOnConnect,
                             cancellationToken: ct);
+
                         await smtp.AuthenticateAsync(_emailSettings.Email, _emailSettings.Password, cancellationToken: ct);
                         await smtp.SendAsync(emailMessage, cancellationToken: ct);
                         await smtp.DisconnectAsync(true, ct);
                         break;
                     }
-                    catch
+                    catch(Exception ex)
                     {
+                        Console.WriteLine($"Email error {ex.Message}");
+                        Console.WriteLine($"Email error {attempts+1}");
                         await smtp.DisconnectAsync(true, ct);
                         attempts++;
                     }
                 }
+                Console.WriteLine($"Email sent to {to}");
             }
-
         }
+
 
         public bool Parse(string email)
         {

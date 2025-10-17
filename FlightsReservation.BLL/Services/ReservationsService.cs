@@ -18,13 +18,19 @@ public class ReservationsService
     private readonly IValidator<IPassengerDto> _passengerValidator;
     private readonly IReservationsRepository _reservationsRepository;
     private readonly ISeatsRepository _seatsRepository;
+    private readonly IFlightsRepository _flightsRepository;
+    private readonly IEmailService _emailService;
+    private readonly IPdfService _pdfService;
 
     public ReservationsService(IUnitOfWork unitOfWork, 
         IMapper mapper,
         IValidator<IReservationDto> reservationValidator,
         IValidator<IPassengerDto> passengerValidator,
         IReservationsRepository reservationsRepository,
-        ISeatsRepository seatsRepository)
+        ISeatsRepository seatsRepository,
+        IFlightsRepository flightsRepository,
+        IEmailService emailService,
+        IPdfService pdfService)
     {
         _unitOfWork = unitOfWork;
         _mapper = mapper;
@@ -32,6 +38,9 @@ public class ReservationsService
         _passengerValidator = passengerValidator;
         _reservationsRepository = reservationsRepository;
         _seatsRepository = seatsRepository;
+        _flightsRepository = flightsRepository;
+        _emailService = emailService;
+        _pdfService = pdfService;
     }
 
     //Admin
@@ -116,11 +125,28 @@ public class ReservationsService
         }
 
         await _unitOfWork.BeginAsync(ct);
+
+        var flight =  await _flightsRepository.GetByIdAsync(reservation.FlightId, ct);
+
+        if (flight is null)
+        {
+            await _unitOfWork.RollbackAsync(ct);
+            Console.WriteLine("ERROR: Flight not found.");
+            return FlightReservationResult<int>.Fail("Flight not found.", ResponseCodes.NotFound);
+        }
+
         foreach (var passenger in reservation.Passengers)
         {
             try
             {
                 await _seatsRepository.MarkSeatAsOccupied(passenger.SeatId, ct);
+
+                var pdf = await _pdfService.GenerateTicketPdfAsync(passenger, flight);
+
+                await _emailService.SendEmailAsync(passenger.Email,
+                    pdf, 
+                    $"Ticket_{flight.FlightNumber}_{DateTime.UtcNow}.pdf", 
+                    ct);
             }
             catch (InvalidOperationException ioex)
             {
@@ -134,11 +160,12 @@ public class ReservationsService
                 Console.WriteLine(aex.Message);
                 return FlightReservationResult<int>.Fail(aex.Message, ResponseCodes.BadRequest);
             }
-            catch
+            catch(Exception ex)
             {
                 await _unitOfWork.RollbackAsync(ct);
+                Console.WriteLine(ex.Message);
                 Console.WriteLine("INTERNAL SERVER ERROR ADD RESERVATION");
-                return FlightReservationResult<int>.Fail("Unknown error marking seat as occupied.", ResponseCodes.InternalServerError);
+                return FlightReservationResult<int>.Fail("Unknown error.", ResponseCodes.InternalServerError);
             }
         }
         

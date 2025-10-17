@@ -10,6 +10,7 @@ using FluentValidation;
 using Carter;
 using FlightsReservation.BLL.Interfaces;
 using FlightsReservation.DAL.Entities.Utils.Email;
+using QuestPDF.Infrastructure;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -44,13 +45,16 @@ builder.Services.AddAutoMapper(cfg => { }, typeof(SeatProfile).Assembly);
 //Validators
 builder.Services.AddValidatorsFromAssembly(typeof(FlightDtoValidator).Assembly);
 
+//Licenses
+QuestPDF.Settings.License = LicenseType.Community;
+
 //Services
 builder.Services.AddScoped<SeatsService>();
 builder.Services.AddScoped<PassengersService>();
 builder.Services.AddScoped<ReservationsService>();
 builder.Services.AddScoped<FlightsService>();
 builder.Services.AddScoped<IEmailService, MailkitEmailService>();
-
+builder.Services.AddScoped<IPdfService, QuestPdfService>();
 
 //Routing modules
 builder.Services.AddCarter();
