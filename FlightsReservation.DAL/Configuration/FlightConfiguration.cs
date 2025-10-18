@@ -17,6 +17,9 @@ public class FlightConfiguration : IEntityTypeConfiguration<Flight>
         builder.Property(f => f.Arrival).IsRequired().HasMaxLength(30);
         builder.Property(f => f.AirplaneType).IsRequired().HasMaxLength(20);
 
+        builder.Property(f => f.Price).IsRequired();
+        builder.Property(f => f.Currency).IsRequired().HasMaxLength(4);
+
         builder.Property(f => f.DepartureTime).IsRequired();
         builder.Property(f => f.ArrivalTime).IsRequired();
     }

@@ -37,7 +37,9 @@ public class UtilityModule() : CarterModule("/Flights")
                         Arrival = arrival,
                         DepartureTime = depDay,
                         ArrivalTime = depDay.AddHours(random.Next(1, 4)),
-                        AirplaneType = $"Boeing {random.Next(700, 799)}"
+                        AirplaneType = $"Boeing {random.Next(700, 799)}",
+                        Price = random.Next(50, 400),
+                        Currency = "EUR"
                     };
                     var flightResult = await flightsService.AddFlightAsync(createFlightDto, ct);
                     if (!flightResult.IsSuccess)
