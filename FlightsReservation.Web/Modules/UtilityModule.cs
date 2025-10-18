@@ -2,14 +2,18 @@
 using FlightsReservation.BLL.Entities.DataTransferObjects.SeatDtos;
 using FlightsReservation.BLL.Services;
 using Carter;
+using FlightsReservation.BLL.Entities.Utilities.Other;
+using FlightsReservation.Web.Extensions;
+using Microsoft.AspNetCore.Http.HttpResults;
+using Microsoft.AspNetCore.Mvc;
 
 namespace FlightsReservation.Web.Modules;
 
-public class UtilityModule() : CarterModule("/Flights")
+public class UtilityModule() : CarterModule("/Utils")
 {
     public override void AddRoutes(IEndpointRouteBuilder app)
     {
-        app.MapPost("/Refresh", async (string password, SeatsService seatsService, FlightsService flightsService, CancellationToken ct) =>
+        app.MapPost("/RefreshFlights", async (string password, SeatsService seatsService, FlightsService flightsService, CancellationToken ct) =>
         {
             if(password != "qwer123")
                 return Results.Unauthorized();
@@ -68,5 +72,27 @@ public class UtilityModule() : CarterModule("/Flights")
 
             return Results.Ok("Refreshed");
         });
+
+        app.MapPost("/GainAdminRights",
+            ([FromBody] AdminLogin adminLogin, TokenService service, HttpResponse response, CancellationToken ct = default) =>
+            {
+                if (string.IsNullOrEmpty(adminLogin.Login) || string.IsNullOrEmpty(adminLogin.Password))
+                    return Results.Unauthorized();
+
+                if (adminLogin.Login != "qwer123" || adminLogin.Password != "qwer123")
+                    return Results.Unauthorized();
+
+                var tokenstr = service.CreateAccessToken(Guid.NewGuid(), adminLogin.Login, "Admin");
+
+                response.Cookies.Append("_t", tokenstr, new CookieOptions
+                {
+                    HttpOnly = true,
+                    Secure = true,
+                    SameSite = SameSiteMode.Strict,
+                    Expires = DateTime.Now.AddMinutes(15)
+                });
+
+                return Results.Ok();
+            });
     }
 }

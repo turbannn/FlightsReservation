@@ -3,6 +3,7 @@ using Microsoft.AspNetCore.Mvc;
 using Carter;
 using FlightsReservation.BLL.Entities.DataTransferObjects.ReservationDtos;
 using FlightsReservation.Web.Extensions;
+using Microsoft.AspNetCore.Authorization;
 
 namespace FlightsReservation.Web.Modules;
 
@@ -14,7 +15,7 @@ public class ReservationModule() : CarterModule("/Reservations")
         {
             var response = await service.GetReservationByIdAsync(id, ct);
             return response.ToHttpResult();
-        });
+        }).RequireAuthorization(new AuthorizeAttribute { Roles = "Admin" });
 
         app.MapPost("/CommitReservation",
             async ([FromBody] ReservationCreateDto createDto, ReservationsService service, CancellationToken ct = default) =>
@@ -27,7 +28,7 @@ public class ReservationModule() : CarterModule("/Reservations")
         {
             var response = await service.DeleteReservation(id, ct);
             return response.ToHttpResult();
-        });
+        }).RequireAuthorization(new AuthorizeAttribute { Roles = "Admin" });
 
         app.MapPost("/BeginReservation", async (List<Guid> ids, SeatsService service, CancellationToken ct = default) =>
         {

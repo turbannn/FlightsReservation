@@ -3,9 +3,11 @@ using FlightsReservation.BLL.Services;
 using Carter;
 using FlightsReservation.BLL.Entities.DataTransferObjects.SeatDtos;
 using FlightsReservation.Web.Extensions;
+using Microsoft.AspNetCore.Authorization;
 
 namespace FlightsReservation.Web.Modules;
 
+[Authorize(Roles = "Admin")]
 public class SeatModule() : CarterModule("/Seats")
 {
     public override void AddRoutes(IEndpointRouteBuilder app)

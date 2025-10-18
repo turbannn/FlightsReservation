@@ -1,5 +1,5 @@
 ﻿using FlightsReservation.DAL.Entities.Model;
-using FlightsReservation.DAL.Entities.Utils;
+using FlightsReservation.DAL.Entities.Utils.Result;
 
 namespace FlightsReservation.DAL.Interfaces;
 
