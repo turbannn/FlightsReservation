@@ -125,20 +125,9 @@ public class FlightsRepository : IFlightsRepository
         }
     }
 
-    public async Task<bool> UpdateAsync(Flight entityToUpdate, CancellationToken ct = default)
+    public bool Update(Flight entityToUpdate)
     {
-        var res = await _context.Flights
-            .Where(f => f.Id == entityToUpdate.Id)
-            .ExecuteUpdateAsync(setters => setters
-                .SetProperty(ff => ff.FlightNumber, entityToUpdate.FlightNumber)
-                .SetProperty(ff => ff.Departure, entityToUpdate.Departure)
-                .SetProperty(ff => ff.Arrival, entityToUpdate.Arrival)
-                .SetProperty(ff => ff.DepartureTime, entityToUpdate.DepartureTime)
-                .SetProperty(ff => ff.ArrivalTime, entityToUpdate.ArrivalTime)
-                .SetProperty(ff => ff.AirplaneType, entityToUpdate.AirplaneType), cancellationToken: ct);
-
-        if (res <= 0)
-            return false;
+        _context.Flights.Update(entityToUpdate);
 
         return true;
     }

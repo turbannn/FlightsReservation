@@ -1,7 +1,6 @@
 using System.Security.Claims;
 using System.Text;
 using FlightsReservation.BLL.MapperProfiles;
-using FlightsReservation.BLL.Services;
 using FlightsReservation.BLL.Validators;
 using FlightsReservation.DAL.Data;
 using FlightsReservation.DAL.Interfaces;
@@ -16,6 +15,8 @@ using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.IdentityModel.Tokens;
 using QuestPDF.Infrastructure;
 using FlightsReservation.BLL.Interfaces.Services;
+using FlightsReservation.BLL.Services.EntityServices;
+using FlightsReservation.BLL.Services.UtilityServices;
 
 var builder = WebApplication.CreateBuilder(args);
 

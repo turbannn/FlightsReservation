@@ -9,7 +9,7 @@ using FlightsReservation.BLL.Entities.Utilities.Requests;
 using FlightsReservation.BLL.Interfaces.Dtos;
 using FlightsReservation.BLL.Interfaces.Requests;
 
-namespace FlightsReservation.BLL.Services;
+namespace FlightsReservation.BLL.Services.EntityServices;
 
 public class FlightsService
 {
@@ -190,7 +190,7 @@ public class FlightsService
         {
             flight = _mapper.Map<Flight>(createDto);
         }
-        catch(Exception ex)
+        catch (Exception ex)
         {
             Console.WriteLine(ex.Message);
             Console.WriteLine("Internal server error");
@@ -236,12 +236,17 @@ public class FlightsService
             return FlightReservationResult<int>.Fail("Internal server error", ResponseCodes.InternalServerError);
         }
 
-        var res = await _flightsRepository.UpdateAsync(existingFlight, ct);
-        if (!res)
+        _flightsRepository.Update(existingFlight);
+
+        try
         {
-            return FlightReservationResult<int>.Fail("Flight was not updated", ResponseCodes.InternalServerError);
+            await _unitOfWork.SaveChangesAsync(ct);
         }
-        await _unitOfWork.SaveChangesAsync(ct);
+        catch (Exception ex)
+        {
+            Console.WriteLine(ex.Message);
+            return FlightReservationResult<int>.Fail("Internal server error", ResponseCodes.InternalServerError);
+        }
 
         return FlightReservationResult<int>.Success(1, ResponseCodes.Success);
     }

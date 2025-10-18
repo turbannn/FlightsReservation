@@ -1,6 +1,6 @@
 ﻿using Carter;
 using FlightsReservation.BLL.Entities.DataTransferObjects.UserDtos;
-using FlightsReservation.BLL.Services;
+using FlightsReservation.BLL.Services.EntityServices;
 using FlightsReservation.Web.Extensions;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;

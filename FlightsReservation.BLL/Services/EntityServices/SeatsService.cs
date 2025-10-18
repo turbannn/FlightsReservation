@@ -7,14 +7,14 @@ using FluentValidation;
 using AutoMapper;
 using FlightsReservation.BLL.Interfaces.Dtos;
 
-namespace FlightsReservation.BLL.Services;
+namespace FlightsReservation.BLL.Services.EntityServices;
 
 public class SeatsService
 {
     private readonly IUnitOfWork _unitOfWork;
     private readonly IMapper _mapper;
     private readonly IValidator<ISeatDto> _validator;
-    private readonly ISeatsRepository _seatsRepository; 
+    private readonly ISeatsRepository _seatsRepository;
 
     public SeatsService(IUnitOfWork unitOfWork, IMapper mapper, IValidator<ISeatDto> validator, ISeatsRepository seatsRepository)
     {
@@ -61,7 +61,7 @@ public class SeatsService
         {
             seat = _mapper.Map<Seat>(createDto);
         }
-        catch(Exception ex)
+        catch (Exception ex)
         {
             Console.WriteLine(ex.Message);
             Console.WriteLine("Internal server error");
@@ -106,12 +106,17 @@ public class SeatsService
             return FlightReservationResult<int>.Fail("Internal server error", ResponseCodes.InternalServerError);
         }
 
-        var res = await _seatsRepository.UpdateAsync(seat, ct);
-        if (!res)
+        _seatsRepository.Update(seat);
+
+        try
         {
+            await _unitOfWork.SaveChangesAsync(ct);
+        }
+        catch (Exception ex)
+        {
+            Console.WriteLine(ex.Message);
             return FlightReservationResult<int>.Fail("Internal server error", ResponseCodes.InternalServerError);
         }
-        await _unitOfWork.SaveChangesAsync(ct);
 
         return FlightReservationResult<int>.Success(1, ResponseCodes.Success);
     }

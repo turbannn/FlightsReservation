@@ -5,7 +5,7 @@ using MailKit.Security;
 using MimeKit;
 using FlightsReservation.BLL.Interfaces.Services;
 
-namespace FlightsReservation.BLL.Services
+namespace FlightsReservation.BLL.Services.UtilityServices
 {
     public class MailkitEmailService : IEmailService
     {
@@ -32,7 +32,7 @@ namespace FlightsReservation.BLL.Services
 
             pdfStream.Position = 0;
             bodyBuilder.Attachments.Add(attachmentName, pdfStream.ToArray(), new ContentType("application", "pdf"));
-            
+
             emailMessage.Body = bodyBuilder.ToMessageBody();
 
             using (var smtp = new SmtpClient(new ProtocolLogger("smtp.log")))
@@ -53,10 +53,10 @@ namespace FlightsReservation.BLL.Services
                         await smtp.DisconnectAsync(true, ct);
                         break;
                     }
-                    catch(Exception ex)
+                    catch (Exception ex)
                     {
                         Console.WriteLine($"Email error {ex.Message}");
-                        Console.WriteLine($"Email error {attempts+1}");
+                        Console.WriteLine($"Email error {attempts + 1}");
                         await smtp.DisconnectAsync(true, ct);
                         attempts++;
                     }

@@ -37,18 +37,9 @@ public class UsersRepository : IUsersRepository
         }
     }
 
-    public async Task<bool> UpdateAsync(User entityToUpdate, CancellationToken ct)
+    public bool Update(User entityToUpdate)
     {
-        var res = await _context.Users
-            .Where(u => u.Id == entityToUpdate.Id)
-            .ExecuteUpdateAsync(setters => setters
-                .SetProperty(uu => uu.Username, entityToUpdate.Username)
-                .SetProperty(uu => uu.Password, entityToUpdate.Password)
-                .SetProperty(uu => uu.Role, entityToUpdate.Role)
-                .SetProperty(uu => uu.Money, entityToUpdate.Money), cancellationToken: ct);
-
-        if (res <= 0)
-            return false;
+        _context.Users.Update(entityToUpdate);
 
         return true;
     }

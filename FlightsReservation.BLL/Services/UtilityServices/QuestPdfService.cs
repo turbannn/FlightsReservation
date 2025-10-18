@@ -3,7 +3,7 @@ using FlightsReservation.DAL.Entities.Model;
 using QuestPDF.Fluent;
 using QuestPDF.Helpers;
 
-namespace FlightsReservation.BLL.Services;
+namespace FlightsReservation.BLL.Services.UtilityServices;
 
 public class QuestPdfService : IPdfService
 {

@@ -10,7 +10,7 @@ using FlightsReservation.BLL.Interfaces.Dtos;
 using FlightsReservation.BLL.Interfaces.Services;
 
 
-namespace FlightsReservation.BLL.Services;
+namespace FlightsReservation.BLL.Services.EntityServices;
 
 public class ReservationsService
 {
@@ -24,7 +24,7 @@ public class ReservationsService
     private readonly IEmailService _emailService;
     private readonly IPdfService _pdfService;
 
-    public ReservationsService(IUnitOfWork unitOfWork, 
+    public ReservationsService(IUnitOfWork unitOfWork,
         IMapper mapper,
         IValidator<IReservationDto> reservationValidator,
         IValidator<IPassengerDto> passengerValidator,
@@ -74,7 +74,7 @@ public class ReservationsService
             Console.WriteLine("ERROR: Reservation must have at least one passenger.");
             return FlightReservationResult<int>.Fail("Reservation must have at least one passenger.", ResponseCodes.BadRequest);
         }
-        
+
         createDto.Id = Guid.NewGuid();
 
         createDto.ReservationNumber = $"RE_{DateTime.UtcNow}";
@@ -130,7 +130,7 @@ public class ReservationsService
 
         await _unitOfWork.BeginAsync(ct);
 
-        var flight =  await _flightsRepository.GetByIdAsync(reservation.FlightId, ct);
+        var flight = await _flightsRepository.GetByIdAsync(reservation.FlightId, ct);
 
         if (flight is null)
         {
@@ -148,8 +148,8 @@ public class ReservationsService
                 var pdf = await _pdfService.GenerateTicketPdfAsync(passenger, flight);
 
                 await _emailService.SendEmailAsync(passenger.Email,
-                    pdf, 
-                    $"Ticket_{flight.FlightNumber}_{DateTime.UtcNow}.pdf", 
+                    pdf,
+                    $"Ticket_{flight.FlightNumber}_{DateTime.UtcNow}.pdf",
                     ct);
             }
             catch (InvalidOperationException ioex)
@@ -164,7 +164,7 @@ public class ReservationsService
                 Console.WriteLine(aex.Message);
                 return FlightReservationResult<int>.Fail(aex.Message, ResponseCodes.BadRequest);
             }
-            catch(Exception ex)
+            catch (Exception ex)
             {
                 await _unitOfWork.RollbackAsync(ct);
                 Console.WriteLine(ex.Message);
@@ -172,7 +172,7 @@ public class ReservationsService
                 return FlightReservationResult<int>.Fail("Unknown error.", ResponseCodes.InternalServerError);
             }
         }
-        
+
         var res = await _reservationsRepository.AddAsync(reservation, ct);
 
         if (!res)

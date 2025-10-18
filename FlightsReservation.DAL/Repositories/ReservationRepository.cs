@@ -1,5 +1,4 @@
-﻿
-using FlightsReservation.DAL.Data;
+﻿using FlightsReservation.DAL.Data;
 using FlightsReservation.DAL.Entities.Model;
 using FlightsReservation.DAL.Interfaces;
 using Microsoft.EntityFrameworkCore;
@@ -38,16 +37,9 @@ public class ReservationRepository : IReservationsRepository
         }
     }
 
-    public async Task<bool> UpdateAsync(Reservation entityToUpdate, CancellationToken ct = default)
+    public bool Update(Reservation entityToUpdate)
     {
-        var res = await _context.Reservations
-            .Where(r => r.Id == entityToUpdate.Id)
-            .ExecuteUpdateAsync(setters => setters
-                .SetProperty(rr => rr.ReservationNumber, entityToUpdate.ReservationNumber)
-                .SetProperty(rr => rr.ReservationDate, entityToUpdate.ReservationDate), cancellationToken: ct);
-
-        if (res <= 0)
-            return false;
+        _context.Reservations.Update(entityToUpdate);
 
         return true;
     }

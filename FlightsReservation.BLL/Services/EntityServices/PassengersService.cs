@@ -6,7 +6,7 @@ using FlightsReservation.DAL.Interfaces;
 using FluentValidation;
 using AutoMapper;
 
-namespace FlightsReservation.BLL.Services;
+namespace FlightsReservation.BLL.Services.EntityServices;
 
 public class PassengersService
 {
@@ -77,12 +77,17 @@ public class PassengersService
             return FlightReservationResult<int>.Fail("Internal server error", ResponseCodes.InternalServerError);
         }
 
-        var res = await _passengersRepository.UpdateAsync(existingPassenger, ct);
-        if (!res)
+        _passengersRepository.Update(existingPassenger);
+
+        try
         {
+            await _unitOfWork.SaveChangesAsync(ct);
+        }
+        catch (Exception ex)
+        {
+            Console.WriteLine(ex.Message);
             return FlightReservationResult<int>.Fail("Internal server error", ResponseCodes.InternalServerError);
         }
-        await _unitOfWork.SaveChangesAsync(ct);
 
         return FlightReservationResult<int>.Success(1, ResponseCodes.Success);
     }

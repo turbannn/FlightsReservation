@@ -38,17 +38,9 @@ public class SeatsRepository : ISeatsRepository
     }
 
     //Non separate transaction
-    public async Task<bool> UpdateAsync(Seat entityToUpdate, CancellationToken ct = default)
+    public bool Update(Seat entityToUpdate)
     {
-        var res = await _context.Seats
-            .Where(s => s.Id == entityToUpdate.Id)
-            .ExecuteUpdateAsync(setters => setters
-                .SetProperty(ss => ss.SeatNumber, entityToUpdate.SeatNumber)
-                .SetProperty(ss => ss.IsAvailable, entityToUpdate.IsAvailable)
-                .SetProperty(ss => ss.FlightId, entityToUpdate.FlightId), cancellationToken: ct);
-
-        if (res <= 0)
-            return false;
+        _context.Seats.Update(entityToUpdate);
 
         return true;
     }

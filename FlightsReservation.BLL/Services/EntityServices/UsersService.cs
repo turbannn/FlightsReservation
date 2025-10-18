@@ -7,7 +7,7 @@ using FlightsReservation.DAL.Interfaces;
 using FluentValidation;
 using AutoMapper;
 
-namespace FlightsReservation.BLL.Services;
+namespace FlightsReservation.BLL.Services.EntityServices;
 
 public class UsersService
 {
@@ -23,7 +23,7 @@ public class UsersService
         _validator = validator;
         _usersRepository = usersRepository;
     }
-    
+
     //Admin
     public async Task<FlightReservationResult<UserReadDto>> GetUserByIdAsync(Guid id, CancellationToken ct = default)
     {
@@ -56,7 +56,7 @@ public class UsersService
         }
 
         createDto.Role = "User";
-        
+
         User user;
 
         try
@@ -107,12 +107,17 @@ public class UsersService
             return FlightReservationResult<int>.Fail("Internal server error", ResponseCodes.InternalServerError);
         }
 
-        var res = await _usersRepository.UpdateAsync(user, ct);
-        if (!res)
+        _usersRepository.Update(user);
+
+        try
         {
+            await _unitOfWork.SaveChangesAsync(ct);
+        }
+        catch (Exception ex)
+        {
+            Console.WriteLine(ex.Message);
             return FlightReservationResult<int>.Fail("Internal server error", ResponseCodes.InternalServerError);
         }
-        await _unitOfWork.SaveChangesAsync(ct);
 
         return FlightReservationResult<int>.Success(1, ResponseCodes.Success);
     }
@@ -133,5 +138,5 @@ public class UsersService
         await _unitOfWork.SaveChangesAsync(ct);
         return FlightReservationResult<int>.Success(1, ResponseCodes.Success);
     }
-    
+
 }

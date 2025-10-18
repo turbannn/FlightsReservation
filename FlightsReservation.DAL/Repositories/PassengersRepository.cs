@@ -39,19 +39,9 @@ public class PassengersRepository : IPassengersRepository
 
     }
 
-    public async Task<bool> UpdateAsync(Passenger entityToUpdate, CancellationToken ct = default)
+    public bool Update(Passenger entityToUpdate)
     {
-        var res = await _context.Passengers
-            .Where(p => p.Id == entityToUpdate.Id)
-            .ExecuteUpdateAsync(setters => setters
-                .SetProperty(pp => pp.FirstName, entityToUpdate.FirstName)
-                .SetProperty(pp => pp.LastName, entityToUpdate.LastName)
-                .SetProperty(pp => pp.PassportNumber, entityToUpdate.PassportNumber)
-                .SetProperty(pp => pp.PhoneNumber, entityToUpdate.PhoneNumber)
-                .SetProperty(pp => pp.Email, entityToUpdate.Email), cancellationToken: ct);
-
-        if (res <= 0)
-            return false;
+        _context.Passengers.Update(entityToUpdate);
 
         return true;
     }
