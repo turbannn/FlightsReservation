@@ -9,6 +9,8 @@ public class Flight
     public DateTime DepartureTime { get; set; }
     public DateTime ArrivalTime { get; set; }
     public string AirplaneType { get; set; } = null!;
+    public int Price { get; set; }
+    public string Currency { get; set; } = null!;
 
     public List<Reservation> Reservations { get; set; } = null!;
     public List<Seat> Seats { get; set; } = null!;
