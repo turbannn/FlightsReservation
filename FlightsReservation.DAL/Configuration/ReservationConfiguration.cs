@@ -2,16 +2,15 @@
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
 
-namespace FlightsReservation.DAL.Configuration
-{
-    public class ReservationConfiguration : IEntityTypeConfiguration<Reservation>
-    {
-        public void Configure(EntityTypeBuilder<Reservation> builder)
-        {
-            builder.Property(r => r.ReservationNumber).IsRequired().HasMaxLength(30);
+namespace FlightsReservation.DAL.Configuration;
 
-            builder.Property(r => r.ReservationDate)
-                .HasDefaultValueSql("NOW()");
-        }
+public class ReservationConfiguration : IEntityTypeConfiguration<Reservation>
+{
+    public void Configure(EntityTypeBuilder<Reservation> builder)
+    {
+        builder.Property(r => r.ReservationNumber).IsRequired().HasMaxLength(30);
+
+        builder.Property(r => r.ReservationDate)
+            .HasDefaultValueSql("NOW()");
     }
 }

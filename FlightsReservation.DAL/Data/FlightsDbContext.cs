@@ -6,6 +6,7 @@ namespace FlightsReservation.DAL.Data
 {
     public class FlightsDbContext : DbContext
     {
+        public DbSet<User> Users { get; set; } = null!;
         public DbSet<Flight> Flights { get; set; } = null!;
         public DbSet<Reservation> Reservations { get; set; } = null!;
         public DbSet<Passenger> Passengers { get; set; } = null!;
@@ -17,6 +18,7 @@ namespace FlightsReservation.DAL.Data
         }
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
+            modelBuilder.ApplyConfiguration(new UsersConfiguration());
             modelBuilder.ApplyConfiguration(new FlightConfiguration());
             modelBuilder.ApplyConfiguration(new ReservationConfiguration());
             modelBuilder.ApplyConfiguration(new PassengerConfiguration());

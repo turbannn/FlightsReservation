@@ -74,11 +74,8 @@ public class UtilityModule() : CarterModule("/Utils")
         });
 
         app.MapPost("/GainAdminRights",
-            ([FromBody] AdminLogin adminLogin, TokenService service, HttpResponse response, CancellationToken ct = default) =>
+            ([FromBody] AdminLogin adminLogin, TokenService service, HttpResponse response, HttpRequest req, CancellationToken ct = default) =>
             {
-                if (string.IsNullOrEmpty(adminLogin.Login) || string.IsNullOrEmpty(adminLogin.Password))
-                    return Results.Unauthorized();
-
                 if (adminLogin.Login != "qwer123" || adminLogin.Password != "qwer123")
                     return Results.Unauthorized();
 
