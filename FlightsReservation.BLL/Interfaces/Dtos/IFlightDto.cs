@@ -1,4 +1,4 @@
-﻿namespace FlightsReservation.BLL.Interfaces;
+﻿namespace FlightsReservation.BLL.Interfaces.Dtos;
 
 public interface IFlightDto
 {

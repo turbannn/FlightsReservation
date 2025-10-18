@@ -1,7 +1,7 @@
 ﻿using FlightsReservation.BLL.Entities.DataTransferObjects.FlightDtos;
 using FlightsReservation.DAL.Entities.Model;
 
-namespace FlightsReservation.BLL.Interfaces;
+namespace FlightsReservation.BLL.Interfaces.Services;
 
 public interface IPdfService
 {

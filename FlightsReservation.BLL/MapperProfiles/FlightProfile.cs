@@ -13,6 +13,7 @@ public class FlightProfile : Profile
             {
                 opt.MapFrom(src => src.Seats.Count(s => s.IsAvailable));
             });
+
         CreateMap<FlightCreateDto, Flight>();
         CreateMap<FlightUpdateDto, Flight>();
     }

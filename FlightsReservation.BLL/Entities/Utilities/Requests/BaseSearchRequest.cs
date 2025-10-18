@@ -1,4 +1,4 @@
-﻿using FlightsReservation.BLL.Interfaces;
+﻿using FlightsReservation.BLL.Interfaces.Requests;
 
 namespace FlightsReservation.BLL.Entities.Utilities.Requests;
 

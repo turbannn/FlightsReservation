@@ -72,24 +72,5 @@ public class UtilityModule() : CarterModule("/Utils")
 
             return Results.Ok("Refreshed");
         });
-
-        app.MapPost("/GainAdminRights",
-            ([FromBody] AdminLogin adminLogin, TokenService service, HttpResponse response, HttpRequest req, CancellationToken ct = default) =>
-            {
-                if (adminLogin.Login != "qwer123" || adminLogin.Password != "qwer123")
-                    return Results.Unauthorized();
-
-                var tokenstr = service.CreateAccessToken(Guid.NewGuid(), adminLogin.Login, "Admin");
-
-                response.Cookies.Append("_t", tokenstr, new CookieOptions
-                {
-                    HttpOnly = true,
-                    Secure = true,
-                    SameSite = SameSiteMode.Strict,
-                    Expires = DateTime.Now.AddMinutes(15)
-                });
-
-                return Results.Ok();
-            });
     }
 }

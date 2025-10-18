@@ -1,4 +1,4 @@
-﻿using FlightsReservation.BLL.Interfaces;
+﻿using FlightsReservation.BLL.Interfaces.Services;
 using FlightsReservation.DAL.Entities.Model;
 using QuestPDF.Fluent;
 using QuestPDF.Helpers;

@@ -1,12 +1,13 @@
 ﻿using FlightsReservation.BLL.Entities.DataTransferObjects.FlightDtos;
 using FlightsReservation.BLL.Entities.Utilities.Results;
 using FlightsReservation.BLL.Entities.Utilities.Other;
-using FlightsReservation.BLL.Interfaces;
 using FlightsReservation.DAL.Entities.Model;
 using FlightsReservation.DAL.Interfaces;
 using FluentValidation;
 using AutoMapper;
 using FlightsReservation.BLL.Entities.Utilities.Requests;
+using FlightsReservation.BLL.Interfaces.Dtos;
+using FlightsReservation.BLL.Interfaces.Requests;
 
 namespace FlightsReservation.BLL.Services;
 
@@ -14,14 +15,20 @@ public class FlightsService
 {
     private readonly IUnitOfWork _unitOfWork;
     private readonly IMapper _mapper;
-    private readonly IValidator<IFlightDto> _validator;
+    private readonly IValidator<IFlightDto> _flightValidator;
+    private readonly IValidator<ISearchRequest> _requestValidator;
     private readonly IFlightsRepository _flightsRepository;
 
-    public FlightsService(IUnitOfWork unitOfWork, IMapper mapper, IValidator<IFlightDto> validator, IFlightsRepository flightsRepository)
+    public FlightsService(IUnitOfWork unitOfWork,
+        IMapper mapper,
+        IValidator<IFlightDto> flightValidator,
+        IValidator<ISearchRequest> requestValidator,
+        IFlightsRepository flightsRepository)
     {
         _unitOfWork = unitOfWork;
         _mapper = mapper;
-        _validator = validator;
+        _flightValidator = flightValidator;
+        _requestValidator = requestValidator;
         _flightsRepository = flightsRepository;
     }
 
@@ -40,6 +47,14 @@ public class FlightsService
         {
             Console.WriteLine("Bad size");
             return FlightReservationPagedResult<List<FlightReadDto>>.PagedFail("Bad size", ResponseCodes.BadRequest);
+        }
+
+        var validationResult = await _requestValidator.ValidateAsync(request, ct);
+        if (!validationResult.IsValid)
+        {
+            var error = validationResult.Errors.First();
+
+            return FlightReservationPagedResult<List<FlightReadDto>>.PagedFail(error.ToString(), ResponseCodes.BadRequest);
         }
 
         var flights = await _flightsRepository.GetFilteredPageWithReturnAsync(page,
@@ -87,6 +102,14 @@ public class FlightsService
         {
             Console.WriteLine("Bad size");
             return FlightReservationPagedResult<List<FlightReadDto>>.PagedFail("Bad size", ResponseCodes.BadRequest);
+        }
+
+        var validationResult = await _requestValidator.ValidateAsync(request, ct);
+        if (!validationResult.IsValid)
+        {
+            var error = validationResult.Errors.First();
+
+            return FlightReservationPagedResult<List<FlightReadDto>>.PagedFail(error.ToString(), ResponseCodes.BadRequest);
         }
 
         var flights = await _flightsRepository.GetFilteredPageAsync(page,
@@ -151,7 +174,7 @@ public class FlightsService
     //Admin
     public async Task<FlightReservationResult<int>> AddFlightAsync(FlightCreateDto createDto, CancellationToken ct = default)
     {
-        var validationResult = await _validator.ValidateAsync(createDto, ct);
+        var validationResult = await _flightValidator.ValidateAsync(createDto, ct);
         if (!validationResult.IsValid)
         {
             var error = validationResult.Errors.First();
@@ -187,7 +210,7 @@ public class FlightsService
     //Admin
     public async Task<FlightReservationResult<int>> UpdateFlightAsync(FlightUpdateDto updateDto, CancellationToken ct = default)
     {
-        var validationResult = await _validator.ValidateAsync(updateDto, ct);
+        var validationResult = await _flightValidator.ValidateAsync(updateDto, ct);
         if (!validationResult.IsValid)
         {
             var error = validationResult.Errors.First();

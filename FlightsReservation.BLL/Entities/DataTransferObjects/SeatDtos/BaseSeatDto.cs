@@ -1,4 +1,4 @@
-﻿using FlightsReservation.BLL.Interfaces;
+﻿using FlightsReservation.BLL.Interfaces.Dtos;
 
 namespace FlightsReservation.BLL.Entities.DataTransferObjects.SeatDtos;
 

@@ -1,4 +1,4 @@
-﻿using FlightsReservation.BLL.Interfaces;
+﻿using FlightsReservation.BLL.Interfaces.Dtos;
 using System.Text.Json.Serialization;
 
 namespace FlightsReservation.BLL.Entities.DataTransferObjects.ReservationDtos;

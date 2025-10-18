@@ -15,7 +15,7 @@ public class TokenService
         _jwtSettings = jwtSettings;
     }
 
-    public string CreateAccessToken(Guid id, string username, string role)
+    public string CreateAccessToken(Guid id, string role)
     {
         var securityKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(_jwtSettings.SecretKey));
 

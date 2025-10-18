@@ -1,5 +1,5 @@
 ﻿using FlightsReservation.BLL.Entities.DataTransferObjects.PassengerDtos;
-using FlightsReservation.BLL.Interfaces;
+using FlightsReservation.BLL.Interfaces.Dtos;
 
 namespace FlightsReservation.BLL.Entities.DataTransferObjects.ReservationDtos;
 

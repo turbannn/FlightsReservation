@@ -3,7 +3,7 @@ using MailKit;
 using MailKit.Net.Smtp;
 using MailKit.Security;
 using MimeKit;
-using FlightsReservation.BLL.Interfaces;
+using FlightsReservation.BLL.Interfaces.Services;
 
 namespace FlightsReservation.BLL.Services
 {

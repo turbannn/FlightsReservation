@@ -1,4 +1,4 @@
-﻿using FlightsReservation.BLL.Interfaces;
+﻿using FlightsReservation.BLL.Interfaces.Dtos;
 using FluentValidation;
 
 namespace FlightsReservation.BLL.Validators;

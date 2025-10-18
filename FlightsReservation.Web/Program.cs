@@ -10,12 +10,12 @@ using FlightsReservation.DAL.UoWs;
 using Microsoft.EntityFrameworkCore;
 using FluentValidation;
 using Carter;
-using FlightsReservation.BLL.Interfaces;
 using FlightsReservation.DAL.Entities.Utils.Authentication;
 using FlightsReservation.DAL.Entities.Utils.Email;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.IdentityModel.Tokens;
 using QuestPDF.Infrastructure;
+using FlightsReservation.BLL.Interfaces.Services;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -30,6 +30,7 @@ builder.Services.AddScoped<ISeatsRepository, SeatsRepository>();
 builder.Services.AddScoped<IPassengersRepository, PassengersRepository>();
 builder.Services.AddScoped<IReservationsRepository, ReservationRepository>();
 builder.Services.AddScoped<IFlightsRepository, FlightsRepository>();
+builder.Services.AddScoped<IUsersRepository, UsersRepository>();
 
 //UoW
 builder.Services.AddScoped<IUnitOfWork, EfUnitOfWork>();
@@ -66,6 +67,7 @@ builder.Services.AddScoped<SeatsService>();
 builder.Services.AddScoped<PassengersService>();
 builder.Services.AddScoped<ReservationsService>();
 builder.Services.AddScoped<FlightsService>();
+builder.Services.AddScoped<UsersService>();
 builder.Services.AddScoped<IEmailService, MailkitEmailService>();
 builder.Services.AddScoped<IPdfService, QuestPdfService>();
 builder.Services.AddScoped<TokenService>();

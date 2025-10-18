@@ -1,5 +1,4 @@
-﻿
-namespace FlightsReservation.BLL.Interfaces;
+﻿namespace FlightsReservation.BLL.Interfaces.Services;
 
 public interface IEmailService
 {

@@ -6,6 +6,8 @@ using FlightsReservation.DAL.Entities.Model;
 using FlightsReservation.DAL.Interfaces;
 using FluentValidation;
 using AutoMapper;
+using FlightsReservation.BLL.Interfaces.Dtos;
+using FlightsReservation.BLL.Interfaces.Services;
 
 
 namespace FlightsReservation.BLL.Services;

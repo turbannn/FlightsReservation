@@ -12,5 +12,9 @@ public class Reservation
     [ForeignKey(nameof(FlightId))]
     public Flight Flight { get; set; } = null!;
 
+    public Guid? UserId { get; set; }
+    [ForeignKey(nameof(UserId))]
+    public User? User { get; set; }
+
     public List<Passenger> Passengers { get; set; } = null!;
 }
