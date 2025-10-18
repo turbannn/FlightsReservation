@@ -46,24 +46,24 @@ public class ReservationsService
     }
 
     //Admin
-    public async Task<FlightReservationResult<ReservationReadDto>> GetReservationByIdAsync(Guid id, CancellationToken ct = default)
+    public async Task<FlightReservationResult<ReservationAdminReadDto>> GetReservationByIdAsync(Guid id, CancellationToken ct = default)
     {
         if (id == Guid.Empty)
         {
             Console.WriteLine("ERROR: Bad id");
-            return FlightReservationResult<ReservationReadDto>.Fail("Bad id", ResponseCodes.BadRequest);
+            return FlightReservationResult<ReservationAdminReadDto>.Fail("Bad id", ResponseCodes.BadRequest);
         }
 
         var reservation = await _reservationsRepository.GetByIdAsync(id, ct);
         if (reservation is null)
         {
             Console.WriteLine("Reservation not found");
-            return FlightReservationResult<ReservationReadDto>.Fail("Reservation not found", ResponseCodes.NotFound);
+            return FlightReservationResult<ReservationAdminReadDto>.Fail("Reservation not found", ResponseCodes.NotFound);
         }
 
-        var reservationReadDto = _mapper.Map<ReservationReadDto>(reservation);
+        var reservationReadDto = _mapper.Map<ReservationAdminReadDto>(reservation);
 
-        return FlightReservationResult<ReservationReadDto>.Success(reservationReadDto, ResponseCodes.Success);
+        return FlightReservationResult<ReservationAdminReadDto>.Success(reservationReadDto, ResponseCodes.Success);
     }
 
     //Admin

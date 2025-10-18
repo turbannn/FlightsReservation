@@ -11,6 +11,12 @@ public class UserModule() : CarterModule("/Users")
 {
     public override void AddRoutes(IEndpointRouteBuilder app)
     {
+        app.MapGet("/GetUserProfile", async (Guid id, UsersService service, CancellationToken ct = default) =>
+        {
+            var response = await service.GetUserProfileByIdAsync(id, ct);
+            return response.ToHttpResult();
+        }).RequireAuthorization(new AuthorizeAttribute { Roles = "Admin" });
+
         app.MapGet("/GetUser", async (Guid id, UsersService service, CancellationToken ct = default) =>
         {
             var response = await service.GetUserByIdAsync(id, ct);

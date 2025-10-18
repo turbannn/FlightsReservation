@@ -2,7 +2,6 @@
 
 public interface IFlightDto
 {
-    string FlightNumber { get; set; }
     string Departure { get; set; }
     string Arrival { get; set; }
     DateTime DepartureTime { get; set; }

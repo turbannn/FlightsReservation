@@ -45,6 +45,27 @@ public class UsersService
         return FlightReservationResult<UserReadDto>.Success(userReadDto, ResponseCodes.Success);
     }
 
+    //Admin
+    public async Task<FlightReservationResult<TotalUserReadDto>> GetUserProfileByIdAsync(Guid id, CancellationToken ct = default)
+    {
+        if (id == Guid.Empty)
+        {
+            Console.WriteLine("ERROR: Bad id");
+            return FlightReservationResult<TotalUserReadDto>.Fail("Bad id", ResponseCodes.BadRequest);
+        }
+
+        var user = await _usersRepository.GetByIdAsync(id, ct);
+        if (user is null)
+        {
+            Console.WriteLine("User not found");
+            return FlightReservationResult<TotalUserReadDto>.Fail("User not found", ResponseCodes.NotFound);
+        }
+
+        var userProfileReadDto = _mapper.Map<TotalUserReadDto>(user);
+
+        return FlightReservationResult<TotalUserReadDto>.Success(userProfileReadDto, ResponseCodes.Success);
+    }
+
     public async Task<FlightReservationResult<int>> AddUserAsync(UserCreateDto createDto, CancellationToken ct = default)
     {
         var validationResult = await _validator.ValidateAsync(createDto, ct);

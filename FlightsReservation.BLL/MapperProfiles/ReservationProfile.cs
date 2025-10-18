@@ -8,7 +8,8 @@ public class ReservationProfile : Profile
 {
     public ReservationProfile()
     {
-        CreateMap<Reservation, ReservationReadDto>();
+        CreateMap<Reservation, ReservationAdminReadDto>();
+        CreateMap<Reservation, ReservationUserReadDto>();
 
         CreateMap<ReservationCreateDto, Reservation>();
     }

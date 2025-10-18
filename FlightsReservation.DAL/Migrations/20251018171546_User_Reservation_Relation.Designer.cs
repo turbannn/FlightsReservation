@@ -12,7 +12,7 @@ using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 namespace FlightsReservation.DAL.Migrations
 {
     [DbContext(typeof(FlightsDbContext))]
-    [Migration("20251018144947_User_Reservation_Relation")]
+    [Migration("20251018171546_User_Reservation_Relation")]
     partial class User_Reservation_Relation
     {
         /// <inheritdoc />
@@ -145,8 +145,7 @@ namespace FlightsReservation.DAL.Migrations
 
                     b.HasIndex("FlightId");
 
-                    b.HasIndex("UserId")
-                        .IsUnique();
+                    b.HasIndex("UserId");
 
                     b.ToTable("Reservations");
                 });
@@ -239,8 +238,8 @@ namespace FlightsReservation.DAL.Migrations
                         .IsRequired();
 
                     b.HasOne("FlightsReservation.DAL.Entities.Model.User", "User")
-                        .WithOne("Reservation")
-                        .HasForeignKey("FlightsReservation.DAL.Entities.Model.Reservation", "UserId");
+                        .WithMany("Reservations")
+                        .HasForeignKey("UserId");
 
                     b.Navigation("Flight");
 
@@ -277,7 +276,7 @@ namespace FlightsReservation.DAL.Migrations
 
             modelBuilder.Entity("FlightsReservation.DAL.Entities.Model.User", b =>
                 {
-                    b.Navigation("Reservation");
+                    b.Navigation("Reservations");
                 });
 #pragma warning restore 612, 618
         }

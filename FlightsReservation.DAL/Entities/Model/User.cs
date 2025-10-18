@@ -1,7 +1,4 @@
-﻿
-using System.ComponentModel.DataAnnotations.Schema;
-
-namespace FlightsReservation.DAL.Entities.Model;
+﻿namespace FlightsReservation.DAL.Entities.Model;
 
 public class User
 {
@@ -11,5 +8,5 @@ public class User
     public string Role { get; set; } = null!;
     public int Money {get; set;}
 
-    public Reservation? Reservation { get; set; }
+    public List<Reservation> Reservations { get; set; } = null!;
 }

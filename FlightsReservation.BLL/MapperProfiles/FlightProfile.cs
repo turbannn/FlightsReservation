@@ -8,11 +8,12 @@ public class FlightProfile : Profile
 {
     public FlightProfile()
     {
-        CreateMap<Flight, FlightReadDto>().ForMember(dest => dest.AvailableSeats,
+        CreateMap<Flight, FlightAdminReadDto>().ForMember(dest => dest.AvailableSeats,
             opt =>
             {
                 opt.MapFrom(src => src.Seats.Count(s => s.IsAvailable));
             });
+        CreateMap<Flight, FlightUserReadDto>();
 
         CreateMap<FlightCreateDto, Flight>();
         CreateMap<FlightUpdateDto, Flight>();

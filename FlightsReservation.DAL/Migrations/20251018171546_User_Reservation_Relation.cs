@@ -20,8 +20,7 @@ namespace FlightsReservation.DAL.Migrations
             migrationBuilder.CreateIndex(
                 name: "IX_Reservations_UserId",
                 table: "Reservations",
-                column: "UserId",
-                unique: true);
+                column: "UserId");
 
             migrationBuilder.AddForeignKey(
                 name: "FK_Reservations_Users_UserId",

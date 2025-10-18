@@ -1,12 +1,9 @@
-﻿using System.Text.Json.Serialization;
-using FlightsReservation.BLL.Interfaces.Dtos;
+﻿using FlightsReservation.BLL.Interfaces.Dtos;
 
 namespace FlightsReservation.BLL.Entities.DataTransferObjects.FlightDtos;
 
 public class BaseFlightDto : IFlightDto
 {
-    [JsonIgnore]
-    public string FlightNumber { get; set; } = null!;
     public string Departure { get; set; } = null!;
     public string Arrival { get; set; } = null!;
     public DateTime DepartureTime { get; set; }

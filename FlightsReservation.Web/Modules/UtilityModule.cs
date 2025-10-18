@@ -36,7 +36,6 @@ public class UtilityModule() : CarterModule("/Utils")
 
                     var createFlightDto = new FlightCreateDto
                     {
-                        FlightNumber = $"FN-{depDay.Year}{depDay.Month}{depDay.Day}{depDay.Hour}{depDay.Minute}{depDay.Second}",
                         Departure = departure,
                         Arrival = arrival,
                         DepartureTime = depDay,

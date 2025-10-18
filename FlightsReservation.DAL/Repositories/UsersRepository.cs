@@ -17,8 +17,8 @@ public class UsersRepository : IUsersRepository
     {
         var user = await _context.Users
             .AsNoTracking()
-            .Include(u => u.Reservation)
-            .ThenInclude(r => r.Flight) //possible null
+            .Include(u => u.Reservations)
+            .ThenInclude(r => r.Flight)
             .FirstOrDefaultAsync(p => p.Id == id, cancellationToken: ct);
 
         return user;
