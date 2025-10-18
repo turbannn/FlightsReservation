@@ -13,6 +13,11 @@ public class UsersRepository : IUsersRepository
         _context = dbContext;
     }
 
+    public async Task<IEnumerable<User>> GetAllAsync(CancellationToken ct)
+    {
+        return await _context.Users.AsNoTracking().ToListAsync(ct);
+    }
+
     public async Task<User?> GetByIdAsync(Guid id, CancellationToken ct)
     {
         var user = await _context.Users

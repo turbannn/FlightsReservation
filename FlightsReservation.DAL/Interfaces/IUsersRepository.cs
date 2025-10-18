@@ -4,5 +4,5 @@ namespace FlightsReservation.DAL.Interfaces;
 
 public interface IUsersRepository : IRepository<User>
 {
-    //get user profile
+    Task<IEnumerable<User>> GetAllAsync(CancellationToken ct);
 }

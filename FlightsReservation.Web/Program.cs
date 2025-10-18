@@ -72,6 +72,7 @@ builder.Services.AddScoped<UsersService>();
 builder.Services.AddScoped<IEmailService, MailkitEmailService>();
 builder.Services.AddScoped<IPdfService, QuestPdfService>();
 builder.Services.AddScoped<TokenService>();
+builder.Services.AddScoped<RefreshService>();
 
 //Routing modules
 builder.Services.AddCarter();
