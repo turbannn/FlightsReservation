@@ -21,6 +21,7 @@ public class ReservationsService
     private readonly IReservationsRepository _reservationsRepository;
     private readonly ISeatsRepository _seatsRepository;
     private readonly IFlightsRepository _flightsRepository;
+    private readonly IUsersRepository _usersRepository;
     private readonly IEmailService _emailService;
     private readonly IPdfService _pdfService;
 
@@ -31,6 +32,7 @@ public class ReservationsService
         IReservationsRepository reservationsRepository,
         ISeatsRepository seatsRepository,
         IFlightsRepository flightsRepository,
+        IUsersRepository usersRepository,
         IEmailService emailService,
         IPdfService pdfService)
     {
@@ -41,6 +43,7 @@ public class ReservationsService
         _reservationsRepository = reservationsRepository;
         _seatsRepository = seatsRepository;
         _flightsRepository = flightsRepository;
+        _usersRepository = usersRepository;
         _emailService = emailService;
         _pdfService = pdfService;
     }
@@ -67,8 +70,34 @@ public class ReservationsService
     }
 
     //Admin
-    public async Task<FlightReservationResult<int>> CommitReservationAsync(ReservationCreateDto createDto, CancellationToken ct = default)
+    public async Task<FlightReservationResult<int>> CommitReservationAsync(Guid userId, ReservationCreateDto createDto, CancellationToken ct = default)
     {
+        if (userId == Guid.Empty)
+        {
+            Console.WriteLine("ERROR: Bad user id");
+            return FlightReservationResult<int>.Fail("Bad user id", ResponseCodes.BadRequest);
+        }
+
+        var user = await _usersRepository.GetByIdAsync(userId, ct);
+        if (user is null)
+        {
+            Console.WriteLine("ERROR: User not found.");
+            return FlightReservationResult<int>.Fail("User not found.", ResponseCodes.NotFound);
+        }
+
+        var flight = await _flightsRepository.GetByIdAsync(createDto.FlightId, ct);
+        if (flight is null)
+        {
+            Console.WriteLine("ERROR: Flight not found.");
+            return FlightReservationResult<int>.Fail("Flight not found.", ResponseCodes.NotFound);
+        }
+
+        if (user.Money < flight.Price * createDto.Passengers.Count)
+        {
+            Console.WriteLine("ERROR: Insufficient funds.");
+            return FlightReservationResult<int>.Fail("Insufficient funds.", ResponseCodes.BadRequest);
+        }
+
         if (createDto.Passengers.Count == 0)
         {
             Console.WriteLine("ERROR: Reservation must have at least one passenger.");
@@ -76,7 +105,6 @@ public class ReservationsService
         }
 
         createDto.Id = Guid.NewGuid();
-
         createDto.ReservationNumber = $"RE_{DateTime.UtcNow}";
 
         foreach (var p in createDto.Passengers)
@@ -114,6 +142,7 @@ public class ReservationsService
         try
         {
             reservation = _mapper.Map<Reservation>(createDto);
+            reservation.UserId = user.Id;
         }
         catch (Exception ex)
         {
@@ -130,13 +159,16 @@ public class ReservationsService
 
         await _unitOfWork.BeginAsync(ct);
 
-        var flight = await _flightsRepository.GetByIdAsync(reservation.FlightId, ct);
-
-        if (flight is null)
+        try
+        {
+            await _usersRepository.SubtractMoneyAsync(user.Id, flight.Price * reservation.Passengers.Count, ct);
+        }
+        catch (Exception ex)
         {
             await _unitOfWork.RollbackAsync(ct);
-            Console.WriteLine("ERROR: Flight not found.");
-            return FlightReservationResult<int>.Fail("Flight not found.", ResponseCodes.NotFound);
+            Console.WriteLine(ex.Message);
+            Console.WriteLine("INTERNAL SERVER ERROR ADD RESERVATION");
+            return FlightReservationResult<int>.Fail("Error subtracting money.", ResponseCodes.InternalServerError);
         }
 
         foreach (var passenger in reservation.Passengers)

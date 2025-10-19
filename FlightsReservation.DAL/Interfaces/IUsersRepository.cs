@@ -7,4 +7,5 @@ public interface IUsersRepository : IRepository<User>
     Task<IEnumerable<User>> GetAllAsync(CancellationToken ct);
     Task<bool> UpdateMoneyAsync(Guid id, int amount, CancellationToken ct);
     Task<User?> GetByLoginAndPasswordAsync(string login, string password, CancellationToken ct);
+    Task<bool> SubtractMoneyAsync(Guid id, int amount, CancellationToken ct);
 }

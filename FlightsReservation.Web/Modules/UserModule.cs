@@ -6,6 +6,8 @@ using FlightsReservation.BLL.Services.UtilityServices;
 using FlightsReservation.Web.Extensions;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using static System.Net.WebRequestMethods;
+using System.Security.Claims;
 
 namespace FlightsReservation.Web.Modules;
 
@@ -13,9 +15,14 @@ public class UserModule() : CarterModule("/Users")
 {
     public override void AddRoutes(IEndpointRouteBuilder app)
     {
-        app.MapGet("/GetUserProfile", async (Guid id, UsersService service, CancellationToken ct = default) =>
+        app.MapGet("/GetUserProfile", async (HttpContext http, UsersService service, CancellationToken ct = default) =>
         {
-            var response = await service.GetUserProfileByIdAsync(id, ct);
+            var idStr = http.User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
+
+            if (string.IsNullOrEmpty(idStr) || !Guid.TryParse(idStr, out Guid userId))
+                return Results.BadRequest(new { success = false, message = "Invalid user ID" });
+
+            var response = await service.GetUserProfileByIdAsync(userId, ct);
             return response.ToHttpResult();
         }).RequireAuthorization(new AuthorizeAttribute { Roles = "Admin,User" });
 

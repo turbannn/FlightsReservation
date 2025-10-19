@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using System.Security.Claims;
+using Microsoft.AspNetCore.Mvc;
 using Carter;
 using FlightsReservation.BLL.Entities.DataTransferObjects.ReservationDtos;
 using FlightsReservation.Web.Extensions;
@@ -18,11 +19,16 @@ public class ReservationModule() : CarterModule("/Reservations")
         }).RequireAuthorization(new AuthorizeAttribute { Roles = "Admin" });
 
         app.MapPost("/CommitReservation",
-            async ([FromBody] ReservationCreateDto createDto, ReservationsService service, CancellationToken ct = default) =>
+            async ([FromBody] ReservationCreateDto createDto, HttpContext http, ReservationsService service, CancellationToken ct = default) =>
             {
-                var response = await service.CommitReservationAsync(createDto, ct);
+                var idStr = http.User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
+
+                if (string.IsNullOrEmpty(idStr) || !Guid.TryParse(idStr, out Guid userId))
+                    return Results.BadRequest(new { success = false, message = "Invalid user ID" });
+
+                var response = await service.CommitReservationAsync(userId, createDto, ct);
                 return response.ToHttpResult();
-            });
+            }).RequireAuthorization(new AuthorizeAttribute { Roles = "User" });
 
         app.MapDelete("/DeleteReservation", async (Guid id, ReservationsService service, CancellationToken ct = default) =>
         {
@@ -34,6 +40,6 @@ public class ReservationModule() : CarterModule("/Reservations")
         {
             var response = await service.LockSeats(ids, ct);
             return response.ToHttpResult();
-        });
+        }).RequireAuthorization(new AuthorizeAttribute { Roles = "User" });
     }
 }

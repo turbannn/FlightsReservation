@@ -24,28 +24,30 @@ public class UsersService
         _usersRepository = usersRepository;
     }
 
-    public async Task<FlightReservationResult<User?>> LoginAsync(string login, string password, CancellationToken ct = default)
+    public async Task<FlightReservationResult<UserReadDto?>> LoginAsync(string login, string password, CancellationToken ct = default)
     {
         if (string.IsNullOrEmpty(login))
         {
             Console.WriteLine("ERROR: Bad login");
-            return FlightReservationResult<User?>.Fail("Bad login", ResponseCodes.BadRequest);
+            return FlightReservationResult<UserReadDto?>.Fail("Bad login", ResponseCodes.BadRequest);
         }
 
         if (string.IsNullOrEmpty(password))
         {
             Console.WriteLine("ERROR: Bad password");
-            return FlightReservationResult<User?>.Fail("Bad password", ResponseCodes.BadRequest);
+            return FlightReservationResult<UserReadDto?>.Fail("Bad password", ResponseCodes.BadRequest);
         }
 
         var user = await _usersRepository.GetByLoginAndPasswordAsync(login, password, ct);
         if (user is null)
         {
             Console.WriteLine("User not found");
-            return FlightReservationResult<User?>.Fail("User not found", ResponseCodes.NotFound);
+            return FlightReservationResult<UserReadDto?>.Fail("User not found", ResponseCodes.NotFound);
         }
 
-        return FlightReservationResult<User?>.Success(user, ResponseCodes.Success);
+        var userReadDto = _mapper.Map<UserReadDto>(user);
+
+        return FlightReservationResult<UserReadDto?>.Success(userReadDto, ResponseCodes.Success);
     }
 
     //Admin
