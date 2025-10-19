@@ -70,66 +70,26 @@ public class ReservationsService
     }
 
     //Admin
-    public async Task<FlightReservationResult<int>> CommitReservationAsync(Guid userId, ReservationCreateDto createDto, CancellationToken ct = default)
+    public async Task<FlightReservationResult<int>> CommitReservationAsync(
+            Guid userId,
+            ReservationCreateDto createDto,
+            CancellationToken ct = default)
     {
-        if (userId == Guid.Empty)
-        {
-            Console.WriteLine("ERROR: Bad user id");
-            return FlightReservationResult<int>.Fail("Bad user id", ResponseCodes.BadRequest);
-        }
+        var precheck = await PrecheckAndFetchEntitiesAsync(userId, createDto, ct);
+        if (!precheck.IsSuccess)
+            return precheck.Result;
 
-        var user = await _usersRepository.GetByIdAsync(userId, ct);
-        if (user is null)
-        {
-            Console.WriteLine("ERROR: User not found.");
-            return FlightReservationResult<int>.Fail("User not found.", ResponseCodes.NotFound);
-        }
+        var (user, flight) = (precheck.User!, precheck.Flight!);
 
-        var flight = await _flightsRepository.GetByIdAsync(createDto.FlightId, ct);
-        if (flight is null)
-        {
-            Console.WriteLine("ERROR: Flight not found.");
-            return FlightReservationResult<int>.Fail("Flight not found.", ResponseCodes.NotFound);
-        }
+        var businessCheck = CheckBusinessRules(user, flight, createDto);
+        if (!businessCheck.IsSuccess)
+            return businessCheck;
 
-        if (user.Money < flight.Price * createDto.Passengers.Count)
-        {
-            Console.WriteLine("ERROR: Insufficient funds.");
-            return FlightReservationResult<int>.Fail("Insufficient funds.", ResponseCodes.BadRequest);
-        }
+        InitializeReservationIdentifiers(createDto);
 
-        if (createDto.Passengers.Count == 0)
-        {
-            Console.WriteLine("ERROR: Reservation must have at least one passenger.");
-            return FlightReservationResult<int>.Fail("Reservation must have at least one passenger.", ResponseCodes.BadRequest);
-        }
-
-        createDto.Id = Guid.NewGuid();
-        createDto.ReservationNumber = $"RE_{DateTime.UtcNow}";
-
-        foreach (var p in createDto.Passengers)
-        {
-            p.ReservationId = createDto.Id;
-        }
-
-        var validationResult = await _reservationValidator.ValidateAsync(createDto, ct);
-        if (!validationResult.IsValid)
-        {
-            var error = validationResult.Errors.First();
-
-            return FlightReservationResult<int>.Fail(error.ToString(), ResponseCodes.BadRequest);
-        }
-
-        foreach (var p in createDto.Passengers)
-        {
-            validationResult = await _passengerValidator.ValidateAsync(p, ct);
-            if (!validationResult.IsValid)
-            {
-                var error = validationResult.Errors.First();
-
-                return FlightReservationResult<int>.Fail(error.ToString(), ResponseCodes.BadRequest);
-            }
-        }
+        var validation = await ValidateReservationAndPassengersAsync(createDto, ct);
+        if (!validation.IsSuccess)
+            return validation;
 
         if (createDto.Passengers.Select(p => p.SeatId).Distinct().Count() != createDto.Passengers.Count)
         {
@@ -138,11 +98,9 @@ public class ReservationsService
         }
 
         Reservation reservation;
-
         try
         {
-            reservation = _mapper.Map<Reservation>(createDto);
-            reservation.UserId = user.Id;
+            reservation = MapToReservation(createDto, user);
         }
         catch (Exception ex)
         {
@@ -171,7 +129,114 @@ public class ReservationsService
             return FlightReservationResult<int>.Fail("Error subtracting money.", ResponseCodes.InternalServerError);
         }
 
-        foreach (var passenger in reservation.Passengers)
+        var passengerProcessingResult = await ProcessPassengersAsync(reservation.Passengers, flight, ct);
+        if (!passengerProcessingResult.IsSuccess)
+        {
+            return passengerProcessingResult;
+        }
+
+        var saved = await _reservationsRepository.AddAsync(reservation, ct);
+        if (!saved)
+        {
+            await _unitOfWork.RollbackAsync(ct);
+            return FlightReservationResult<int>.Fail("Internal server error", ResponseCodes.InternalServerError);
+        }
+
+        await _unitOfWork.CommitAsync(ct);
+
+        return FlightReservationResult<int>.Success(1, ResponseCodes.Success);
+    }
+
+    //Helpers
+
+    private async Task<(bool IsSuccess, FlightReservationResult<int> Result, User? User, Flight? Flight)> PrecheckAndFetchEntitiesAsync(
+        Guid userId,
+        ReservationCreateDto createDto,
+        CancellationToken ct)
+    {
+        if (userId == Guid.Empty)
+        {
+            Console.WriteLine("ERROR: Bad user id");
+            return (false, FlightReservationResult<int>.Fail("Bad user id", ResponseCodes.BadRequest), null, null);
+        }
+
+        var user = await _usersRepository.GetByIdAsync(userId, ct);
+        if (user is null)
+        {
+            Console.WriteLine("ERROR: User not found.");
+            return (false, FlightReservationResult<int>.Fail("User not found.", ResponseCodes.NotFound), null, null);
+        }
+
+        var flight = await _flightsRepository.GetByIdAsync(createDto.FlightId, ct);
+        if (flight is null)
+        {
+            Console.WriteLine("ERROR: Flight not found.");
+            return (false, FlightReservationResult<int>.Fail("Flight not found.", ResponseCodes.NotFound), null, null);
+        }
+
+        return (true, FlightReservationResult<int>.Success(0, ResponseCodes.Success), user, flight);
+    }
+
+    private FlightReservationResult<int> CheckBusinessRules(User user, Flight flight, ReservationCreateDto createDto)
+    {
+        if (user.Money < flight.Price * createDto.Passengers.Count)
+        {
+            Console.WriteLine("ERROR: Insufficient funds.");
+            return FlightReservationResult<int>.Fail("Insufficient funds.", ResponseCodes.BadRequest);
+        }
+
+        if (createDto.Passengers.Count == 0)
+        {
+            Console.WriteLine("ERROR: Reservation must have at least one passenger.");
+            return FlightReservationResult<int>.Fail("Reservation must have at least one passenger.", ResponseCodes.BadRequest);
+        }
+
+        return FlightReservationResult<int>.Success(0, ResponseCodes.Success);
+    }
+
+    private void InitializeReservationIdentifiers(ReservationCreateDto createDto)
+    {
+        createDto.Id = Guid.NewGuid();
+        createDto.ReservationNumber = $"RE_{DateTime.UtcNow.AddHours(2)}";
+
+        foreach (var p in createDto.Passengers)
+        {
+            p.ReservationId = createDto.Id;
+        }
+    }
+
+    private async Task<FlightReservationResult<int>> ValidateReservationAndPassengersAsync(ReservationCreateDto createDto, CancellationToken ct)
+    {
+        var validationResult = await _reservationValidator.ValidateAsync(createDto, ct);
+        if (!validationResult.IsValid)
+        {
+            var error = validationResult.Errors.First();
+            return FlightReservationResult<int>.Fail(error.ToString(), ResponseCodes.BadRequest);
+        }
+
+        foreach (var p in createDto.Passengers)
+        {
+            validationResult = await _passengerValidator.ValidateAsync(p, ct);
+            if (!validationResult.IsValid)
+            {
+                var error = validationResult.Errors.First();
+                return FlightReservationResult<int>.Fail(error.ToString(), ResponseCodes.BadRequest);
+            }
+        }
+
+        return FlightReservationResult<int>.Success(0, ResponseCodes.Success);
+    }
+
+    private Reservation MapToReservation(ReservationCreateDto createDto, User user)
+    {
+        var reservation = _mapper.Map<Reservation>(createDto);
+        reservation.UserId = user.Id;
+        return reservation;
+    }
+
+    private async Task<FlightReservationResult<int>> ProcessPassengersAsync(IEnumerable<Passenger> passengers, Flight flight, CancellationToken ct)
+    {
+        foreach (var passenger in passengers)
         {
             try
             {
@@ -205,18 +270,9 @@ public class ReservationsService
             }
         }
 
-        var res = await _reservationsRepository.AddAsync(reservation, ct);
-
-        if (!res)
-        {
-            await _unitOfWork.RollbackAsync(ct);
-            return FlightReservationResult<int>.Fail("Internal server error", ResponseCodes.InternalServerError);
-        }
-
-        await _unitOfWork.CommitAsync(ct);
-
-        return FlightReservationResult<int>.Success(1, ResponseCodes.Success);
+        return FlightReservationResult<int>.Success(0, ResponseCodes.Success);
     }
+    //End helpers
 
     //Admin
     public async Task<FlightReservationResult<int>> DeleteReservation(Guid id, CancellationToken ct = default)
