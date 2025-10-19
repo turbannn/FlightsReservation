@@ -24,6 +24,30 @@ public class UsersService
         _usersRepository = usersRepository;
     }
 
+    public async Task<FlightReservationResult<User?>> LoginAsync(string login, string password, CancellationToken ct = default)
+    {
+        if (string.IsNullOrEmpty(login))
+        {
+            Console.WriteLine("ERROR: Bad login");
+            return FlightReservationResult<User?>.Fail("Bad login", ResponseCodes.BadRequest);
+        }
+
+        if (string.IsNullOrEmpty(password))
+        {
+            Console.WriteLine("ERROR: Bad password");
+            return FlightReservationResult<User?>.Fail("Bad password", ResponseCodes.BadRequest);
+        }
+
+        var user = await _usersRepository.GetByLoginAndPasswordAsync(login, password, ct);
+        if (user is null)
+        {
+            Console.WriteLine("User not found");
+            return FlightReservationResult<User?>.Fail("User not found", ResponseCodes.NotFound);
+        }
+
+        return FlightReservationResult<User?>.Success(user, ResponseCodes.Success);
+    }
+
     //Admin
     public async Task<FlightReservationResult<UserReadDto>> GetUserByIdAsync(Guid id, CancellationToken ct = default)
     {
@@ -77,6 +101,7 @@ public class UsersService
         }
 
         createDto.Role = "User";
+        createDto.Money = 0;
 
         User user;
 
@@ -138,6 +163,23 @@ public class UsersService
         {
             Console.WriteLine(ex.Message);
             return FlightReservationResult<int>.Fail("Internal server error", ResponseCodes.InternalServerError);
+        }
+
+        return FlightReservationResult<int>.Success(1, ResponseCodes.Success);
+    }
+
+    public async Task<FlightReservationResult<int>> UpdateUserMoneyAsync(Guid id, int amount, CancellationToken ct = default)
+    {
+        if(amount < -100000)
+        {
+            return FlightReservationResult<int>.Fail("Amount is too low", ResponseCodes.BadRequest);
+        }
+
+
+        var res = await _usersRepository.UpdateMoneyAsync(id, amount, ct);
+        if (!res)
+        {
+            return FlightReservationResult<int>.Fail("User not updated", ResponseCodes.InternalServerError);
         }
 
         return FlightReservationResult<int>.Success(1, ResponseCodes.Success);

@@ -6,4 +6,7 @@ public class UserCreateDto : BaseUserDto
 {
     [JsonIgnore]
     public string Role { get; set; } = null!;
+
+    [JsonIgnore]
+    public int Money { get; set; }
 }

@@ -15,9 +15,5 @@ public class UserDtoValidator : AbstractValidator<IUserDto>
         RuleFor(u => u.Password)
             .NotEmpty().WithMessage("Password is required.")
             .MaximumLength(120).WithMessage("Password cannot exceed 120 characters.");
-
-        //Int
-        RuleFor(u => u.Money)
-            .GreaterThan(-1).WithMessage("Money must be above 0.");
     }
 }

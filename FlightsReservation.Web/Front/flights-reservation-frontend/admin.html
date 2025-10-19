@@ -1,0 +1,31 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Admin Panel</title>
+    <link rel="stylesheet" href="src/css/base.css">
+    <link rel="stylesheet" href="src/css/layout.css">
+    <link rel="stylesheet" href="src/css/components.css">
+</head>
+<body>
+    <header>
+        <h1>Admin Panel</h1>
+        <nav id="navbar"></nav>
+    </header>
+    <main>
+        <section id="flight-management">
+            <h2>Flight Management</h2>
+            <button id="add-flight-btn">Add Flight</button>
+            <div id="flight-list"></div>
+        </section>
+        <section id="user-management">
+            <h2>User Management</h2>
+            <button id="add-user-btn">Add User</button>
+            <div id="user-list"></div>
+        </section>
+    </main>
+    <script src="src/js/components/navbar.js"></script>
+    <script src="src/js/admin.js"></script>
+</body>
+</html>

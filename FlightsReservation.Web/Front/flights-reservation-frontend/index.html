@@ -1,0 +1,75 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Flight Reservation</title>
+    <link rel="stylesheet" href="src/css/base.css">
+    <link rel="stylesheet" href="src/css/layout.css">
+    <link rel="stylesheet" href="src/css/components.css">
+</head>
+<body>
+    <header>
+        <h1>Flight Reservation System</h1>
+        <nav id="navbar"></nav>
+    </header>
+    <main>
+        <h2>Search Flights</h2>
+        <form id="flightSearchForm">
+            <label for="departureDate">Departure Date:</label>
+            <input type="date" id="departureDate" required>
+
+            <label for="returnDate">Return Date:</label>
+            <input type="date" id="returnDate">
+
+            <label for="origin">Origin:</label>
+            <input type="text" id="origin" required>
+
+            <label for="destination">Destination:</label>
+            <input type="text" id="destination" required>
+
+            <button type="submit">Search Flights</button>
+        </form>
+    </main>
+    <script src="src/js/config.js"></script>
+    <script src="src/js/main.js"></script>
+    <script src="src/js/components/navbar.js"></script>
+    <script>
+        document.getElementById('flightSearchForm').addEventListener('submit', function(event) {
+            event.preventDefault();
+            const departureDate = document.getElementById('departureDate').value;
+            const returnDate = document.getElementById('returnDate').value;
+            const origin = document.getElementById('origin').value;
+            const destination = document.getElementById('destination').value;
+
+            const requestUrl = returnDate ? 
+                `${API_BASE_URL}/RequestFlightsPageWithReturn` : 
+                `${API_BASE_URL}/RequestFlightsPage`;
+
+            const requestData = {
+                DepartureDate: departureDate,
+                ReturnDate: returnDate,
+                Origin: origin,
+                Destination: destination
+            };
+
+            fetch(requestUrl, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify(requestData)
+            })
+            .then(response => response.json())
+            .then(data => {
+                // Handle the flight data response
+                console.log(data);
+                // Redirect to flights.html or update the UI accordingly
+            })
+            .catch(error => {
+                console.error('Error:', error);
+            });
+        });
+    </script>
+</body>
+</html>

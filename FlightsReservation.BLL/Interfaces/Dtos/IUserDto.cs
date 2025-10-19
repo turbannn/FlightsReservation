@@ -5,5 +5,4 @@ public interface IUserDto
 {
     string Username { get; set; }
     string Password { get; set; }
-    int Money { get; set; }
 }
