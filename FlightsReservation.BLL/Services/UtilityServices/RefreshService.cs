@@ -29,6 +29,7 @@ namespace FlightsReservation.BLL.Services.UtilityServices
 
             var random = new Random();
             var airports = new[] { "Warsaw", "Berlin", "Paris", "London", "Rome", "Prague" };
+            var companies = new[] { "LOT Polish Airlines", "Wizz Air", "Air France", "Eurowings", "Ryanair", "British Airways" };
 
             int n = 70;
 
@@ -38,6 +39,7 @@ namespace FlightsReservation.BLL.Services.UtilityServices
                 {
                     var departure = airports[random.Next(airports.Length)];
                     var arrival = airports.Except(new[] { departure }).OrderBy(_ => random.Next()).First();
+                    var company = companies[random.Next(companies.Length)];
 
                     var depDay = DateTime.UtcNow.AddDays(i);
 
@@ -49,7 +51,8 @@ namespace FlightsReservation.BLL.Services.UtilityServices
                         ArrivalTime = depDay.AddHours(random.Next(1, 4)),
                         AirplaneType = $"Boeing {random.Next(700, 799)}",
                         Price = random.Next(50, 400),
-                        Currency = "EUR"
+                        Currency = "EUR",
+                        Company = company
                     };
                     var flightResult = await _flightsRepository.AddAsync(createFlightDto, ct);
                     if (!flightResult)

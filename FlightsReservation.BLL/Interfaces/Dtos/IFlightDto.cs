@@ -9,4 +9,5 @@ public interface IFlightDto
     string AirplaneType { get; set; }
     int Price { get; set; }
     string Currency { get; set; }
+    string Company { get; set; }
 }
