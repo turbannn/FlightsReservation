@@ -1,9 +1,9 @@
 <!DOCTYPE html>
-<html lang="uk">
+<html lang="en">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Профіль користувача</title>
+    <title>User Profile</title>
     <link rel="stylesheet" href="css/style.css">
 </head>
 <body>
@@ -12,10 +12,10 @@
             <nav class="nav">
                 <a href="index.html" class="logo">FlightReservation</a>
                 <ul class="nav-menu">
-                    <li><a href="index.html">Головна</a></li>
-                    <li><a href="profile.html">Профіль</a></li>
-                    <li><a href="login.html">Вхід</a></li>
-                    <li><a href="register.html">Реєстрація</a></li>
+                    <li><a href="index.html">Home</a></li>
+                    <li><a href="profile.html">Profile</a></li>
+                    <li><a href="login.html">Login</a></li>
+                    <li><a href="register.html">Register</a></li>
                 </ul>
             </nav>
         </div>
@@ -23,19 +23,19 @@
 
     <main class="main">
         <div class="container">
-            <div id="profileLoading" class="loading">Завантаження...</div>
+            <div id="profileLoading" class="loading">Loading...</div>
             <div id="profileError" class="error" style="display: none;"></div>
             
             <div id="profileContent" style="display: none;">
                 <div class="profile-card">
-                    <h1>Профіль користувача</h1>
+                    <h1>User Profile</h1>
                     <div class="profile-info">
                         <div class="profile-item">
-                            <strong>Ім'я:</strong>
+                            <strong>First Name:</strong>
                             <span id="userName"></span>
                         </div>
                         <div class="profile-item">
-                            <strong>Прізвище:</strong>
+                            <strong>Last Name:</strong>
                             <span id="userSurname"></span>
                         </div>
                         <div class="profile-item">
@@ -43,29 +43,28 @@
                             <span id="userEmail"></span>
                         </div>
                         <div class="profile-item">
-                            <strong>Логін:</strong>
+                            <strong>Login:</strong>
                             <span id="userLogin"></span>
                         </div>
                         <div class="profile-item">
-                            <strong>Баланс:</strong>
-                            <span id="userMoney"></span> грн
+                            <strong>Balance:</strong>
+                            <span id="userMoney"></span> USD
                         </div>
                         <div class="profile-item">
-                            <strong>Роль:</strong>
+                            <strong>Role:</strong>
                             <span id="userRole"></span>
                         </div>
                     </div>
                 </div>
 
                 <div class="reservations-section">
-                    <h2>Мої бронювання</h2>
+                    <h2>My Reservations</h2>
                     <div id="reservationsList" class="reservations-list"></div>
                 </div>
             </div>
         </div>
     </main>
 
-    <script src="js/types.js"></script>
     <script src="js/config.js"></script>
     <script src="js/profile.js"></script>
 </body>

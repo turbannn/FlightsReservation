@@ -1,5 +1,3 @@
-/// <reference path="./types.js" />
-
 document.getElementById('registerForm').addEventListener('submit', async (e) => {
     e.preventDefault();
 
@@ -16,14 +14,13 @@ document.getElementById('registerForm').addEventListener('submit', async (e) => 
         errorEl.style.display = 'none';
         successEl.style.display = 'none';
 
-        /** @type {UserCreateDto} */
         const userData = {
-            name,
-            surname,
-            email,
-            login,
-            password
+            Username: login,
+            Password: password
         };
+
+        console.log('Registration request URL:', `${API_BASE_URL}${API_ENDPOINTS.register}`);
+        console.log('Registration data:', userData);
 
         const response = await fetch(`${API_BASE_URL}${API_ENDPOINTS.register}`, {
             method: 'POST',
@@ -34,9 +31,20 @@ document.getElementById('registerForm').addEventListener('submit', async (e) => 
             body: JSON.stringify(userData)
         });
 
+        console.log('Registration response status:', response.status);
+        console.log('Registration response ok:', response.ok);
+
+        if (!response.ok) {
+            const errorText = await response.text();
+            console.error('Registration response error text:', errorText);
+            throw new Error(`HTTP error! status: ${response.status}, message: ${errorText}`);
+        }
+
         const result = await response.json();
+        console.log('Registration response data:', result);
 
         if (result.isSuccess) {
+            console.log('Registration successful');
             successEl.textContent = 'Реєстрація успішна! Перенаправлення на сторінку входу...';
             successEl.style.display = 'block';
             
@@ -44,10 +52,15 @@ document.getElementById('registerForm').addEventListener('submit', async (e) => 
                 window.location.href = 'login.html';
             }, 2000);
         } else {
-            throw new Error(result.message || 'Помилка реєстрації');
+            const errorMsg = result.errorMessage || 'Помилка реєстрації';
+            console.error('Registration failed:', errorMsg);
+            console.error('Error code:', result.code);
+            console.error('Full response:', result);
+            throw new Error(errorMsg);
         }
 
     } catch (error) {
+        console.error('Registration error:', error);
         errorEl.textContent = error.message;
         errorEl.style.display = 'block';
     }

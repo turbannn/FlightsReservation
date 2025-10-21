@@ -1,5 +1,3 @@
-/// <reference path="./types.js" />
-
 let currentPage = 1;
 let totalPages = 1;
 let searchParams = null;
@@ -24,10 +22,10 @@ function loadSearchParams() {
 
 function fillSearchForm() {
     if (searchParams) {
-        document.getElementById('departureLocation').value = searchParams.departureLocation || '';
-        document.getElementById('arrivalLocation').value = searchParams.arrivalLocation || '';
-        document.getElementById('departureDate').value = searchParams.departureDate || '';
-        document.getElementById('returnDate').value = searchParams.returnDate || '';
+        document.getElementById('departureLocation').value = searchParams.DepartureCity || '';
+        document.getElementById('arrivalLocation').value = searchParams.ArrivalCity || '';
+        document.getElementById('departureDate').value = searchParams.DepartureDate || '';
+        document.getElementById('returnDate').value = searchParams.ReturnDate || '';
     }
 }
 
@@ -37,7 +35,9 @@ async function loadFlights() {
     const listEl = document.getElementById('flightsList');
 
     if (!searchParams) {
-        errorEl.textContent = 'Параметри пошуку не знайдено';
+        const errorMsg = 'Параметри пошуку не знайдено';
+        console.error(errorMsg);
+        errorEl.textContent = errorMsg;
         errorEl.style.display = 'block';
         loadingEl.style.display = 'none';
         return;
@@ -48,20 +48,23 @@ async function loadFlights() {
         errorEl.style.display = 'none';
         listEl.innerHTML = '';
 
-        const hasReturnDate = searchParams.returnDate && searchParams.returnDate.trim() !== '';
+        const hasReturnDate = searchParams.ReturnDate && searchParams.ReturnDate.trim() !== '';
         const endpoint = hasReturnDate ? API_ENDPOINTS.searchFlightsWithReturn : API_ENDPOINTS.searchFlights;
 
         // Формуємо body request
         const requestBody = {
-            departureLocation: searchParams.departureLocation,
-            arrivalLocation: searchParams.arrivalLocation,
-            departureDate: searchParams.departureDate
+            DepartureCity: searchParams.DepartureCity,
+            ArrivalCity: searchParams.ArrivalCity,
+            DepartureDate: searchParams.DepartureDate
         };
 
         // Додаємо returnDate тільки якщо він є
         if (hasReturnDate) {
-            requestBody.returnDate = searchParams.returnDate;
+            requestBody.ReturnDate = searchParams.ReturnDate;
         }
+
+        console.log('Request URL:', `${API_BASE_URL}${endpoint}?page=${currentPage}&size=10`);
+        console.log('Request body:', requestBody);
 
         // Query параметри для пагінації
         const queryParams = new URLSearchParams({
@@ -79,20 +82,44 @@ async function loadFlights() {
             body: JSON.stringify(requestBody)
         });
 
+        console.log('Response status:', response.status);
+        console.log('Response ok:', response.ok);
+
         if (!response.ok) {
-            throw new Error(`HTTP error! status: ${response.status}`);
+            const errorText = await response.text();
+            console.error('Response error text:', errorText);
+            throw new Error(`HTTP error! status: ${response.status}, message: ${errorText}`);
         }
 
         const result = await response.json();
+        console.log('Response data:', result);
 
         if (result.isSuccess && result.value) {
-            displayFlights(result.value);
-            updatePagination(result.value);
+            // result.value - це масив рейсів, а totalCount - окреме поле
+            const data = {
+                items: result.value,
+                totalCount: result.totalCount,
+                pageNumber: currentPage,
+                pageSize: 10
+            };
+            
+            // Обчислюємо totalPages
+            data.totalPages = Math.ceil(result.totalCount / 10);
+            data.hasPreviousPage = currentPage > 1;
+            data.hasNextPage = currentPage < data.totalPages;
+            
+            displayFlights(data);
+            updatePagination(data);
         } else {
-            throw new Error(result.message || 'Не вдалося завантажити рейси');
+            const errorMsg = result.errorMessage || 'Не вдалося завантажити рейси';
+            console.error('API error:', errorMsg);
+            console.error('Error code:', result.code);
+            console.error('Full response:', result);
+            throw new Error(errorMsg);
         }
 
     } catch (error) {
+        console.error('Load flights error:', error);
         errorEl.textContent = `Помилка: ${error.message}`;
         errorEl.style.display = 'block';
     } finally {
@@ -100,12 +127,10 @@ async function loadFlights() {
     }
 }
 
-/**
- * Відображення списку рейсів
- * @param {FlightReservationPagedResult} data 
- */
 function displayFlights(data) {
     const listEl = document.getElementById('flightsList');
+    
+    console.log('Displaying flights:', data);
     
     if (!data.items || data.items.length === 0) {
         listEl.innerHTML = '<p>Рейси не знайдено</p>';
@@ -116,26 +141,44 @@ function displayFlights(data) {
         <div class="flight-card">
             <div class="flight-header">
                 <div class="flight-route">
-                    ${flight.departureLocation} → ${flight.arrivalLocation}
+                    ${flight.departure} → ${flight.arrival}
                 </div>
-                <div class="flight-price">${flight.price} грн</div>
+                <div class="flight-price">${flight.price} ${flight.currency}</div>
             </div>
             <div class="flight-details">
                 <div class="flight-detail">
-                    <strong>Відправлення:</strong> ${formatDate(flight.departureDate)}
+                    <strong>Flight Number:</strong> ${flight.flightNumber}
                 </div>
                 <div class="flight-detail">
-                    <strong>Прибуття:</strong> ${formatDate(flight.arrivalDate)}
+                    <strong>Departure:</strong> ${formatDate(flight.departureTime)}
                 </div>
                 <div class="flight-detail">
-                    <strong>Компанія:</strong> ${flight.company}
+                    <strong>Arrival:</strong> ${formatDate(flight.arrivalTime)}
                 </div>
                 <div class="flight-detail">
-                    <strong>Вільних місць:</strong> ${flight.availableSeats}
+                    <strong>Company:</strong> ${flight.company || 'N/A'}
                 </div>
+                <div class="flight-detail">
+                    <strong>Aircraft:</strong> ${flight.airplaneType}
+                </div>
+                <div class="flight-detail">
+                    <strong>Available Seats:</strong> ${flight.availableSeats}
+                </div>
+            </div>
+            <div class="flight-actions">
+                <button class="btn btn-primary" onclick="startReservation('${flight.id}')">
+                    Start Reservation
+                </button>
             </div>
         </div>
     `).join('');
+}
+
+function startReservation(flightId) {
+    console.log('Starting reservation for flight:', flightId);
+    // Save flight ID to session storage and redirect to seats page
+    sessionStorage.setItem('selectedFlightId', flightId);
+    window.location.href = 'seats.html';
 }
 
 function updatePagination(data) {
@@ -144,6 +187,8 @@ function updatePagination(data) {
     const pageInfoEl = document.getElementById('pageInfo');
     const prevBtn = document.getElementById('prevPage');
     const nextBtn = document.getElementById('nextPage');
+
+    console.log('Pagination info:', { currentPage, totalPages });
 
     if (totalPages <= 1) {
         paginationEl.style.display = 'none';
@@ -161,6 +206,7 @@ function setupPagination() {
     document.getElementById('prevPage').addEventListener('click', () => {
         if (currentPage > 1) {
             currentPage--;
+            console.log('Going to previous page:', currentPage);
             sessionStorage.setItem('currentPage', currentPage.toString());
             loadFlights();
         }
@@ -169,6 +215,7 @@ function setupPagination() {
     document.getElementById('nextPage').addEventListener('click', () => {
         if (currentPage < totalPages) {
             currentPage++;
+            console.log('Going to next page:', currentPage);
             sessionStorage.setItem('currentPage', currentPage.toString());
             loadFlights();
         }
@@ -179,17 +226,19 @@ function setupSearchForm() {
     document.getElementById('flightSearchForm').addEventListener('submit', (e) => {
         e.preventDefault();
 
-        const departureLocation = document.getElementById('departureLocation').value;
-        const arrivalLocation = document.getElementById('arrivalLocation').value;
+        const departureCity = document.getElementById('departureLocation').value;
+        const arrivalCity = document.getElementById('arrivalLocation').value;
         const departureDate = document.getElementById('departureDate').value;
         const returnDate = document.getElementById('returnDate').value;
 
         searchParams = {
-            departureLocation,
-            arrivalLocation,
-            departureDate,
-            returnDate: returnDate || null
+            DepartureCity: departureCity,
+            ArrivalCity: arrivalCity,
+            DepartureDate: departureDate,
+            ReturnDate: returnDate || null
         };
+
+        console.log('New search params:', searchParams);
 
         currentPage = 1;
         sessionStorage.setItem('searchParams', JSON.stringify(searchParams));

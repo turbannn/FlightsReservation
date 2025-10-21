@@ -1,0 +1,51 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Passenger Information</title>
+    <link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+    <header class="header">
+        <div class="container">
+            <nav class="nav">
+                <a href="index.html" class="logo">FlightReservation</a>
+                <ul class="nav-menu">
+                    <li><a href="index.html">Home</a></li>
+                    <li><a href="profile.html">Profile</a></li>
+                    <li><a href="login.html">Login</a></li>
+                    <li><a href="register.html">Register</a></li>
+                </ul>
+            </nav>
+        </div>
+    </header>
+
+    <main class="main">
+        <div class="container">
+            <div id="passengersError" class="error" style="display: none;"></div>
+            
+            <div id="passengersContent">
+                <h1>Passenger Information</h1>
+                <p class="passengers-instruction">Please provide information for all passengers:</p>
+
+                <form id="passengersForm">
+                    <div id="passengerForms"></div>
+
+                    <div class="form-actions">
+                        <button type="submit" class="btn btn-primary" id="commitReservationBtn">
+                            Complete Reservation
+                        </button>
+                        <button type="button" onclick="window.history.back()" class="btn btn-secondary">
+                            Back to Seat Selection
+                        </button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </main>
+
+    <script src="js/config.js"></script>
+    <script src="js/passengers.js"></script>
+</body>
+</html>

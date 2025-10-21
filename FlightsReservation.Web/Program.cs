@@ -28,14 +28,24 @@ builder.Services.AddCors(options =>
 {
     options.AddPolicy("AllowLocalhost", policy =>
     {
+        policy.WithOrigins("http://localhost:63342")   
+            .AllowAnyHeader()
+            .AllowAnyMethod()
+            .AllowCredentials();
+    });
+});
+/*
+builder.Services.AddCors(options =>
+{
+    options.AddDefaultPolicy(policy =>
+    {
         policy.WithOrigins("http://localhost:63342")
             .AllowAnyHeader()
             .AllowAnyMethod()
             .AllowCredentials();
     });
 });
-
-
+*/
 builder.Services.AddDbContext<FlightsDbContext>(options => options.UseNpgsql(connection));
 
 // Add services to the container.
@@ -143,6 +153,7 @@ app.UseRouting();
 
 //app.UseCors("AllowAll");
 app.UseCors("AllowLocalhost");
+//app.UseCors();
 
 app.UseAuthentication();
 app.UseAuthorization();

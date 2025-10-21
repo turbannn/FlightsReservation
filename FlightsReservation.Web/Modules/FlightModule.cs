@@ -19,6 +19,7 @@ public class FlightModule() : CarterModule("/Flights")
             CancellationToken ct = default) =>
         {
             var response = await service.GetFlightPageFromRequestWithReturnAsync(page, size, request, ct);
+            Console.WriteLine("Error: " + response.ErrorMessage);
             return response.ToHttpResult();
         });
 
@@ -29,12 +30,14 @@ public class FlightModule() : CarterModule("/Flights")
             CancellationToken ct = default) =>
         {
             var response = await service.GetFlightPageFromRequestAsync(page, size, request, ct);
+            Console.WriteLine("Error: " + response.ErrorMessage);
             return response.ToHttpResult();
         });
 
         app.MapGet("/GetFlightsPage", async (int page, int size, FlightsService service, CancellationToken ct = default) =>
         {
             var response = await service.GetFlightPageAsync(page, size, ct);
+            Console.WriteLine("Error: " + response.ErrorMessage);
             return response.ToHttpResult();
         }).RequireAuthorization(new AuthorizeAttribute { Roles = "Admin" });
 
@@ -42,7 +45,7 @@ public class FlightModule() : CarterModule("/Flights")
         {
             var response = await service.GetFlightByIdAsync(id, ct);
             return response.ToHttpResult();
-        }).RequireAuthorization(new AuthorizeAttribute { Roles = "Admin" });
+        });
 
         app.MapPost("/AddFlight",
             async ([FromBody] FlightCreateDto createDto, FlightsService service, CancellationToken ct = default) =>

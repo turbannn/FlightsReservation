@@ -1,0 +1,56 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Reservation Confirmed</title>
+    <link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+    <header class="header">
+        <div class="container">
+            <nav class="nav">
+                <a href="index.html" class="logo">FlightReservation</a>
+                <ul class="nav-menu">
+                    <li><a href="index.html">Home</a></li>
+                    <li><a href="profile.html">Profile</a></li>
+                    <li><a href="login.html">Login</a></li>
+                    <li><a href="register.html">Register</a></li>
+                </ul>
+            </nav>
+        </div>
+    </header>
+
+    <main class="main">
+        <div class="container">
+            <div id="confirmationError" class="error" style="display: none;"></div>
+            
+            <div id="confirmationContent" style="display: none;">
+                <div class="confirmation-card">
+                    <div class="confirmation-icon">✓</div>
+                    <h1>Reservation Confirmed!</h1>
+                    <p class="confirmation-message">Your flight reservation has been successfully completed.</p>
+
+                    <div class="confirmation-details">
+                        <h2>Reservation Details</h2>
+                        <div id="reservationInfo"></div>
+                    </div>
+
+                    <div class="confirmation-passengers">
+                        <h2>Passengers</h2>
+                        <div id="passengersList"></div>
+                    </div>
+
+                    <div class="confirmation-actions">
+                        <a href="profile.html" class="btn btn-primary">View My Reservations</a>
+                        <a href="index.html" class="btn btn-secondary">Search New Flights</a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <script src="js/config.js"></script>
+    <script src="js/confirmation.js"></script>
+</body>
+</html>

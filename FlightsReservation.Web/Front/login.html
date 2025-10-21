@@ -1,9 +1,9 @@
 <!DOCTYPE html>
-<html lang="uk">
+<html lang="en">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Вхід</title>
+    <title>Login</title>
     <link rel="stylesheet" href="css/style.css">
 </head>
 <body>
@@ -12,10 +12,10 @@
             <nav class="nav">
                 <a href="index.html" class="logo">FlightReservation</a>
                 <ul class="nav-menu">
-                    <li><a href="index.html">Головна</a></li>
-                    <li><a href="profile.html">Профіль</a></li>
-                    <li><a href="login.html">Вхід</a></li>
-                    <li><a href="register.html">Реєстрація</a></li>
+                    <li><a href="index.html">Home</a></li>
+                    <li><a href="profile.html">Profile</a></li>
+                    <li><a href="login.html">Login</a></li>
+                    <li><a href="register.html">Register</a></li>
                 </ul>
             </nav>
         </div>
@@ -24,31 +24,30 @@
     <main class="main">
         <div class="container">
             <div class="auth-form">
-                <h1>Вхід</h1>
+                <h1>Login</h1>
                 <form id="loginForm">
                     <div class="form-group">
-                        <label for="login">Логін:</label>
+                        <label for="login">Username:</label>
                         <input type="text" id="login" name="login" required>
                     </div>
 
                     <div class="form-group">
-                        <label for="password">Пароль:</label>
+                        <label for="password">Password:</label>
                         <input type="password" id="password" name="password" required>
                     </div>
 
                     <div id="loginError" class="error" style="display: none;"></div>
 
-                    <button type="submit" class="btn btn-primary btn-block">Увійти</button>
+                    <button type="submit" class="btn btn-primary btn-block">Sign In</button>
                 </form>
 
                 <p class="auth-link">
-                    Немає акаунту? <a href="register.html">Зареєструватися</a>
+                    Don't have an account? <a href="register.html">Register</a>
                 </p>
             </div>
         </div>
     </main>
 
-    <script src="js/types.js"></script>
     <script src="js/config.js"></script>
     <script src="js/login.js"></script>
 </body>
