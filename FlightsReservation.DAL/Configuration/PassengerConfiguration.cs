@@ -16,7 +16,7 @@ public class PassengerConfiguration : IEntityTypeConfiguration<Passenger>
         builder.Property(p => p.LastName).IsRequired().HasMaxLength(40);
         builder.Property(p => p.PassportNumber).IsRequired().HasMaxLength(15);
         builder.Property(p => p.PhoneNumber).IsRequired().HasMaxLength(15);
-        builder.Property(p => p.Email).IsRequired().HasMaxLength(25);
+        builder.Property(p => p.Email).IsRequired().HasMaxLength(80);
 
 
         builder.HasOne(p => p.Seat)

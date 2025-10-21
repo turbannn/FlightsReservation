@@ -27,7 +27,7 @@ public class PassengerDtoValidator : AbstractValidator<IPassengerDto>
         RuleFor(passenger => passenger.Email)
             .NotEmpty().WithMessage("Email is required.")
             .EmailAddress().WithMessage("A valid email is required.")
-            .MaximumLength(25).WithMessage("Email cannot exceed 25 characters.");
+            .MaximumLength(80).WithMessage("Email cannot exceed 80 characters.");
 
         RuleFor(passenger => passenger.PhoneNumber)
             .NotEmpty().WithMessage("Phone number is required.")
