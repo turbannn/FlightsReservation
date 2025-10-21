@@ -1,0 +1,71 @@
+<!DOCTYPE html>
+<html lang="uk">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Реєстрація</title>
+    <link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+    <header class="header">
+        <div class="container">
+            <nav class="nav">
+                <a href="index.html" class="logo">FlightReservation</a>
+                <ul class="nav-menu">
+                    <li><a href="index.html">Головна</a></li>
+                    <li><a href="profile.html">Профіль</a></li>
+                    <li><a href="login.html">Вхід</a></li>
+                    <li><a href="register.html">Реєстрація</a></li>
+                </ul>
+            </nav>
+        </div>
+    </header>
+
+    <main class="main">
+        <div class="container">
+            <div class="auth-form">
+                <h1>Реєстрація</h1>
+                <form id="registerForm">
+                    <div class="form-group">
+                        <label for="name">Ім'я:</label>
+                        <input type="text" id="name" name="name" required>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="surname">Прізвище:</label>
+                        <input type="text" id="surname" name="surname" required>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="email">Email:</label>
+                        <input type="email" id="email" name="email" required>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="login">Логін:</label>
+                        <input type="text" id="login" name="login" required>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="password">Пароль:</label>
+                        <input type="password" id="password" name="password" required>
+                    </div>
+
+                    <div id="registerError" class="error" style="display: none;"></div>
+                    <div id="registerSuccess" class="success" style="display: none;"></div>
+
+                    <button type="submit" class="btn btn-primary btn-block">Зареєструватися</button>
+                </form>
+
+                <p class="auth-link">
+                    Вже є акаунт? <a href="login.html">Увійти</a>
+                </p>
+            </div>
+        </div>
+    </main>
+
+    <script src="js/types.js"></script>
+    <script src="js/config.js"></script>
+    <script src="js/register.js"></script>
+</body>
+</html>

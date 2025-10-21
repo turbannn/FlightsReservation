@@ -1,0 +1,64 @@
+<!DOCTYPE html>
+<html lang="uk">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Бронювання рейсів</title>
+    <link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+    <header class="header">
+        <div class="container">
+            <nav class="nav">
+                <a href="index.html" class="logo">FlightReservation</a>
+                <ul class="nav-menu">
+                    <li><a href="index.html">Головна</a></li>
+                    <li><a href="profile.html">Профіль</a></li>
+                    <li><a href="login.html">Вхід</a></li>
+                    <li><a href="register.html">Реєстрація</a></li>
+                </ul>
+            </nav>
+        </div>
+    </header>
+
+    <main class="main">
+        <div class="container">
+            <div class="hero">
+                <h1>Знайдіть свій ідеальний рейс</h1>
+                <p>Пошук та бронювання авіаквитків</p>
+            </div>
+
+            <div class="search-form">
+                <h2>Пошук рейсів</h2>
+                <form id="flightSearchForm">
+                    <div class="form-group">
+                        <label for="departureLocation">Звідки:</label>
+                        <input type="text" id="departureLocation" name="departureLocation" required>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="arrivalLocation">Куди:</label>
+                        <input type="text" id="arrivalLocation" name="arrivalLocation" required>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="departureDate">Дата відправлення:</label>
+                        <input type="datetime-local" id="departureDate" name="departureDate" required>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="returnDate">Дата повернення (опціонально):</label>
+                        <input type="datetime-local" id="returnDate" name="returnDate">
+                    </div>
+
+                    <button type="submit" class="btn btn-primary">Знайти рейси</button>
+                </form>
+            </div>
+        </div>
+    </main>
+
+    <script src="js/types.js"></script>
+    <script src="js/config.js"></script>
+    <script src="js/index.js"></script>
+</body>
+</html>

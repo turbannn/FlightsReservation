@@ -12,9 +12,9 @@ public class FlightModule() : CarterModule("/Flights")
 {
     public override void AddRoutes(IEndpointRouteBuilder app)
     {
-        app.MapPost("/RequestFlightsPageWithReturn", async (int page,
-            int size,
-            FlightSearchWithReturnRequest request,
+        app.MapPost("/RequestFlightsPageWithReturn", async ([FromQuery] int page,
+            [FromQuery] int size,
+            [FromBody] FlightSearchWithReturnRequest request,
             FlightsService service,
             CancellationToken ct = default) =>
         {
@@ -22,9 +22,9 @@ public class FlightModule() : CarterModule("/Flights")
             return response.ToHttpResult();
         });
 
-        app.MapPost("/RequestFlightsPage", async (int page,
-            int size,
-            FlightSearchRequest request,
+        app.MapPost("/RequestFlightsPage", async ([FromQuery] int page,
+            [FromQuery] int size,
+            [FromBody] FlightSearchRequest request,
             FlightsService service,
             CancellationToken ct = default) =>
         {

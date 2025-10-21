@@ -23,6 +23,19 @@ var builder = WebApplication.CreateBuilder(args);
 // Add services to the container.
 var connection = builder.Configuration.GetConnectionString("DefaultConnection");
 
+
+builder.Services.AddCors(options =>
+{
+    options.AddPolicy("AllowLocalhost", policy =>
+    {
+        policy.WithOrigins("http://localhost:63342")
+            .AllowAnyHeader()
+            .AllowAnyMethod()
+            .AllowCredentials();
+    });
+});
+
+
 builder.Services.AddDbContext<FlightsDbContext>(options => options.UseNpgsql(connection));
 
 // Add services to the container.
@@ -115,6 +128,8 @@ builder.Services.AddSwaggerGen();
 
 var app = builder.Build();
 
+
+
 // Configure the HTTP request pipeline.
 if (app.Environment.IsDevelopment())
 {
@@ -123,6 +138,11 @@ if (app.Environment.IsDevelopment())
 }
 
 app.UseHttpsRedirection();
+app.UseStaticFiles();
+app.UseRouting();
+
+//app.UseCors("AllowAll");
+app.UseCors("AllowLocalhost");
 
 app.UseAuthentication();
 app.UseAuthorization();

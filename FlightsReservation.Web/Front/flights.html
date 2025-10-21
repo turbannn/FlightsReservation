@@ -1,0 +1,74 @@
+<!DOCTYPE html>
+<html lang="uk">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Результати пошуку</title>
+    <link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+    <header class="header">
+        <div class="container">
+            <nav class="nav">
+                <a href="index.html" class="logo">FlightReservation</a>
+                <ul class="nav-menu">
+                    <li><a href="index.html">Головна</a></li>
+                    <li><a href="profile.html">Профіль</a></li>
+                    <li><a href="login.html">Вхід</a></li>
+                    <li><a href="register.html">Реєстрація</a></li>
+                </ul>
+            </nav>
+        </div>
+    </header>
+
+    <main class="main">
+        <div class="container flights-container">
+            <div class="flights-content">
+                <h1>Результати пошуку</h1>
+                <div id="flightsLoading" class="loading">Завантаження...</div>
+                <div id="flightsError" class="error" style="display: none;"></div>
+                <div id="flightsList" class="flights-list"></div>
+                
+                <div id="pagination" class="pagination" style="display: none;">
+                    <button id="prevPage" class="btn btn-secondary">← Попередня</button>
+                    <span id="pageInfo" class="page-info"></span>
+                    <button id="nextPage" class="btn btn-secondary">Наступна →</button>
+                </div>
+            </div>
+
+            <aside class="search-sidebar">
+                <div class="search-form-compact">
+                    <h3>Змінити пошук</h3>
+                    <form id="flightSearchForm">
+                        <div class="form-group">
+                            <label for="departureLocation">Звідки:</label>
+                            <input type="text" id="departureLocation" name="departureLocation" required>
+                        </div>
+
+                        <div class="form-group">
+                            <label for="arrivalLocation">Куди:</label>
+                            <input type="text" id="arrivalLocation" name="arrivalLocation" required>
+                        </div>
+
+                        <div class="form-group">
+                            <label for="departureDate">Дата відправлення:</label>
+                            <input type="datetime-local" id="departureDate" name="departureDate" required>
+                        </div>
+
+                        <div class="form-group">
+                            <label for="returnDate">Дата повернення:</label>
+                            <input type="datetime-local" id="returnDate" name="returnDate">
+                        </div>
+
+                        <button type="submit" class="btn btn-primary btn-block">Оновити пошук</button>
+                    </form>
+                </div>
+            </aside>
+        </div>
+    </main>
+
+    <script src="js/types.js"></script>
+    <script src="js/config.js"></script>
+    <script src="js/flights.js"></script>
+</body>
+</html>
