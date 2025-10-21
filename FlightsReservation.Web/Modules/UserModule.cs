@@ -2,7 +2,7 @@
 using FlightsReservation.BLL.Entities.DataTransferObjects.UserDtos;
 using FlightsReservation.BLL.Entities.Utilities.Results;
 using FlightsReservation.BLL.Services.EntityServices;
-using FlightsReservation.BLL.Services.UtilityServices;
+using FlightsReservation.BLL.Services.UtilityServices.Authentication;
 using FlightsReservation.Web.Extensions;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;

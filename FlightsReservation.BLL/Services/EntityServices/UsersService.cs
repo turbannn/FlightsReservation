@@ -187,6 +187,26 @@ public class UsersService
         return FlightReservationResult<int>.Success(1, ResponseCodes.Success);
     }
 
+    public async Task<FlightReservationResult<string>> AddUserMoneyAsync(Guid id, int amount, CancellationToken ct = default)
+    {
+        if (amount < 0)
+        {
+            return FlightReservationResult<string>.Fail("Amount is below zero", ResponseCodes.BadRequest);
+        }
+
+        var res = await _usersRepository.AddMoneyAsync(id, amount/100, ct);
+        if (!res)
+        {
+            return FlightReservationResult<string>.Fail("User not found", ResponseCodes.NotFound);
+        }
+
+        await _unitOfWork.SaveChangesAsync(ct);
+
+        var profileUrl = "http://localhost:63342/Front/profile.html";
+
+        return FlightReservationResult<string>.Success(profileUrl, ResponseCodes.Success);
+    }
+
     public async Task<FlightReservationResult<int>> DeleteUser(Guid id, CancellationToken ct = default)
     {
         if (id == Guid.Empty)

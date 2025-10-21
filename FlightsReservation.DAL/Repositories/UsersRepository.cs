@@ -18,18 +18,6 @@ public class UsersRepository : IUsersRepository
         return await _context.Users.AsNoTracking().ToListAsync(ct);
     }
 
-    public async Task<bool> UpdateMoneyAsync(Guid id, int amount, CancellationToken ct)
-    {
-        var res = await _context.Users
-            .Where(u => u.Id == id)
-            .ExecuteUpdateAsync(u => u.SetProperty(user => user.Money, amount), cancellationToken: ct);
-
-        if(res <= 0)
-            return false;
-
-        return true;
-    }
-
     public async Task<User?> GetByLoginAndPasswordAsync(string login, string password, CancellationToken ct)
     {
         var user = await _context.Users
@@ -37,18 +25,6 @@ public class UsersRepository : IUsersRepository
             .FirstOrDefaultAsync(p => p.Username == login && p.Password == password, cancellationToken: ct);
 
         return user;
-    }
-
-    public async Task<bool> SubtractMoneyAsync(Guid id, int amount, CancellationToken ct)
-    {
-        var user = await _context.Users.FirstOrDefaultAsync(p => p.Id == id, cancellationToken: ct);
-
-        if (user is null || user.Money < amount)
-            return false;
-
-        user.Money -= amount;
-
-        return true;
     }
 
     public async Task<User?> GetByIdAsync(Guid id, CancellationToken ct)
@@ -88,6 +64,40 @@ public class UsersRepository : IUsersRepository
 
         if (res <= 0)
             return false;
+
+        return true;
+    }
+    public async Task<bool> UpdateMoneyAsync(Guid id, int amount, CancellationToken ct)
+    {
+        var res = await _context.Users
+            .Where(u => u.Id == id)
+            .ExecuteUpdateAsync(u => u.SetProperty(user => user.Money, amount), cancellationToken: ct);
+
+        if (res <= 0)
+            return false;
+
+        return true;
+    }
+
+    public async Task<bool> AddMoneyAsync(Guid id, int amount, CancellationToken ct)
+    {
+        var user = await _context.Users.FirstOrDefaultAsync(p => p.Id == id, cancellationToken: ct);
+
+        if (user is null)
+            return false;
+
+        user.Money += amount;
+
+        return true;
+    }
+    public async Task<bool> SubtractMoneyAsync(Guid id, int amount, CancellationToken ct)
+    {
+        var user = await _context.Users.FirstOrDefaultAsync(p => p.Id == id, cancellationToken: ct);
+
+        if (user is null || user.Money < amount)
+            return false;
+
+        user.Money -= amount;
 
         return true;
     }

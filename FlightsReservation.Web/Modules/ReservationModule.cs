@@ -1,5 +1,4 @@
-﻿using System.Security.Claims;
-using Microsoft.AspNetCore.Mvc;
+﻿using Microsoft.AspNetCore.Mvc;
 using Carter;
 using FlightsReservation.BLL.Entities.DataTransferObjects.ReservationDtos;
 using FlightsReservation.Web.Extensions;

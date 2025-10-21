@@ -5,7 +5,7 @@ using MailKit.Security;
 using MimeKit;
 using FlightsReservation.BLL.Interfaces.Services;
 
-namespace FlightsReservation.BLL.Services.UtilityServices
+namespace FlightsReservation.BLL.Services.UtilityServices.FilnalizeReservation
 {
     public class MailkitEmailService : IEmailService
     {

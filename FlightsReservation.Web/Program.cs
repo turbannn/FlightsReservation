@@ -17,12 +17,16 @@ using QuestPDF.Infrastructure;
 using FlightsReservation.BLL.Interfaces.Services;
 using FlightsReservation.BLL.Services.EntityServices;
 using FlightsReservation.BLL.Services.UtilityServices;
+using FlightsReservation.DAL.Entities.Utils.Payment;
+using FlightsReservation.BLL.Services.UtilityServices.FilnalizeReservation;
+using FlightsReservation.BLL.Services.UtilityServices.Simulation;
+using FlightsReservation.BLL.Services.UtilityServices.Authentication;
+using FlightsReservation.BLL.Services.UtilityServices.Payment;
 
 var builder = WebApplication.CreateBuilder(args);
 
 // Add services to the container.
 var connection = builder.Configuration.GetConnectionString("DefaultConnection");
-
 
 builder.Services.AddCors(options =>
 {
@@ -73,9 +77,17 @@ var jwtSettings = builder.Configuration
 if (jwtSettings is null)
     throw new Exception("Email settings are not configured properly");
 
+var payuSettings = builder.Configuration
+    .GetSection("PayU")
+    .Get<PayuSettings>();
+
+if (payuSettings is null)
+    throw new Exception("PayU settings are not configured properly");
+
 //Settings
 builder.Services.AddSingleton(emailSettings);
 builder.Services.AddSingleton(jwtSettings);
+builder.Services.AddSingleton(payuSettings);
 
 //OOM Mapper
 builder.Services.AddAutoMapper(cfg => { }, typeof(SeatProfile).Assembly);
@@ -96,6 +108,7 @@ builder.Services.AddScoped<IEmailService, MailkitEmailService>();
 builder.Services.AddScoped<IPdfService, QuestPdfService>();
 builder.Services.AddScoped<TokenService>();
 builder.Services.AddScoped<RefreshService>();
+builder.Services.AddScoped<PayuService>();
 
 //Routing modules
 builder.Services.AddCarter();

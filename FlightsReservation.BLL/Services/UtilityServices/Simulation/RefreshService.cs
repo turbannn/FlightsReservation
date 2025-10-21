@@ -3,7 +3,7 @@ using FlightsReservation.BLL.Entities.Utilities.Results;
 using FlightsReservation.DAL.Entities.Model;
 using FlightsReservation.DAL.Interfaces;
 
-namespace FlightsReservation.BLL.Services.UtilityServices
+namespace FlightsReservation.BLL.Services.UtilityServices.Simulation
 {
     public class RefreshService
     {
@@ -50,8 +50,8 @@ namespace FlightsReservation.BLL.Services.UtilityServices
                         DepartureTime = depDay,
                         ArrivalTime = depDay.AddHours(random.Next(1, 4)),
                         AirplaneType = $"Boeing {random.Next(700, 799)}",
-                        Price = random.Next(50, 400),
-                        Currency = "EUR",
+                        Price = random.Next(300, 900),
+                        Currency = "PLN",
                         Company = company
                     };
                     var flightResult = await _flightsRepository.AddAsync(createFlightDto, ct);

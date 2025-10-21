@@ -4,7 +4,7 @@ using FlightsReservation.DAL.Entities.Utils.Authentication;
 using Microsoft.IdentityModel.JsonWebTokens;
 using Microsoft.IdentityModel.Tokens;
 
-namespace FlightsReservation.BLL.Services.UtilityServices;
+namespace FlightsReservation.BLL.Services.UtilityServices.Authentication;
 
 public class TokenService
 {
