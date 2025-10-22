@@ -48,7 +48,10 @@
                         </div>
                         <div class="profile-item">
                             <strong>Balance:</strong>
-                            <span id="userMoney"></span> USD
+                            <span id="userMoney"></span> PLN
+                            <button class="btn btn-primary btn-small" id="topUpBalanceBtn" onclick="openTopUpModal()">
+                                Top Up Balance
+                            </button>
                         </div>
                         <div class="profile-item">
                             <strong>Role:</strong>
@@ -64,6 +67,51 @@
             </div>
         </div>
     </main>
+
+    <!-- Top Up Balance Modal -->
+    <div id="topUpModal" class="modal" style="display: none;">
+        <div class="modal-content">
+            <span class="modal-close" onclick="closeTopUpModal()">&times;</span>
+            <h2>Top Up Balance</h2>
+            
+            <form id="topUpForm">
+                <div class="form-group">
+                    <label for="topUpAmount">Amount (PLN):</label>
+                    <input 
+                        type="number" 
+                        id="topUpAmount" 
+                        name="topUpAmount" 
+                        min="1"
+                        step="1"
+                        placeholder="Enter amount in PLN"
+                        required
+                    />
+                </div>
+
+                <div class="form-group">
+                    <label for="topUpEmail">Email:</label>
+                    <input 
+                        type="email" 
+                        id="topUpEmail" 
+                        name="topUpEmail" 
+                        placeholder="Enter your email"
+                        required
+                    />
+                </div>
+
+                <div id="topUpError" class="error" style="display: none;"></div>
+
+                <div class="modal-actions">
+                    <button type="submit" class="btn btn-primary" id="commitPaymentBtn">
+                        Commit Payment
+                    </button>
+                    <button type="button" class="btn btn-secondary" onclick="closeTopUpModal()">
+                        Cancel
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
 
     <script src="js/config.js"></script>
     <script src="js/profile.js"></script>

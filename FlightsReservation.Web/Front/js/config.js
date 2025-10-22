@@ -14,5 +14,8 @@ const API_ENDPOINTS = {
     
     // Reservations
     beginReservation: '/Reservations/BeginReservation',
-    commitReservation: '/Reservations/CommitReservation'
+    commitReservation: '/Reservations/CommitReservation',
+    
+    // Payments
+    createPayment: '/Payments/CreatePayment'
 };

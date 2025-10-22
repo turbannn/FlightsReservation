@@ -1,5 +1,6 @@
 document.addEventListener('DOMContentLoaded', () => {
     loadUserProfile();
+    setupTopUpForm();
 });
 
 async function loadUserProfile() {
@@ -117,4 +118,123 @@ function formatDate(dateString) {
         hour: '2-digit',
         minute: '2-digit'
     });
+}
+
+// Top Up Balance Modal Functions
+function openTopUpModal() {
+    const modal = document.getElementById('topUpModal');
+    const emailInput = document.getElementById('topUpEmail');
+    
+    // Pre-fill email from profile if available
+    const userEmail = document.getElementById('userEmail').textContent;
+    if (userEmail && userEmail !== 'N/A') {
+        emailInput.value = userEmail;
+    }
+    
+    modal.style.display = 'flex';
+    console.log('Top up modal opened');
+}
+
+function closeTopUpModal() {
+    const modal = document.getElementById('topUpModal');
+    const form = document.getElementById('topUpForm');
+    const errorEl = document.getElementById('topUpError');
+    
+    modal.style.display = 'none';
+    form.reset();
+    errorEl.style.display = 'none';
+    console.log('Top up modal closed');
+}
+
+function setupTopUpForm() {
+    document.getElementById('topUpForm').addEventListener('submit', async (e) => {
+        e.preventDefault();
+        await processPayment();
+    });
+    
+    // Close modal when clicking outside
+    window.addEventListener('click', (e) => {
+        const modal = document.getElementById('topUpModal');
+        if (e.target === modal) {
+            closeTopUpModal();
+        }
+    });
+}
+
+async function processPayment() {
+    const btn = document.getElementById('commitPaymentBtn');
+    const errorEl = document.getElementById('topUpError');
+    
+    try {
+        btn.disabled = true;
+        btn.textContent = 'Processing...';
+        errorEl.style.display = 'none';
+
+        const amount = parseInt(document.getElementById('topUpAmount').value * 100); // With cents conversion
+        const email = document.getElementById('topUpEmail').value.trim();
+
+        if (amount <= 0) {
+            throw new Error('Amount must be greater than 0');
+        }
+
+        if (!email) {
+            throw new Error('Email is required');
+        }
+
+        // Create payment request matching PayuOrderRequest DTO
+        const paymentRequest = {
+            TotalAmount: amount,
+            BuyerEmail: email
+        };
+
+        console.log('Payment request:', paymentRequest);
+        console.log('Request URL:', `${API_BASE_URL}${API_ENDPOINTS.createPayment}`);
+
+        const response = await fetch(`${API_BASE_URL}${API_ENDPOINTS.createPayment}`, {
+            method: 'POST',
+            credentials: 'include',
+            headers: {
+                'Content-Type': 'application/json',
+                'Accept': 'application/json'
+            },
+            body: JSON.stringify(paymentRequest)
+        });
+
+        console.log('Response status:', response.status);
+        console.log('Response ok:', response.ok);
+
+        if (!response.ok) {
+            const errorText = await response.text();
+            console.error('Response error text:', errorText);
+            throw new Error(`HTTP error! status: ${response.status}, message: ${errorText}`);
+        }
+
+        const result = await response.json();
+        console.log('Response data:', result);
+
+        if (result.isSuccess && result.value) {
+            const payuResult = result.value;
+            console.log('Payment created successfully:', payuResult);
+            console.log('Redirect URI:', payuResult.redirectUri);
+            
+            if (payuResult.redirectUri) {
+                // Redirect to PayU payment page
+                window.location.href = payuResult.redirectUri;
+            } else {
+                throw new Error('No redirect URI provided');
+            }
+        } else {
+            const errorMsg = result.errorMessage || 'Failed to create payment';
+            console.error('API error:', errorMsg);
+            console.error('Error code:', result.code);
+            throw new Error(errorMsg);
+        }
+
+    } catch (error) {
+        console.error('Payment error:', error);
+        errorEl.textContent = `Error: ${error.message}`;
+        errorEl.style.display = 'block';
+        btn.disabled = false;
+        btn.textContent = 'Commit Payment';
+    }
 }

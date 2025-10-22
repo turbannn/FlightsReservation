@@ -1,0 +1,138 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Debug - URL Check</title>
+    <style>
+        body {
+            font-family: monospace;
+            padding: 20px;
+            background: #f5f5f5;
+        }
+        .info {
+            background: white;
+            padding: 20px;
+            border-radius: 8px;
+            margin-bottom: 20px;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+        }
+        .warning {
+            background: #fff3cd;
+            border: 2px solid #ffc107;
+            padding: 15px;
+            border-radius: 4px;
+            margin-top: 20px;
+        }
+        .error-box {
+            background: #f8d7da;
+            border: 2px solid #f5c6cb;
+            padding: 15px;
+            border-radius: 4px;
+            margin-top: 20px;
+        }
+        .success {
+            background: #d4edda;
+            border: 2px solid #c3e6cb;
+            padding: 15px;
+            border-radius: 4px;
+            margin-top: 20px;
+        }
+        pre {
+            background: #f4f4f4;
+            padding: 10px;
+            border-radius: 4px;
+            overflow-x: auto;
+        }
+    </style>
+</head>
+<body>
+    <h1>🔍 Environment Debug</h1>
+    
+    <div class="info">
+        <h2>Current Page Information:</h2>
+        <p><strong>Protocol:</strong> <span id="protocol"></span></p>
+        <p><strong>Hostname:</strong> <span id="hostname"></span></p>
+        <p><strong>Port:</strong> <span id="port"></span></p>
+        <p><strong>Origin:</strong> <span id="origin"></span></p>
+        <p><strong>Full URL:</strong> <span id="fullUrl"></span></p>
+    </div>
+
+    <div class="info">
+        <h2>Config Check:</h2>
+        <p><strong>API_BASE_URL loaded:</strong> <span id="configLoaded"></span></p>
+        <p><strong>API_BASE_URL value:</strong> <span id="apiBaseUrl"></span></p>
+    </div>
+
+    <div class="info">
+        <h2>Browser Information:</h2>
+        <p><strong>User Agent:</strong> <span id="userAgent"></span></p>
+        <p><strong>Cookies Enabled:</strong> <span id="cookiesEnabled"></span></p>
+        <p><strong>Current Cookies:</strong> <span id="currentCookies"></span></p>
+    </div>
+
+    <div id="warningBox"></div>
+
+    <script src="js/config.js"></script>
+    <script>
+        // Get page info
+        document.getElementById('protocol').textContent = window.location.protocol;
+        document.getElementById('hostname').textContent = window.location.hostname;
+        document.getElementById('port').textContent = window.location.port || '(default)';
+        document.getElementById('origin').textContent = window.location.origin;
+        document.getElementById('fullUrl').textContent = window.location.href;
+
+        // Check config
+        const configLoaded = typeof API_BASE_URL !== 'undefined';
+        document.getElementById('configLoaded').textContent = configLoaded ? '✅ YES' : '❌ NO';
+        document.getElementById('apiBaseUrl').textContent = configLoaded ? API_BASE_URL : 'NOT LOADED!';
+
+        // Browser info
+        document.getElementById('userAgent').textContent = navigator.userAgent;
+        document.getElementById('cookiesEnabled').textContent = navigator.cookieEnabled ? '✅ Yes' : '❌ No';
+        document.getElementById('currentCookies').textContent = document.cookie || '(none)';
+
+        // Check for issues
+        const warningBox = document.getElementById('warningBox');
+        
+        if (window.location.protocol === 'file:') {
+            warningBox.className = 'error-box';
+            warningBox.innerHTML = `
+                <h2>❌ CRITICAL ISSUE FOUND!</h2>
+                <p><strong>You are using file:// protocol!</strong></p>
+                <p>This will NOT work with cookies and CORS.</p>
+                <h3>Solution:</h3>
+                <ol>
+                    <li>Right-click on login.html in WebStorm</li>
+                    <li>Choose "Open in Browser" → "Built-in Server"</li>
+                    <li>Make sure URL starts with <code>http://localhost:63342</code></li>
+                </ol>
+            `;
+        } else if (window.location.port === '63342') {
+            warningBox.className = 'success';
+            warningBox.innerHTML = `
+                <h2>✅ Protocol is Correct!</h2>
+                <p>You are using WebStorm built-in server: <strong>${window.location.origin}</strong></p>
+                <p>This should work with CORS and cookies.</p>
+            `;
+        } else {
+            warningBox.className = 'warning';
+            warningBox.innerHTML = `
+                <h2>⚠️ Unexpected Configuration</h2>
+                <p>You are on: <strong>${window.location.origin}</strong></p>
+                <p>Expected: <strong>http://localhost:63342</strong></p>
+                <p>Make sure CORS is configured for your origin in Program.cs</p>
+            `;
+        }
+
+        console.log('=== ENVIRONMENT DEBUG ===');
+        console.log('Protocol:', window.location.protocol);
+        console.log('Origin:', window.location.origin);
+        console.log('Full URL:', window.location.href);
+        console.log('Config loaded:', configLoaded);
+        if (configLoaded) {
+            console.log('API_BASE_URL:', API_BASE_URL);
+        }
+    </script>
+</body>
+</html>

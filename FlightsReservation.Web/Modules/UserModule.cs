@@ -42,7 +42,7 @@ public class UserModule() : CarterModule("/Users")
             });
 
         app.MapGet("/CommitLogin",
-            async (string login, string password, HttpResponse res, UsersService service, TokenService tokenService, CancellationToken ct = default) =>
+            async (string login, string password, HttpResponse res, HttpContext context, UsersService service, TokenService tokenService, CancellationToken ct = default) =>
             {
                 var response = await service.LoginAsync(login, password, ct);
 
@@ -51,15 +51,21 @@ public class UserModule() : CarterModule("/Users")
 
                 var tokenstr = tokenService.CreateAccessToken(response.Value!.Id, response.Value.Role);
                 Console.WriteLine("Generated Token: " + tokenstr);
+                Console.WriteLine("Request Origin: " + context.Request.Headers["Origin"]);
+                
 #if DEBUG
-                res.Cookies.Append("_t", tokenstr, new CookieOptions
+                var cookieOptions = new CookieOptions
                 {
                     HttpOnly = true,
-                    Secure = false, // HTTP для localhost
+                    Secure = false,
                     SameSite = SameSiteMode.Lax,
                     Expires = DateTime.Now.AddMinutes(15),
-                    Path = "/"
-                });
+                    Path = "/",
+                    Domain = null
+                };
+                
+                res.Cookies.Append("_t", tokenstr, cookieOptions);
+                Console.WriteLine("Cookie set with options: HttpOnly=true, Secure=false, SameSite=Lax, Path=/, Domain=null");
 #else
                 res.Cookies.Append("_t", tokenstr, new CookieOptions
                 {

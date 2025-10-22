@@ -15,6 +15,7 @@ public class PaymentModule() : CarterModule("/Payments")
         {
             request.CurrencyCode = "PLN";
             request.CustomerIp = "127.0.0.1";
+            request.Description = "Flights Reservation payment order.";
 
             var response = await service.CreateOrderAsync(request, ct);
             return response.ToHttpResult();

@@ -32,24 +32,30 @@ builder.Services.AddCors(options =>
 {
     options.AddPolicy("AllowLocalhost", policy =>
     {
-        policy.WithOrigins("http://localhost:63342")   
+        policy.WithOrigins(
+                "http://localhost:63342",   // WebStorm
+                "http://127.0.0.1:63342",   // Alternative localhost
+                "http://localhost:5500",    // Live Server (if used)
+                "http://127.0.0.1:5500"
+            )
             .AllowAnyHeader()
             .AllowAnyMethod()
-            .AllowCredentials();
+            .AllowCredentials()
+            .SetIsOriginAllowedToAllowWildcardSubdomains();
     });
 });
 /*
 builder.Services.AddCors(options =>
 {
-    options.AddDefaultPolicy(policy =>
+    options.AddPolicy("AllowAll", policy =>
     {
-        policy.WithOrigins("http://localhost:63342")
-            .AllowAnyHeader()
+        policy.AllowAnyHeader()
             .AllowAnyMethod()
-            .AllowCredentials();
+            .AllowAnyOrigin()
+            .SetIsOriginAllowedToAllowWildcardSubdomains();
     });
-});
-*/
+});*/
+
 builder.Services.AddDbContext<FlightsDbContext>(options => options.UseNpgsql(connection));
 
 // Add services to the container.
@@ -166,7 +172,6 @@ app.UseRouting();
 
 //app.UseCors("AllowAll");
 app.UseCors("AllowLocalhost");
-//app.UseCors();
 
 app.UseAuthentication();
 app.UseAuthorization();
