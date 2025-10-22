@@ -1,7 +1,7 @@
 ﻿using FlightsReservation.BLL.Interfaces.Dtos;
 using FluentValidation;
 
-namespace FlightsReservation.BLL.Validators;
+namespace FlightsReservation.BLL.Validators.DtoEntitiesValidators;
 
 public class FlightDtoValidator : AbstractValidator<IFlightDto>
 {
@@ -18,7 +18,7 @@ public class FlightDtoValidator : AbstractValidator<IFlightDto>
         RuleFor(flight => flight.Arrival)
             .NotEmpty().WithMessage("Arrival is required.")
             .MaximumLength(30).WithMessage("Arrival cannot exceed 30 characters.");
-        
+
         RuleFor(flight => flight.AirplaneType)
             .NotEmpty().WithMessage("AirplaneType is required.")
             .MaximumLength(20).WithMessage("AirplaneType exceed 20 characters.");

@@ -1,7 +1,7 @@
 ﻿using FlightsReservation.BLL.Interfaces.Dtos;
 using FluentValidation;
 
-namespace FlightsReservation.BLL.Validators;
+namespace FlightsReservation.BLL.Validators.DtoEntitiesValidators;
 
 public class ReservationDtoValidator : AbstractValidator<IReservationDto>
 {

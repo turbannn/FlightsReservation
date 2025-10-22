@@ -1,7 +1,7 @@
 ﻿using FlightsReservation.BLL.Interfaces.Dtos;
 using FluentValidation;
 
-namespace FlightsReservation.BLL.Validators;
+namespace FlightsReservation.BLL.Validators.DtoEntitiesValidators;
 
 public class SeatDtoValidator : AbstractValidator<ISeatDto>
 {
@@ -10,7 +10,7 @@ public class SeatDtoValidator : AbstractValidator<ISeatDto>
         //Ids
         RuleFor(seat => seat.FlightId)
             .NotEmpty().WithMessage("Flight ID is required.");
-        
+
         //String
         RuleFor(seat => seat.SeatNumber)
             .NotEmpty().WithMessage("Seat number is required.")

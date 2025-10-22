@@ -7,16 +7,20 @@ using FlightsReservation.BLL.Entities.Utilities.Results;
 using FlightsReservation.DAL.Entities.Utils.Payment;
 using FlightsReservation.DAL.Interfaces;
 using FlightsReservation.DAL.UoWs;
+using FluentValidation;
+using FlightsReservation.BLL.Entities.DataTransferObjects.FlightDtos;
 
 namespace FlightsReservation.BLL.Services.UtilityServices.Payment;
 
 public class PayuService
 {
     private readonly PayuSettings _payuSettings;
+    private readonly IValidator<PayuOrderRequest> _payuOrderRequestValidator;
 
-    public PayuService(PayuSettings payuSettings)
+    public PayuService(PayuSettings payuSettings, IValidator<PayuOrderRequest> validator)
     {
         _payuSettings = payuSettings;
+        _payuOrderRequestValidator = validator;
     }
 
     private async Task<string> GetTokenAsync(CancellationToken ct)
@@ -47,6 +51,14 @@ public class PayuService
 
     public async Task<FlightReservationResult<PayuOrderResult>> CreateOrderAsync(PayuOrderRequest request, CancellationToken ct)
     {
+        var validationResult = await _payuOrderRequestValidator.ValidateAsync(request, ct);
+        if (!validationResult.IsValid)
+        {
+            var error = validationResult.Errors.First();
+
+            return FlightReservationResult<PayuOrderResult>.Fail(error.ToString(), ResponseCodes.BadRequest);
+        }
+
         var handler = new HttpClientHandler { AllowAutoRedirect = false };
         using var client = new HttpClient(handler);
         client.DefaultRequestHeaders.Authorization = new System.Net.Http.Headers.AuthenticationHeaderValue("Bearer", await GetTokenAsync(ct));

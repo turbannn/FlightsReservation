@@ -1,7 +1,7 @@
 ﻿using FlightsReservation.BLL.Interfaces.Requests;
 using FluentValidation;
 
-namespace FlightsReservation.BLL.Validators;
+namespace FlightsReservation.BLL.Validators.RequestValidators;
 
 public class SearchRequestValidator : AbstractValidator<ISearchRequest>
 {

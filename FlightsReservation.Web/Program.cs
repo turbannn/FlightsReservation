@@ -1,7 +1,6 @@
 using System.Security.Claims;
 using System.Text;
 using FlightsReservation.BLL.MapperProfiles;
-using FlightsReservation.BLL.Validators;
 using FlightsReservation.DAL.Data;
 using FlightsReservation.DAL.Interfaces;
 using FlightsReservation.DAL.Repositories;
@@ -22,6 +21,7 @@ using FlightsReservation.BLL.Services.UtilityServices.FilnalizeReservation;
 using FlightsReservation.BLL.Services.UtilityServices.Simulation;
 using FlightsReservation.BLL.Services.UtilityServices.Authentication;
 using FlightsReservation.BLL.Services.UtilityServices.Payment;
+using FlightsReservation.BLL.Validators.DtoEntitiesValidators;
 
 var builder = WebApplication.CreateBuilder(args);
 

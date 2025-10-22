@@ -1,5 +1,4 @@
-﻿
-namespace FlightsReservation.BLL.Entities.Utilities.Results;
+﻿namespace FlightsReservation.BLL.Entities.Utilities.Results;
 
 public class PayuOrderResult
 {
