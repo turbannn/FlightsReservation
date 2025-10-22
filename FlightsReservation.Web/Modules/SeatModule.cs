@@ -16,26 +16,26 @@ public class SeatModule() : CarterModule("/Seats")
         {
             var response = await service.GetSeatByIdAsync(id, ct);
             return response.ToHttpResult();
-        });
+        }).RequireAuthorization(new AuthorizeAttribute { Roles = "Admin,User" }); ;
 
         app.MapPost("/AddSeat",
             async ([FromBody] SeatCreateDto createDto, SeatsService service, CancellationToken ct = default) =>
             {
                 var response = await service.AddSeatAsync(createDto, ct);
                 return response.ToHttpResult();
-            });
+            }).RequireAuthorization(new AuthorizeAttribute { Roles = "Admin" }); ;
 
         app.MapPut("/UpdateSeat",
             async ([FromBody] SeatUpdateDto productUpdateDto, SeatsService service, CancellationToken ct = default) =>
             {
                 var response = await service.UpdateSeatAsync(productUpdateDto, ct);
                 return response.ToHttpResult();
-            });
+            }).RequireAuthorization(new AuthorizeAttribute { Roles = "Admin" }); ;
 
         app.MapDelete("/DeleteSeat", async (Guid id, SeatsService service, CancellationToken ct = default) =>
         {
             var response = await service.DeleteSeat(id, ct);
             return response.ToHttpResult();
-        });
+        }).RequireAuthorization(new AuthorizeAttribute { Roles = "Admin" }); ;
     }
 }

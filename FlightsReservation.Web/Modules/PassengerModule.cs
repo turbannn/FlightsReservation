@@ -16,19 +16,19 @@ public class PassengerModule() : CarterModule("/Passengers")
         {
             var response = await service.GetPassengerByIdAsync(id, ct);
             return response.ToHttpResult();
-        });
+        }).RequireAuthorization(new AuthorizeAttribute { Roles = "Admin" });
 
         app.MapPut("/UpdatePassenger",
             async ([FromBody] PassengerUpdateDto productUpdateDto, PassengersService service, CancellationToken ct = default) =>
             {
                 var response = await service.UpdatePassengerAsync(productUpdateDto, ct);
                 return response.ToHttpResult();
-            });
+            }).RequireAuthorization(new AuthorizeAttribute { Roles = "Admin" });
 
         app.MapDelete("/DeletePassenger", async (Guid id, PassengersService service, CancellationToken ct = default) =>
         {
             var response = await service.DeletePassengerAsync(id, ct);
             return response.ToHttpResult();
-        });
+        }).RequireAuthorization(new AuthorizeAttribute { Roles = "Admin" });
     }
 }

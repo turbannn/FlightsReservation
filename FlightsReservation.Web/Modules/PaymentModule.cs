@@ -3,7 +3,9 @@ using FlightsReservation.BLL.Entities.Utilities.Requests;
 using FlightsReservation.BLL.Services.EntityServices;
 using FlightsReservation.BLL.Services.UtilityServices.Payment;
 using FlightsReservation.Web.Extensions;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using System.Security.Claims;
 
 namespace FlightsReservation.Web.Modules;
 
@@ -19,14 +21,23 @@ public class PaymentModule() : CarterModule("/Payments")
 
             var response = await service.CreateOrderAsync(request, ct);
             return response.ToHttpResult();
-        });
+        }).RequireAuthorization(new AuthorizeAttribute { Roles = "Admin,User" });
 
-        app.MapGet("/CommitPayment", async ([FromQuery] int amount, UsersService service, CancellationToken ct = default) =>
+        app.MapGet("/CommitPayment", async ([FromQuery] int amount, HttpContext http, UsersService service, CancellationToken ct = default) =>
         {
-            var userId = Guid.Parse("3d781d10-d652-464c-82de-9b7d667549bf");
+            var idStr = http.User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
+
+            if (string.IsNullOrEmpty(idStr) || !Guid.TryParse(idStr, out Guid userId))
+                return Results.BadRequest(new { success = false, message = "Invalid user ID" });
 
             var response = await service.AddUserMoneyAsync(userId, amount, ct);
-            return response.ToHttpResult();
-        });
+
+            await service.AddUserMoneyAsync(userId, amount, ct);
+
+            if (!response.IsSuccess)
+                return response.ToHttpResult();
+            
+            return Results.Redirect(response.Value!);
+        }).RequireAuthorization(new AuthorizeAttribute { Roles = "Admin,User" });
     }
 }

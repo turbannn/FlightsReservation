@@ -16,17 +16,14 @@ public class UserModule() : CarterModule("/Users")
     {
         app.MapGet("/GetUserProfile", async (HttpContext http, UsersService service, CancellationToken ct = default) =>
         {
-            //3d781d10-d652-464c-82de-9b7d667549bf - test user id
-            /*
             var idStr = http.User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
 
             if (string.IsNullOrEmpty(idStr) || !Guid.TryParse(idStr, out Guid userId))
                 return Results.BadRequest(new { success = false, message = "Invalid user ID" }); 
-            */
-            var userId = Guid.Parse("3d781d10-d652-464c-82de-9b7d667549bf");
+            
             var response = await service.GetUserProfileByIdAsync(userId, ct);
             return response.ToHttpResult();
-        });//.RequireAuthorization(new AuthorizeAttribute { Roles = "Admin,User" }); //- for test without token
+        }).RequireAuthorization(new AuthorizeAttribute { Roles = "Admin,User" });
 
         app.MapGet("/GetUser", async (Guid id, UsersService service, CancellationToken ct = default) =>
         {
@@ -57,11 +54,10 @@ public class UserModule() : CarterModule("/Users")
                 var cookieOptions = new CookieOptions
                 {
                     HttpOnly = true,
-                    Secure = false,
-                    SameSite = SameSiteMode.Lax,
+                    Secure = true,
+                    SameSite = SameSiteMode.None,
                     Expires = DateTime.Now.AddMinutes(15),
                     Path = "/",
-                    Domain = null
                 };
                 
                 res.Cookies.Append("_t", tokenstr, cookieOptions);

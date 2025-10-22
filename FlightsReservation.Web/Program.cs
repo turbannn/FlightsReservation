@@ -44,17 +44,6 @@ builder.Services.AddCors(options =>
             .SetIsOriginAllowedToAllowWildcardSubdomains();
     });
 });
-/*
-builder.Services.AddCors(options =>
-{
-    options.AddPolicy("AllowAll", policy =>
-    {
-        policy.AllowAnyHeader()
-            .AllowAnyMethod()
-            .AllowAnyOrigin()
-            .SetIsOriginAllowedToAllowWildcardSubdomains();
-    });
-});*/
 
 builder.Services.AddDbContext<FlightsDbContext>(options => options.UseNpgsql(connection));
 
@@ -167,10 +156,7 @@ if (app.Environment.IsDevelopment())
 }
 
 app.UseHttpsRedirection();
-app.UseStaticFiles();
-app.UseRouting();
 
-//app.UseCors("AllowAll");
 app.UseCors("AllowLocalhost");
 
 app.UseAuthentication();

@@ -9,6 +9,7 @@ const API_ENDPOINTS = {
     // Users
     getUserProfile: '/Users/GetUserProfile',
     login: '/Users/CommitLogin',
+    COMMIT_LOGIN: '/Users/CommitLogin',
     register: '/Users/CommitRegistration',
     logout: '/Users/CommitLogout',
     

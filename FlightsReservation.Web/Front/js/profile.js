@@ -30,7 +30,7 @@ async function loadUserProfile() {
         if (!response.ok) {
             if (response.status === 401) {
                 console.warn('Unauthorized, redirecting to login...');
-                window.location.href = 'login.html';
+                window.location.href = 'login_profile.html';
                 return;
             }
             const errorText = await response.text();

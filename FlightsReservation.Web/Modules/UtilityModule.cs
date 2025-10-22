@@ -3,6 +3,7 @@ using FlightsReservation.BLL.Entities.Utilities.Other;
 using FlightsReservation.BLL.Services.UtilityServices.Authentication;
 using FlightsReservation.BLL.Services.UtilityServices.Simulation;
 using FlightsReservation.Web.Extensions;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
 namespace FlightsReservation.Web.Modules;
@@ -15,10 +16,11 @@ public class UtilityModule() : CarterModule("/Utils")
         {
             var res = await service.RefreshDatabaseAsync(password, ct);
             return res.ToHttpResult();
-        });
+        }).RequireAuthorization(new AuthorizeAttribute { Roles = "Admin" }); ;
 
         app.MapPost("/GainAdminRights",
-            ([FromBody] AdminLogin adminLogin, TokenService service, HttpResponse response, CancellationToken ct = default) =>
+            ([FromBody] AdminLogin adminLogin, TokenService service, HttpResponse response,
+                CancellationToken ct = default) =>
             {
                 if (adminLogin.Login != "qwer123" || adminLogin.Password != "qwer123")
                     return Results.Unauthorized();
@@ -35,5 +37,6 @@ public class UtilityModule() : CarterModule("/Utils")
 
                 return Results.Ok();
             });
+
     }
 }

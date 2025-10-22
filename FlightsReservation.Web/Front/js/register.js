@@ -49,7 +49,7 @@ document.getElementById('registerForm').addEventListener('submit', async (e) => 
             successEl.style.display = 'block';
             
             setTimeout(() => {
-                window.location.href = 'login.html';
+                window.location.href = 'login_profile.html';
             }, 2000);
         } else {
             const errorMsg = result.errorMessage || 'Помилка реєстрації';
