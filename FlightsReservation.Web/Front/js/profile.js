@@ -81,28 +81,28 @@ function displayReservations(reservations) {
     console.log('Displaying reservations:', reservations);
 
     if (!reservations || reservations.length === 0) {
-        listEl.innerHTML = '<p>У вас немає бронювань</p>';
+        listEl.innerHTML = '<p>You have no reservations</p>';
         return;
     }
 
     listEl.innerHTML = reservations.map(reservation => `
         <div class="reservation-card">
-            <h3>Бронювання #${reservation.reservationNumber}</h3>
+            <h3>Reservation #${reservation.reservationNumber}</h3>
             <div class="flight-details">
                 <div class="flight-detail">
-                    <strong>Рейс:</strong> ${reservation.flight.departure} → ${reservation.flight.arrival}
+                    <strong>Flight:</strong> ${reservation.flight.departure} → ${reservation.flight.arrival}
                 </div>
                 <div class="flight-detail">
-                    <strong>Відправлення:</strong> ${formatDate(reservation.flight.departureTime)}
+                    <strong>Departure:</strong> ${formatDate(reservation.flight.departureTime)}
                 </div>
                 <div class="flight-detail">
-                    <strong>Прибуття:</strong> ${formatDate(reservation.flight.arrivalTime)}
+                    <strong>Arrival:</strong> ${formatDate(reservation.flight.arrivalTime)}
                 </div>
                 <div class="flight-detail">
-                    <strong>Компанія:</strong> ${reservation.flight.company}
+                    <strong>Company:</strong> ${reservation.flight.company}
                 </div>
                 <div class="flight-detail">
-                    <strong>Дата бронювання:</strong> ${formatDate(reservation.reservationDate)}
+                    <strong>Reservation Date:</strong> ${formatDate(reservation.reservationDate)}
                 </div>
             </div>
         </div>
@@ -111,7 +111,7 @@ function displayReservations(reservations) {
 
 function formatDate(dateString) {
     const date = new Date(dateString);
-    return date.toLocaleString('uk-UA', {
+    return date.toLocaleString('en-US', {
         year: 'numeric',
         month: '2-digit',
         day: '2-digit',

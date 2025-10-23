@@ -1,9 +1,6 @@
 document.getElementById('registerForm').addEventListener('submit', async (e) => {
     e.preventDefault();
 
-    const name = document.getElementById('name').value;
-    const surname = document.getElementById('surname').value;
-    const email = document.getElementById('email').value;
     const login = document.getElementById('login').value;
     const password = document.getElementById('password').value;
 
@@ -43,16 +40,16 @@ document.getElementById('registerForm').addEventListener('submit', async (e) => 
         const result = await response.json();
         console.log('Registration response data:', result);
 
-        if (result.isSuccess) {
+        if (result.isSuccess || result.IsSuccess) {
             console.log('Registration successful');
-            successEl.textContent = 'Реєстрація успішна! Перенаправлення на сторінку входу...';
+            successEl.textContent = 'Registration successful! Redirecting to login page...';
             successEl.style.display = 'block';
             
             setTimeout(() => {
                 window.location.href = 'login_profile.html';
             }, 2000);
         } else {
-            const errorMsg = result.errorMessage || 'Помилка реєстрації';
+            const errorMsg = result.errorMessage || result.ErrorMessage || 'Registration failed';
             console.error('Registration failed:', errorMsg);
             console.error('Error code:', result.code);
             console.error('Full response:', result);
