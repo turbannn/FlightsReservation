@@ -16,6 +16,6 @@ public class SearchRequestValidator : AbstractValidator<ISearchRequest>
             .MaximumLength(30).WithMessage("Arrival city cannot exceed 100 characters.");
 
         RuleFor(x => x.DepartureDate)
-            .GreaterThan(DateTime.Now).WithMessage("Departure date must be in the future.");
+            .GreaterThan(DateTime.Now.AddDays(-1)).WithMessage("Departure date must be in the future.");
     }
 }

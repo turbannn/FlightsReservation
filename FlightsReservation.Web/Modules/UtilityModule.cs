@@ -15,6 +15,7 @@ public class UtilityModule() : CarterModule("/Utils")
         app.MapPost("/RefreshFlights", async (string password, RefreshService service, CancellationToken ct) =>
         {
             var res = await service.RefreshDatabaseAsync(password, ct);
+
             return res.ToHttpResult();
         }).RequireAuthorization(new AuthorizeAttribute { Roles = "Admin" }); ;
 

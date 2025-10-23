@@ -22,12 +22,18 @@ using FlightsReservation.BLL.Services.UtilityServices.Simulation;
 using FlightsReservation.BLL.Services.UtilityServices.Authentication;
 using FlightsReservation.BLL.Services.UtilityServices.Payment;
 using FlightsReservation.BLL.Validators.DtoEntitiesValidators;
+using FlightsReservation.BLL.Services.UtilityServices.FlightsApi;
+using FlightsReservation.DAL.Entities.Utils.FlightsApiSettings;
 
 var builder = WebApplication.CreateBuilder(args);
 
 // Add services to the container.
 var connection = builder.Configuration.GetConnectionString("DefaultConnection");
 
+//Http Client
+builder.Services.AddHttpClient();
+
+//Cors
 builder.Services.AddCors(options =>
 {
     options.AddPolicy("AllowLocalhost", policy =>
@@ -79,10 +85,18 @@ var payuSettings = builder.Configuration
 if (payuSettings is null)
     throw new Exception("PayU settings are not configured properly");
 
+var aviationStackSettings = builder.Configuration
+    .GetSection("AviationStackSettings")
+    .Get<AviationStackSettings>();
+
+if (aviationStackSettings is null)
+    throw new Exception("AviationStack settings are not configured properly");
+
 //Settings
 builder.Services.AddSingleton(emailSettings);
 builder.Services.AddSingleton(jwtSettings);
 builder.Services.AddSingleton(payuSettings);
+builder.Services.AddSingleton(aviationStackSettings);
 
 //OOM Mapper
 builder.Services.AddAutoMapper(cfg => { }, typeof(SeatProfile).Assembly);
@@ -102,6 +116,9 @@ builder.Services.AddScoped<UsersService>();
 builder.Services.AddScoped<IEmailService, MailkitEmailService>();
 builder.Services.AddScoped<IPdfService, QuestPdfService>();
 builder.Services.AddScoped<TokenService>();
+
+builder.Services.AddScoped<AviationStackService>();
+
 builder.Services.AddScoped<RefreshService>();
 builder.Services.AddScoped<PayuService>();
 
@@ -145,8 +162,6 @@ builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 
 var app = builder.Build();
-
-
 
 // Configure the HTTP request pipeline.
 if (app.Environment.IsDevelopment())
