@@ -2,6 +2,8 @@
 using Microsoft.AspNetCore.Mvc;
 using Carter;
 using FlightsReservation.BLL.Entities.DataTransferObjects.ReservationDtos;
+using FlightsReservation.BLL.Entities.Utilities.Other;
+using FlightsReservation.BLL.Entities.Utilities.Results;
 using FlightsReservation.Web.Extensions;
 using Microsoft.AspNetCore.Authorization;
 using FlightsReservation.BLL.Services.EntityServices;
@@ -37,9 +39,31 @@ public class ReservationModule() : CarterModule("/Reservations")
             return response.ToHttpResult();
         }).RequireAuthorization(new AuthorizeAttribute { Roles = "Admin" });
 
-        app.MapPost("/BeginReservation", async (List<Guid> ids, SeatsService service, CancellationToken ct = default) =>
+        app.MapPost("/BeginReservation", async ([FromBody]List<Guid> ids, HttpContext con, SeatsService service, CancellationToken ct = default) =>
         {
+            con.Request.Cookies.TryGetValue("_ids", out string? existingIds);
+
+            if (existingIds is not null)
+                return FlightReservationResult<int>.Fail("Seats already occupied", ResponseCodes.BadRequest).ToHttpResult();
+            
             var response = await service.LockSeats(ids, ct);
+
+            if (!response.IsSuccess)
+                return response.ToHttpResult();
+            
+            var cookieOptions = new CookieOptions
+            {
+                HttpOnly = true,
+                Secure = true,
+                SameSite = SameSiteMode.None,
+                Expires = DateTime.Now.AddMinutes(15),
+                Path = "/",
+            };
+            
+            string idString = string.Join(",", ids);
+
+            con.Response.Cookies.Append("_ids", idString, cookieOptions);
+
             return response.ToHttpResult();
         }).RequireAuthorization(new AuthorizeAttribute { Roles = "Admin,User" });
     }
