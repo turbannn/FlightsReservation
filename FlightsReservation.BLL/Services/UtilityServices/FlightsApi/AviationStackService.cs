@@ -14,7 +14,7 @@ public class AviationStackService
     public AviationStackService(AviationStackSettings settings, IHttpClientFactory clientFactory)
     {
         _settings = settings;
-        _httpClient = clientFactory.CreateClient("PayU");
+        _httpClient = clientFactory.CreateClient("AviationStack");
     }
 
     public async Task<FlightReservationResult<List<AviationStackFlight>>> GetFutureFlightsAsync(string iataCode, string type, DateTime date)

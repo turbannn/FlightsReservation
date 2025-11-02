@@ -16,17 +16,20 @@ public class PayuService
 {
     private readonly PayuSettings _payuSettings;
     private readonly IValidator<PayuOrderRequest> _payuOrderRequestValidator;
+    private readonly HttpClient _httpClient;
 
-    public PayuService(PayuSettings payuSettings, IValidator<PayuOrderRequest> validator)
+    public PayuService(PayuSettings payuSettings, IValidator<PayuOrderRequest> validator, IHttpClientFactory httpClientFactory)
     {
         _payuSettings = payuSettings;
         _payuOrderRequestValidator = validator;
+        _httpClient = httpClientFactory.CreateClient("PayU");
     }
 
     private async Task<string> GetTokenAsync(CancellationToken ct)
     {
-        using var client = new HttpClient();
-        var url = $"{_payuSettings.BaseUrl}/pl/standard/user/oauth/authorize";
+        var url = "/pl/standard/user/oauth/authorize";
+
+        _httpClient.BaseAddress = new Uri(_httpClient.BaseAddress+url);
 
         var form = new FormUrlEncodedContent(new[]
         {
@@ -35,7 +38,7 @@ public class PayuService
                 new KeyValuePair<string, string>("client_secret", _payuSettings.ClientSecret)
             });
 
-        var res = await client.PostAsync(url, form, cancellationToken: ct);
+        var res = await _httpClient.PostAsync(url, form, cancellationToken: ct);
 
         if (!res.IsSuccessStatusCode)
         {

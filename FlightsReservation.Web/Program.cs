@@ -134,6 +134,12 @@ builder.Services.AddHttpClient("PayU", client =>
     client.DefaultRequestHeaders.Add("Accept", "application/json");
 });
 
+builder.Services.AddHttpClient("AviationStack", client =>
+{
+    client.BaseAddress = new Uri(aviationStackSettings.BaseUrl);
+    client.DefaultRequestHeaders.Add("Accept", "application/json");
+});
+
 //Services
 builder.Services.AddScoped<SeatsService>();
 builder.Services.AddScoped<PassengersService>();
