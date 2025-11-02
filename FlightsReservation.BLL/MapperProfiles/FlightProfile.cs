@@ -2,18 +2,14 @@
 using AutoMapper;
 using FlightsReservation.BLL.Entities.DataTransferObjects.FlightDtos;
 using FlightsReservation.BLL.Entities.Utilities.Other;
+using FlightsReservation.BLL.MapperProfiles.Resolvers;
 
 namespace FlightsReservation.BLL.MapperProfiles;
 
 public class FlightProfile : Profile
 {
-    private static readonly Random _random = new Random();
-    private readonly AirportCodeMapper _airportCodeMapper;
-
-    public FlightProfile(AirportCodeMapper airportCodeMapper)
+    public FlightProfile()
     {
-        _airportCodeMapper = airportCodeMapper;
-        
         CreateMap<Flight, FlightAdminReadDto>().ForMember(dest => dest.AvailableSeats,
             opt =>
             {
@@ -29,10 +25,8 @@ public class FlightProfile : Profile
             .ForMember(dest => dest.Id, opt => opt.Ignore())
             .ForMember(dest => dest.FlightNumber, opt => opt.MapFrom(src =>
                 src.Flight.Number ?? src.Flight.IcaoNumber ?? src.Flight.IataNumber ?? "UNKNOWN"))
-            .ForMember(dest => dest.Departure, opt => opt.MapFrom(src => 
-                _airportCodeMapper.GetCityName(src.Departure.IataCode ?? src.Departure.IcaoCode)))
-            .ForMember(dest => dest.Arrival, opt => opt.MapFrom(src => 
-                _airportCodeMapper.GetCityName(src.Arrival.IataCode ?? src.Arrival.IcaoCode)))
+            .ForMember(dest => dest.Departure, opt => opt.MapFrom<DepartureCityResolver>())
+            .ForMember(dest => dest.Arrival, opt => opt.MapFrom<ArrivalCityResolver>())
             .ForMember(dest => dest.DepartureTime, opt => opt.MapFrom(src => 
                 ParseDateTime(src.Departure.ScheduledTime)))
             .ForMember(dest => dest.ArrivalTime, opt => opt.MapFrom(src => 
@@ -41,8 +35,7 @@ public class FlightProfile : Profile
                 src.Aircraft != null ? src.Aircraft.ModelText ?? "Unknown" : "Unknown"))
             .ForMember(dest => dest.Company, opt => opt.MapFrom(src => 
                 src.Airline.Name ?? src.Airline.IataCode ?? "Unknown"))
-            .ForMember(dest => dest.Price, opt => opt.MapFrom(src => 
-                _random.Next(400, 1001)))
+            .ForMember(dest => dest.Price, opt => opt.MapFrom<FlightPriceResolver>())
             .ForMember(dest => dest.Currency, opt => opt.MapFrom(src => "PLN"))
             .ForMember(dest => dest.Reservations, opt => opt.Ignore())
             .ForMember(dest => dest.Seats, opt => opt.Ignore());

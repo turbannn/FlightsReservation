@@ -1,6 +1,6 @@
 using FlightsReservation.DAL.Entities.Utils.FlightsApiSettings;
 
-namespace FlightsReservation.BLL.Entities.Utilities.Other;
+namespace FlightsReservation.BLL.Services.UtilityServices.FlightsApi;
 
 public class AirportCodeMapper
 {
