@@ -11,16 +11,14 @@ public class AviationStackService
     private readonly HttpClient _httpClient;
     private readonly AviationStackSettings _settings;
 
-    public AviationStackService(AviationStackSettings settings, HttpClient client)
+    public AviationStackService(AviationStackSettings settings, IHttpClientFactory clientFactory)
     {
         _settings = settings;
-        _httpClient = client;
+        _httpClient = clientFactory.CreateClient("PayU");
     }
 
     public async Task<FlightReservationResult<List<AviationStackFlight>>> GetFutureFlightsAsync(string iataCode, string type, DateTime date)
     {
-        _httpClient.BaseAddress = new Uri(_settings.BaseUrl);
-
         var (isSuccess, content) = await GetFutureFlightsFromApiAsync(iataCode, type, date);
 
         if (!isSuccess)

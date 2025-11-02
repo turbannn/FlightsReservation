@@ -25,13 +25,13 @@ using FlightsReservation.BLL.Validators.DtoEntitiesValidators;
 using FlightsReservation.BLL.Services.UtilityServices.FlightsApi;
 using FlightsReservation.DAL.Entities.Utils.FlightsApiSettings;
 
+//Licenses
+QuestPDF.Settings.License = LicenseType.Community;
+
 var builder = WebApplication.CreateBuilder(args);
 
 // Add services to the container.
 var connection = builder.Configuration.GetConnectionString("DefaultConnection");
-
-//Http Client
-builder.Services.AddHttpClient();
 
 //Cors
 builder.Services.AddCors(options =>
@@ -104,8 +104,12 @@ builder.Services.AddAutoMapper(cfg => { }, typeof(SeatProfile).Assembly);
 //Validators
 builder.Services.AddValidatorsFromAssembly(typeof(FlightDtoValidator).Assembly);
 
-//Licenses
-QuestPDF.Settings.License = LicenseType.Community;
+//Http Client
+builder.Services.AddHttpClient("PayU", client =>
+{
+    client.BaseAddress = new Uri(payuSettings.BaseUrl);
+    client.DefaultRequestHeaders.Add("Accept", "application/json");
+});
 
 //Services
 builder.Services.AddScoped<SeatsService>();
@@ -125,7 +129,7 @@ builder.Services.AddScoped<PayuService>();
 //Routing modules
 builder.Services.AddCarter();
 
-//Authorisation
+//Authentication
 builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
     .AddJwtBearer(options =>
     {

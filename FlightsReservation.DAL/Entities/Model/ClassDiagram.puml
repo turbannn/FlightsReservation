@@ -1,0 +1,114 @@
+@startuml FlightsReservation_DAL_Models
+
+!define PRIMARY_KEY <b><color:gold>🔑</color></b>
+!define FOREIGN_KEY <color:silver>🔗</color>
+
+skinparam classAttributeIconSize 0
+skinparam class {
+    BackgroundColor<<Entity>> LightBlue
+    BorderColor DarkBlue
+    ArrowColor DarkGray
+}
+
+class Flight <<Entity>> {
+    PRIMARY_KEY Id : Guid
+    FlightNumber : string
+    Departure : string
+    Arrival : string
+    DepartureTime : DateTime
+    ArrivalTime : DateTime
+    AirplaneType : string
+    Company : string
+    Price : int
+    Currency : string
+}
+
+class Reservation <<Entity>> {
+    PRIMARY_KEY Id : Guid
+    ReservationNumber : string
+    ReservationDate : DateTime
+    FOREIGN_KEY FlightId : Guid
+    FOREIGN_KEY UserId : Guid?
+}
+
+class Passenger <<Entity>> {
+    PRIMARY_KEY Id : Guid
+    FirstName : string
+    LastName : string
+    PassportNumber : string
+    PhoneNumber : string
+    Email : string
+    FOREIGN_KEY ReservationId : Guid
+    FOREIGN_KEY SeatId : Guid
+}
+
+class Seat <<Entity>> {
+    PRIMARY_KEY Id : Guid
+    SeatNumber : string
+    IsAvailable : bool
+    Lock : DateTime
+    FOREIGN_KEY FlightId : Guid
+}
+
+class User <<Entity>> {
+    PRIMARY_KEY Id : Guid
+    Username : string
+    Password : string
+    Role : string
+    Money : int
+}
+
+' Relationships
+Flight "1" -- "0..*" Reservation : has
+Flight "1" -- "0..*" Seat : has
+
+Reservation "1" -- "1..*" Passenger : contains
+Reservation "0..*" -- "0..1" User : made by
+
+Passenger "1" -- "1" Seat : occupies
+
+note right of Flight
+  Main flight information:
+  - Unique flight number
+  - Departure and arrival points
+  - Departure and arrival times
+  - Airplane type and company
+  - Price and currency
+end note
+
+note right of Reservation
+  Flight reservation:
+  - Unique reservation number
+  - Reservation creation date
+  - Associated with specific flight
+  - May be associated with a user
+  - Contains list of passengers
+end note
+
+note left of Passenger
+  Passenger information:
+  - Personal data (first name, last name)
+  - Passport number
+  - Contact details (phone, email)
+  - Associated with reservation
+  - Occupies specific seat
+end note
+
+note left of Seat
+  Airplane seat:
+  - Seat number
+  - Availability status
+  - Lock time
+  - Belongs to specific flight
+  - May be occupied by passenger
+end note
+
+note bottom of User
+  System user:
+  - Username and password
+  - Role in the system
+  - Money balance
+  - May have multiple reservations
+end note
+
+@enduml
