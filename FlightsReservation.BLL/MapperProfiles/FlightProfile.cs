@@ -24,7 +24,7 @@ public class FlightProfile : Profile
         CreateMap<AviationStackFlight, Flight>()
             .ForMember(dest => dest.Id, opt => opt.Ignore())
             .ForMember(dest => dest.FlightNumber, opt => opt.MapFrom(src =>
-                src.Flight.Number ?? src.Flight.IcaoNumber ?? src.Flight.IataNumber ?? "UNKNOWN"))
+                src.Flight.IcaoNumber ?? src.Flight.IataNumber ?? src.Flight.Number ?? "UNKNOWN"))
             .ForMember(dest => dest.Departure, opt => opt.MapFrom<DepartureCityResolver>())
             .ForMember(dest => dest.Arrival, opt => opt.MapFrom<ArrivalCityResolver>())
             .ForMember(dest => dest.DepartureTime, opt => opt.MapFrom(src => 
