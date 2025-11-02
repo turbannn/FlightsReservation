@@ -103,7 +103,7 @@ public class UsersService
         }
 
         createDto.Role = "User";
-        createDto.Money = 0;
+        createDto.Money = 0.0d;
 
         User user;
 
@@ -187,7 +187,7 @@ public class UsersService
         return FlightReservationResult<int>.Success(1, ResponseCodes.Success);
     }
 
-    public async Task<FlightReservationResult<string>> AddUserMoneyAsync(Guid id, int amount, CancellationToken ct = default)
+    public async Task<FlightReservationResult<string>> AddUserMoneyAsync(Guid id, double amount, CancellationToken ct = default)
     {
         if (amount < 0)
         {

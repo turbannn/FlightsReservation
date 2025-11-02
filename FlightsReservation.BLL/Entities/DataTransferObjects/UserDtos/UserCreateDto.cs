@@ -8,5 +8,5 @@ public class UserCreateDto : BaseUserDto
     public string Role { get; set; } = null!;
 
     [JsonIgnore]
-    public int Money { get; set; }
+    public double Money { get; set; }
 }

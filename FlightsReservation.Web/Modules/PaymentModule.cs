@@ -23,7 +23,7 @@ public class PaymentModule() : CarterModule("/Payments")
             return response.ToHttpResult();
         }).RequireAuthorization(new AuthorizeAttribute { Roles = "Admin,User" });
 
-        app.MapGet("/CommitPayment", async ([FromQuery] int amount, HttpContext http, UsersService service, CancellationToken ct = default) =>
+        app.MapGet("/CommitPayment", async ([FromQuery] double amount, HttpContext http, UsersService service, CancellationToken ct = default) =>
         {
             var idStr = http.User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
 

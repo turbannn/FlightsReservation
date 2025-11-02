@@ -79,7 +79,7 @@ public class UsersRepository : IUsersRepository
         return true;
     }
 
-    public async Task<bool> AddMoneyAsync(Guid id, int amount, CancellationToken ct)
+    public async Task<bool> AddMoneyAsync(Guid id, double amount, CancellationToken ct)
     {
         var user = await _context.Users.FirstOrDefaultAsync(p => p.Id == id, cancellationToken: ct);
 
@@ -97,7 +97,7 @@ public class UsersRepository : IUsersRepository
         if (user is null || user.Money < amount)
             return false;
 
-        user.Money -= (int)amount;
+        user.Money -= amount;
 
         return true;
     }
