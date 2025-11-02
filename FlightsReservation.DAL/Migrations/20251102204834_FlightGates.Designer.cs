@@ -3,6 +3,7 @@ using System;
 using FlightsReservation.DAL.Data;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 
@@ -11,9 +12,11 @@ using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 namespace FlightsReservation.DAL.Migrations
 {
     [DbContext(typeof(FlightsDbContext))]
-    partial class FlightsDbContextModelSnapshot : ModelSnapshot
+    [Migration("20251102204834_FlightGates")]
+    partial class FlightGates
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -73,7 +76,7 @@ namespace FlightsReservation.DAL.Migrations
 
                     b.HasKey("Id");
 
-                    b.ToTable("Flights", (string)null);
+                    b.ToTable("Flights");
                 });
 
             modelBuilder.Entity("FlightsReservation.DAL.Entities.Model.Passenger", b =>
@@ -121,7 +124,7 @@ namespace FlightsReservation.DAL.Migrations
                     b.HasIndex("SeatId")
                         .IsUnique();
 
-                    b.ToTable("Passengers", (string)null);
+                    b.ToTable("Passengers");
                 });
 
             modelBuilder.Entity("FlightsReservation.DAL.Entities.Model.Reservation", b =>
@@ -152,7 +155,7 @@ namespace FlightsReservation.DAL.Migrations
 
                     b.HasIndex("UserId");
 
-                    b.ToTable("Reservations", (string)null);
+                    b.ToTable("Reservations");
                 });
 
             modelBuilder.Entity("FlightsReservation.DAL.Entities.Model.Seat", b =>
@@ -182,7 +185,7 @@ namespace FlightsReservation.DAL.Migrations
 
                     b.HasIndex("FlightId");
 
-                    b.ToTable("Seats", (string)null);
+                    b.ToTable("Seats");
                 });
 
             modelBuilder.Entity("FlightsReservation.DAL.Entities.Model.User", b =>
@@ -212,7 +215,7 @@ namespace FlightsReservation.DAL.Migrations
 
                     b.HasKey("Id");
 
-                    b.ToTable("Users", (string)null);
+                    b.ToTable("Users");
                 });
 
             modelBuilder.Entity("FlightsReservation.DAL.Entities.Model.Passenger", b =>

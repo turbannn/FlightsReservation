@@ -43,6 +43,7 @@ public class QuestPdfService : IPdfService
                     col.Item().Text($"From: {flight.Departure} → To: {flight.Arrival}");
                     col.Item().Text($"Departure: {flight.DepartureTime:yyyy-MM-dd HH:mm}");
                     col.Item().Text($"Arrival: {flight.ArrivalTime:yyyy-MM-dd HH:mm}");
+                    col.Item().Text($"Gate: {(flight.Gate > 0 ? flight.Gate.ToString() : "TBA")}");
                 });
 
                 page.Footer()

@@ -12,6 +12,7 @@ public class Flight
     public string Company { get; set; } = null!;
     public double Price { get; set; }
     public string Currency { get; set; } = null!;
+    public int Gate { get; set; }
 
     public List<Reservation> Reservations { get; set; } = null!;
     public List<Seat> Seats { get; set; } = null!;

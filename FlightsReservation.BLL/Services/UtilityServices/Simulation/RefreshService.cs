@@ -35,7 +35,7 @@ namespace FlightsReservation.BLL.Services.UtilityServices.Simulation
             if (password != "qwer123")
                 return FlightReservationResult<int>.Fail("Bad password", ResponseCodes.BadRequest);
 
-            await _flightsRepository.DeleteAllAsync(ct);
+            //await _flightsRepository.DeleteAllAsync(ct);
 
             var futureDate = DateTime.UtcNow.Date.AddDays(10);
 

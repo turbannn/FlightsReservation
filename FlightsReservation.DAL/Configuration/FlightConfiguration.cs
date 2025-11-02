@@ -20,6 +20,7 @@ public class FlightConfiguration : IEntityTypeConfiguration<Flight>
 
         builder.Property(f => f.Price).IsRequired();
         builder.Property(f => f.Currency).IsRequired().HasMaxLength(4);
+        builder.Property(f => f.Gate).IsRequired();
 
         builder.Property(f => f.DepartureTime).IsRequired();
         builder.Property(f => f.ArrivalTime).IsRequired();

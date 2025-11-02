@@ -37,6 +37,8 @@ public class FlightProfile : Profile
                 src.Airline.Name ?? src.Airline.IataCode ?? "Unknown"))
             .ForMember(dest => dest.Price, opt => opt.MapFrom<FlightPriceResolver>())
             .ForMember(dest => dest.Currency, opt => opt.MapFrom(src => "PLN"))
+            .ForMember(dest => dest.Gate, opt => opt.MapFrom(src => 
+                ParseGate(src.Departure.Gate)))
             .ForMember(dest => dest.Reservations, opt => opt.Ignore())
             .ForMember(dest => dest.Seats, opt => opt.Ignore());
     }
@@ -52,5 +54,20 @@ public class FlightProfile : Profile
         }
 
         return DateTime.UtcNow;
+    }
+
+    private static int ParseGate(string? gateString)
+    {
+        if (string.IsNullOrWhiteSpace(gateString))
+            return 0;
+
+        // Спробувати спарсити номер гейту (може бути "A12", "12", "B5" тощо)
+        // Витягуємо тільки цифри
+        var digits = new string(gateString.Where(char.IsDigit).ToArray());
+        
+        if (int.TryParse(digits, out var gateNumber))
+            return gateNumber;
+
+        return 0;
     }
 }

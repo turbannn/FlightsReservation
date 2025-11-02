@@ -12,4 +12,5 @@ public class BaseFlightDto : IFlightDto
     public double Price { get; set; }
     public string Currency { get; set; } = null!;
     public string Company { get; set; } = null!;
+    public int Gate { get; set; }
 }
