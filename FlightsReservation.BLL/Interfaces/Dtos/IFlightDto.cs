@@ -7,7 +7,7 @@ public interface IFlightDto
     DateTime DepartureTime { get; set; }
     DateTime ArrivalTime { get; set; }
     string AirplaneType { get; set; }
-    int Price { get; set; }
+    double Price { get; set; }
     string Currency { get; set; }
     string Company { get; set; }
 }

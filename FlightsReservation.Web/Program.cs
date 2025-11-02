@@ -24,6 +24,7 @@ using FlightsReservation.BLL.Services.UtilityServices.Payment;
 using FlightsReservation.BLL.Validators.DtoEntitiesValidators;
 using FlightsReservation.BLL.Services.UtilityServices.FlightsApi;
 using FlightsReservation.DAL.Entities.Utils.FlightsApiSettings;
+using FlightsReservation.BLL.Entities.Utilities.Other;
 
 //Licenses
 QuestPDF.Settings.License = LicenseType.Community;
@@ -92,11 +93,23 @@ var aviationStackSettings = builder.Configuration
 if (aviationStackSettings is null)
     throw new Exception("AviationStack settings are not configured properly");
 
+var airports = builder.Configuration
+    .GetSection("Airports")
+    .Get<List<AviationStackSettingsAirport>>();
+
+if (airports is null || !airports.Any())
+    throw new Exception("Airports settings are not configured properly");
+
+aviationStackSettings.Airports = airports;
+
 //Settings
 builder.Services.AddSingleton(emailSettings);
 builder.Services.AddSingleton(jwtSettings);
 builder.Services.AddSingleton(payuSettings);
 builder.Services.AddSingleton(aviationStackSettings);
+
+//Utilities
+builder.Services.AddSingleton<AirportCodeMapper>();
 
 //OOM Mapper
 builder.Services.AddAutoMapper(cfg => { }, typeof(SeatProfile).Assembly);

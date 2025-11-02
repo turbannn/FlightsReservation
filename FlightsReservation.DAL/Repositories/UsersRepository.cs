@@ -90,14 +90,14 @@ public class UsersRepository : IUsersRepository
 
         return true;
     }
-    public async Task<bool> SubtractMoneyAsync(Guid id, int amount, CancellationToken ct)
+    public async Task<bool> SubtractMoneyAsync(Guid id, double amount, CancellationToken ct)
     {
         var user = await _context.Users.FirstOrDefaultAsync(p => p.Id == id, cancellationToken: ct);
 
         if (user is null || user.Money < amount)
             return false;
 
-        user.Money -= amount;
+        user.Money -= (int)amount;
 
         return true;
     }

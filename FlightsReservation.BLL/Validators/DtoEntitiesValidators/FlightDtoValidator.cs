@@ -7,10 +7,11 @@ public class FlightDtoValidator : AbstractValidator<IFlightDto>
 {
     public FlightDtoValidator()
     {
-        //Int
+        //Double
         RuleFor(flight => flight.Price)
             .GreaterThan(0).WithMessage("Price must be greater than zero.");
 
+        //Int
         RuleFor(flight => flight.Departure)
             .NotEmpty().WithMessage("Departure is required.")
             .MaximumLength(30).WithMessage("Departure cannot exceed 30 characters.");

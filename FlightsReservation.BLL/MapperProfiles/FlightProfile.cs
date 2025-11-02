@@ -8,9 +8,12 @@ namespace FlightsReservation.BLL.MapperProfiles;
 public class FlightProfile : Profile
 {
     private static readonly Random _random = new Random();
+    private readonly AirportCodeMapper _airportCodeMapper;
 
-    public FlightProfile()
+    public FlightProfile(AirportCodeMapper airportCodeMapper)
     {
+        _airportCodeMapper = airportCodeMapper;
+        
         CreateMap<Flight, FlightAdminReadDto>().ForMember(dest => dest.AvailableSeats,
             opt =>
             {
@@ -27,9 +30,9 @@ public class FlightProfile : Profile
             .ForMember(dest => dest.FlightNumber, opt => opt.MapFrom(src =>
                 src.Flight.Number ?? src.Flight.IcaoNumber ?? src.Flight.IataNumber ?? "UNKNOWN"))
             .ForMember(dest => dest.Departure, opt => opt.MapFrom(src => 
-                AirportCodeMapper.GetCityName(src.Departure.IataCode ?? src.Departure.IcaoCode)))
+                _airportCodeMapper.GetCityName(src.Departure.IataCode ?? src.Departure.IcaoCode)))
             .ForMember(dest => dest.Arrival, opt => opt.MapFrom(src => 
-                AirportCodeMapper.GetCityName(src.Arrival.IataCode ?? src.Arrival.IcaoCode)))
+                _airportCodeMapper.GetCityName(src.Arrival.IataCode ?? src.Arrival.IcaoCode)))
             .ForMember(dest => dest.DepartureTime, opt => opt.MapFrom(src => 
                 ParseDateTime(src.Departure.ScheduledTime)))
             .ForMember(dest => dest.ArrivalTime, opt => opt.MapFrom(src => 
