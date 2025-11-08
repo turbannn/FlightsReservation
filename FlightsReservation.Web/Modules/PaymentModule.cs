@@ -32,8 +32,6 @@ public class PaymentModule() : CarterModule("/Payments")
 
             var response = await service.AddUserMoneyAsync(userId, amount, ct);
 
-            await service.AddUserMoneyAsync(userId, amount, ct);
-
             if (!response.IsSuccess)
                 return response.ToHttpResult();
             
