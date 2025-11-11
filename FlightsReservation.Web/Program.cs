@@ -158,6 +158,7 @@ builder.Services.AddScoped<AviationStackService>();
 
 builder.Services.AddScoped<RefreshService>();
 builder.Services.AddScoped<PayuService>();
+builder.Services.AddScoped<IPasswordHasher, Pbkdf2PasswordHasher>();
 
 //Routing modules
 builder.Services.AddCarter();

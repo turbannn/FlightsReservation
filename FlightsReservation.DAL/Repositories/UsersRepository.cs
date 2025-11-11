@@ -18,11 +18,11 @@ public class UsersRepository : IUsersRepository
         return await _context.Users.AsNoTracking().ToListAsync(ct);
     }
 
-    public async Task<User?> GetByLoginAndPasswordAsync(string login, string password, CancellationToken ct)
+    public async Task<User?> GetByUsernameAsync(string username, CancellationToken ct)
     {
         var user = await _context.Users
             .AsNoTracking()
-            .FirstOrDefaultAsync(p => p.Username == login && p.Password == password, cancellationToken: ct);
+            .FirstOrDefaultAsync(p => p.Username == username, cancellationToken: ct);
 
         return user;
     }

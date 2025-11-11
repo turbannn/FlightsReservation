@@ -1,0 +1,161 @@
+@startuml FlightsReservation - Model Domenowy
+
+!define PRIMARY_KEY <b><color:red>PK</color></b>
+!define FOREIGN_KEY <b><color:blue>FK</color></b>
+
+' Kompaktny layout
+skinparam linetype ortho
+skinparam nodesep 60
+skinparam ranksep 80
+skinparam padding 2
+skinparam classAttributeIconSize 0
+
+' Kolory dla lepszej czytelności
+skinparam class {
+    BackgroundColor<<Entity>> LightBlue
+    BorderColor<<Entity>> Blue
+    BackgroundColor<<ValueObject>> LightYellow
+    ArrowColor Blue
+    FontSize 10
+}
+
+' ========================================
+' KLASA: Flight (Lot)
+' ========================================
+class Flight <<Entity>> {
+    PRIMARY_KEY Id : Guid
+    FlightNumber : string
+    Departure : string
+    Arrival : string
+    DepartureTime : DateTime
+    ArrivalTime : DateTime
+    AirplaneType : string
+    Company : string
+    Price : double
+    Currency : string
+    Gate : int
+    --
+    + Reservations : List<Reservation>
+    + Seats : List<Seat>
+}
+
+' ========================================
+' KLASA: Reservation (Rezerwacja)
+' ========================================
+class Reservation <<Entity>> {
+    PRIMARY_KEY Id : Guid
+    ReservationNumber : string
+    ReservationDate : DateTime
+    --
+    FOREIGN_KEY FlightId : Guid
+    FOREIGN_KEY UserId : Guid?
+    --
+    + Flight : Flight
+    + User : User?
+    + Passengers : List<Passenger>
+}
+
+' ========================================
+' KLASA: Passenger (Pasażer)
+' ========================================
+class Passenger <<Entity>> {
+    PRIMARY_KEY Id : Guid
+    FirstName : string
+    LastName : string
+    PassportNumber : string
+    PhoneNumber : string
+    Email : string
+    --
+    FOREIGN_KEY ReservationId : Guid
+    FOREIGN_KEY SeatId : Guid
+    --
+    + Reservation : Reservation
+    + Seat : Seat
+}
+
+' ========================================
+' KLASA: Seat (Miejsce)
+' ========================================
+class Seat <<Entity>> {
+    PRIMARY_KEY Id : Guid
+    SeatNumber : string
+    IsAvailable : bool
+    Lock : DateTime
+    --
+    FOREIGN_KEY FlightId : Guid
+    --
+    + Flight : Flight
+    + Passenger : Passenger?
+}
+
+' ========================================
+' KLASA: User (Użytkownik)
+' ========================================
+class User <<Entity>> {
+    PRIMARY_KEY Id : Guid
+    Username : string
+    Password : string
+    Role : string
+    Money : double
+    --
+    + Reservations : List<Reservation>
+}
+
+' ========================================
+' RELACJE MIĘDZY KLASAMI
+' ========================================
+
+Flight "1" -- "0..*" Reservation
+Flight "1" -- "0..*" Seat
+Reservation "0..*" -- "0..1" User
+Reservation "1" -- "1..*" Passenger
+Passenger "1" -- "1" Seat
+
+' ========================================
+' NOTATKI OBJAŚNIAJĄCE (KOMPAKTOWE)
+' ========================================
+
+note top of Flight
+  <b>Flight</b> - Pojedynczy lot
+  • Gate=0 oznacza TBA (do ogłoszenia)
+  • Price w PLN
+end note
+
+note bottom of Reservation
+  <b>Reservation</b> - Rezerwacja
+  • Może być bez User (gość)
+  • Zawiera >=1 pasażerów
+end note
+
+note right of Passenger
+  <b>Passenger</b> - Pasażer
+  • Każdy ma przypisane
+    konkretne miejsce (Seat)
+end note
+
+note left of Seat
+  <b>Seat</b> - Miejsce
+  • Lock = tymczasowa rezerwacja
+  • Zapobiega podwójnej rezerwacji
+end note
+
+note bottom of User
+  <b>User</b> - Użytkownik
+  • Money = wirtualny portfel
+  • Role: Admin/User
+end note
+
+' ========================================
+' LEGENDA (UPROSZCZONA)
+' ========================================
+legend bottom
+  <b>Legenda:</b>
+  PRIMARY_KEY (PK) = Klucz główny | FOREIGN_KEY (FK) = Klucz obcy
+  
+  <b>Relacje:</b>
+  Flight 1→* Reservation, Seat | Reservation *→0..1 User, 1→* Passenger | Passenger 1→1 Seat
+  
+  <b>Model:</b> FlightsReservation DAL | <b>Data:</b> 10.11.2025
+endlegend
+
+@enduml

@@ -6,6 +6,7 @@ using FlightsReservation.DAL.Entities.Model;
 using FlightsReservation.DAL.Interfaces;
 using FluentValidation;
 using AutoMapper;
+using FlightsReservation.BLL.Interfaces.Services;
 
 namespace FlightsReservation.BLL.Services.EntityServices;
 
@@ -15,13 +16,15 @@ public class UsersService
     private readonly IMapper _mapper;
     private readonly IValidator<IUserDto> _validator;
     private readonly IUsersRepository _usersRepository;
+    private readonly IPasswordHasher _passwordHasher;
 
-    public UsersService(IUnitOfWork unitOfWork, IMapper mapper, IValidator<IUserDto> validator, IUsersRepository usersRepository)
+    public UsersService(IUnitOfWork unitOfWork, IMapper mapper, IValidator<IUserDto> validator, IUsersRepository usersRepository, IPasswordHasher passwordHasher)
     {
         _unitOfWork = unitOfWork;
         _mapper = mapper;
         _validator = validator;
         _usersRepository = usersRepository;
+        _passwordHasher = passwordHasher;
     }
 
     public async Task<FlightReservationResult<UserReadDto?>> LoginAsync(string login, string password, CancellationToken ct = default)
@@ -37,12 +40,19 @@ public class UsersService
             Console.WriteLine("ERROR: Bad password");
             return FlightReservationResult<UserReadDto?>.Fail("Bad password", ResponseCodes.BadRequest);
         }
-
-        var user = await _usersRepository.GetByLoginAndPasswordAsync(login, password, ct);
+        
+        var user = await _usersRepository.GetByUsernameAsync(login, ct);
         if (user is null)
         {
             Console.WriteLine("User not found");
             return FlightReservationResult<UserReadDto?>.Fail("User not found", ResponseCodes.NotFound);
+        }
+
+        var verifyResult = _passwordHasher.VerifyPassword(password, user.Password);
+        if (!verifyResult)
+        {
+            Console.WriteLine("Password hashes don`t match");
+            return FlightReservationResult<UserReadDto?>.Fail("Password hashes don`t match", ResponseCodes.BadRequest);
         }
 
         var userReadDto = _mapper.Map<UserReadDto>(user);
@@ -71,7 +81,6 @@ public class UsersService
         return FlightReservationResult<UserReadDto>.Success(userReadDto, ResponseCodes.Success);
     }
 
-    //Admin
     public async Task<FlightReservationResult<TotalUserReadDto>> GetUserProfileByIdAsync(Guid id, CancellationToken ct = default)
     {
         if (id == Guid.Empty)
@@ -94,6 +103,13 @@ public class UsersService
 
     public async Task<FlightReservationResult<int>> AddUserAsync(UserCreateDto createDto, CancellationToken ct = default)
     {
+        var existingUser = await _usersRepository.GetByUsernameAsync(createDto.Username, ct);
+        if (existingUser is not null)
+        {
+            Console.WriteLine("User already exists");
+            return FlightReservationResult<int>.Fail("User already exists", ResponseCodes.BadRequest);
+        }
+
         var validationResult = await _validator.ValidateAsync(createDto, ct);
         if (!validationResult.IsValid)
         {
@@ -110,12 +126,14 @@ public class UsersService
         try
         {
             user = _mapper.Map<User>(createDto);
+            string hashedPassword = _passwordHasher.HashPassword(createDto.Password);
+            user.Password = hashedPassword;
         }
         catch (Exception ex)
         {
             Console.WriteLine(ex.Message);
             Console.WriteLine("Internal server error");
-            return FlightReservationResult<int>.Fail("Internal server error", ResponseCodes.InternalServerError);
+            return FlightReservationResult<int>.Fail($"Internal server error: {ex.Message}", ResponseCodes.InternalServerError);
         }
 
         var res = await _usersRepository.AddAsync(user, ct);
@@ -149,6 +167,8 @@ public class UsersService
         try
         {
             _mapper.Map(updateDto, user);
+            string hashedPassword = _passwordHasher.HashPassword(updateDto.Password);
+            user.Password = hashedPassword;
         }
         catch
         {
